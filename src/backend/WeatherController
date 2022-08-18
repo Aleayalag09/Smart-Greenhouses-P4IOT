@@ -1,0 +1,105 @@
+import json
+import urllib.request
+from MQTT.MyMQTT import *
+import time
+
+class WeatherController():
+    
+    def __init__(self,clientID,rpiID,broker,port):
+        self.clientID = clientID
+        self.rpiID = rpiID
+        self.rtopic = '/'.join([self.clientID,self.rpiID]) + '/measurements' + '/#'
+        self.__api = 'YOUR_API_KEY'
+        self.client = MyMQTT(clientID,broker,port,self)
+        self.city = None
+        self.temp = None
+        self.hum = None
+        self.payload = None
+    
+    def getlocation(self):
+        """
+        This method takes the name of a place and extract the
+        code key of that place.
+        """
+        search_address = 'http://dataservice.accuweather.com/locations/v1/cities/search?apikey='+self.__api+'&q='+self.city+'&details=true'
+        with urllib.request.urlopen(search_address) as search_address:
+            data = json.loads(search_address.read().decode())
+        location_key = data[0]['Key']
+        return location_key
+    
+    def getWeather(self):
+        """
+        This method ask the API Accuweather the weather 
+        conditions using the key code of the place 
+        and get a json of all the measuraments.
+        """
+        key = self.getlocation()
+        weatherUrl= 'http://dataservice.accuweather.com/currentconditions/v1/'+key+'?apikey='+self.__api+'&details=true'
+        with urllib.request.urlopen(weatherUrl) as weatherUrl:
+            data = json.loads(weatherUrl.read().decode())
+        return data
+    
+    def getMeasurements(self):
+        """
+        This method extract from a json the measurements that our
+        user is interest.
+        """
+        data = self.getWeather()
+        self.temp = data[0]['Temperature']['Metric']['Value']
+        self.hum = data[0]['RelativeHumidity']
+        
+    def getInfo(self):
+        """
+        This method request the information 
+        """
+        None
+    
+    def openWindow(self):
+        """
+        This method extract from a json the measurements that our
+        user is interest.
+        """
+        None
+        
+    def start(self):
+        self.client.start()
+
+    def stop(self):
+        self.client.stop()
+        
+    def publish(self):
+        message=self.__message
+        self.client.myPublish(self.ttopic,message) 
+        
+    def subscribe(self):
+        self.client.mySubscribe(self.rtopic)
+        
+    def notify(self,topic,msg):
+        #Decode the JSON string
+        self.payload=json.loads(msg)
+        #encoding to JSON objects
+        # print(json.dumps(self.payload,indent=4))
+    
+    
+    
+if __name__ == '__main__':
+    conf=json.load(open("src/backend/settings.json"))
+    broker=conf["broker"]
+    port=conf["port"]
+    controller = WeatherController("Pepoclown","0",broker,port)
+    # controller.getMeasurements()
+    last_refresh = time.time()
+    controller.start()
+    while True:
+        time_start = time.time()
+        
+        if time_start-last_refresh >= 2:
+            controller.subscribe()
+            print(controller.payload)
+            last_refresh = time.time()
+    
+        
+        
+        
+    
+    
