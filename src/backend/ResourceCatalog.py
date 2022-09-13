@@ -6,77 +6,120 @@ import time
 class UserManager(object):
     exposed = True
 
-    # RETRIEVE THE INFORMATIONS ABOUT THE REGISTERED USERS (query must be equal to "all" or "user_ID")
     def GET(self, *path, **queries):
-        users = json.load(open("DATABASE/users.json", "r"))
-
-        if queries=="all":
-            return json.dumps(users, indent=3)
-
-        else:
-            return json.dumps(users[queries], indent=3)
-
-    # INSERT A NEW USER OR UPDATE THE INFORMATIONS OF AN ALREADY EXISTING USER (if user_ID specified in queries)
-    def PUT(self, *path, **queries):
-        input = json.loads(cherrypy.request.body.read()) 
-        users_dict = json.load(open("DATABASE/users.json", "r"))
-
-        # If we assume that the information about a user can be changed only sending again all the informations 
-        # (the entire json with the device description)
-        if len(queries)==1:
-            new_user = {"id": queries.split("_")[1], "name": input["name"], "surname": input["surname"], "n_rooms": input["n_rooms"], "email_addresses": input["email_addresses"], "timestamp": time.time()}
-            users_dict[queries] = new_user
-            json.dump(users_dict, open("DATABASE/users.json", "w"), indent=3)
+        """
+        Function that get an especific user or all the users, each user will be call by his id
+        """
+        users = json.load(open("src/db/users.json", "r"))
+        
+        try:
+            id = queries['id']
+        
+        except:
+            raise cherrypy.HTTPError(400, 'Bad request')
         
         else:
-            # Insert the first user 
-            if len(users_dict) == 0:
-                new_user_ID = "user_0"
-
-            # Insert a new user with an ID = ID_of_the_last_user_in_json + 1
-            else:
-                n_user = 0
-                for user in users_dict:
-                    n_user += 1
-
-                    # if user is the last user in the dict creates new_user with ID = user["id"] + 1
-                    if n_user == len(users_dict):
-                        new_user_ID = user["id"] + 1
-
-            new_user = {"id": new_user_ID, "name": input["name"], "surname": input["surname"], "n_rooms": input["n_rooms"], "email_addresses": input["email_addresses"], "timestamp": time.time()}
-            users_dict["user_"+str(new_user_ID)] = new_user
-            json.dump(users_dict, open("DATABASE/users.json", "w"), indent=3)
-
-            # initialize the strategies database (json) for the specific user and its rooms
-            strategies_dict = json.load(open("DATABASE/strategies.json", "r"))
-            strategies_dict[new_user_ID] = {}
-
-            for n_rooms in range(input["n_rooms"]):
-                strategies_dict[new_user_ID]["room_"+str(n_rooms)] = {}
-
-                strategies_dict[new_user_ID]["room_"+str(n_rooms)]["Irr_strategy"] = {"active": "False", "ip": "", "port": "", "mqtt_topic_pub": "", "strategy": "", "timestamp": 0} 
-                strategies_dict[new_user_ID]["room_"+str(n_rooms)]["Env_strategy"] = {"active": "False", "ip": "", "port": "", "mqtt_topic_pub": "", "strategy": "", "timestamp": 0} 
-                strategies_dict[new_user_ID]["room_"+str(n_rooms)]["Wea_strategy"] = {"active": "False", "ip": "", "port": "", "mqtt_topic_pub": "", "strategy": "", "timestamp": 0} 
-
-            json.dump(strategies_dict, open("DATABASE/strategies.json", "w"), indent=3)
-
-            # initialize the devices database (json) for the specific user and its rooms
-            devices_dict = json.load(open("DATABASE/devices.json", "r"))
-            devices_dict[new_user_ID] = {}
-
-            for n_rooms in range(input["n_rooms"]):
-                devices_dict[new_user_ID]["room_"+str(n_rooms)] = {}
-
-            json.dump(devices_dict, open("DATABASE/devices.json", "w"), indent=3)
+            if queries['id']== "all":
+                return json.dumps(users, indent=3)
+        
+            for user in users:
+                if user['id'] == int(id):
+                    return json.dumps(user, indent=3)
+                
+            raise cherrypy.HTTPError(400, 'No user found')
     
-    # DELETE AN USER (with user_ID = queries)
+    @cherrypy.tools.json_in()
+    def POST(self, *path, **queries):
+        """
+        This function create a new user
+        """
+        users = json.load(open("src/db/users.json", "r"))
+        new_user = {
+            "userName": "userName",
+            "password": "password",
+            "super_User": False,
+            "id": users[len(users)-1]['id'] + 1,
+            "name": "name",
+            "surname": "surname",
+            "email_addresses": "email",
+            "country": "country",
+            "city": "city",
+            "greenHouses": [],
+            "timestamp": time.time()
+        }
+        input = cherrypy.request.json
+        try:
+            new_user["userName"] = input['userName']
+            new_user["password"] = input['password']
+            new_user["name"] = input['name']
+            new_user["surname"] = input['surname']
+            new_user["email_addresses"] = input['email_addresses']
+            new_user["country"] = input['country']
+            new_user["city"] = input['city']
+        except:
+            raise cherrypy.HTTPError(400, 'Incorrect parameter')
+        else:
+            users.append(new_user)
+            json.dump(users, open("src/db/users.json", "w"), indent=3)
+            output=str(type(input))+"<br>"+str(input)
+            return output
+            
+
+    # INSERT A NEW USER OR UPDATE THE INFORMATIONS OF AN ALREADY EXISTING USER (if user_ID specified in queries)
+    @cherrypy.tools.json_in()
+    def PUT(self, *path, **queries): 
+        """
+        This function modify the personal data of the user
+        """
+        try: 
+            id = queries['id']
+        except:
+            raise cherrypy.HTTPError(400, 'Incorrect id')
+        
+        input = cherrypy.request.json
+        
+        users = json.load(open("src/db/users.json", "r"))
+        
+        keys_to_change = input.keys()
+            
+        key_not_allowed = ["id","super_User","greenHouses","timestamp"]
+        
+        keys = list(set(keys_to_change)-set(key_not_allowed))
+        
+        if not keys:
+            raise cherrypy.HTTPError(400, 'Not value to change found')
+        
+        for user in users:
+            if user['id'] == int(id):
+                for key in keys:
+                    user[key] = type(user[key])(input[key])
+                user["timestamp"] = time.time()
+                json.dump(users, open("src/db/users.json", "w"), indent=3)
+                output = str(type(user))+"<br>"+str(user)
+                return output
+            
+        raise cherrypy.HTTPError(400, 'No user found')
+    
     def DELETE(self, *path, **queries):
-        users_dict = json.load(open("DATABASE/users.json", "r"))
-
-        users_dict.pop(queries)
-
-        json.dump(users_dict, open("DATABASE/users.json", "w"), indent=3)
-
+        """
+        This function delete an user by id
+        """
+        
+        try: 
+            id = queries['id']
+        except:
+            raise cherrypy.HTTPError(400, 'Incorrect id')
+        
+        users = json.load(open("src/db/users.json", "r"))
+        
+        for idx, user in enumerate(users):
+            if user['id'] == int(id):
+                output = str(type(user))+"<br>"+str(user)
+                users.pop(idx)
+                json.dump(users, open("src/db/users.json", "w"), indent=3)
+                return output
+            
+        raise cherrypy.HTTPError(400, 'No user found')
 
 class DeviceManager(object):
     exposed = True
@@ -84,7 +127,7 @@ class DeviceManager(object):
     # RETRIEVE THE INFORMATIONS ABOUT THE REGISTERED DEVICES 
     # (queries[0] = user_ID, queries[1] = room_ID, queries[2] = device_ID)
     def GET(self, *path, **queries):
-        devices_dict = json.load(open("DATABASE/devices.json", "r"))
+        devices_dict = json.load(open("src/db/devices.json", "r"))
 
         # Returns all the devices info divided by room and for a specific user
         if len(queries) == 1:
@@ -102,14 +145,14 @@ class DeviceManager(object):
     # (queries[0] = user_ID, queries[1] = room_ID, queries[2] = device_ID (choosen by the user => CONTROL IF IT IS CORRECT?))
     def PUT(self, *path, **queries):
         input = json.loads(cherrypy.request.body.read()) 
-        devices_dict = json.load(open("DATABASE/devices.json", "r"))
+        devices_dict = json.load(open("src/db/devices.json", "r"))
 
         new_device = {"active": input["active"], "ip": input["ip"], "port": input["port"], "mqtt_topic_pub": input["mqtt_topic_pub"], "mqtt_topic_sub": input["mqtt_topic_sub"], "resources": input["resources"], "timestamp": time.time()}
 
         # If we assume that the information about a device can be changed only sending again all the informations 
         # (the entire json with the device description)
         devices_dict[queries[0]][queries[1]][queries[2]] = new_device
-        json.dump(devices_dict, open("DATABASE/devices.json", "w"), indent=3)
+        json.dump(devices_dict, open("src/db/devices.json", "w"), indent=3)
 
 
 class StrategiesManager(object):
@@ -119,7 +162,7 @@ class StrategiesManager(object):
     def GET(self, *path, **queries):
         # The user wants all the strategies for each room he manages
         if len(queries) == 1:
-            strategies = json.load(open("DATABASE/strategies.json", "r"))[queries]
+            strategies = json.load(open("src/db/strategies.json", "r"))[queries]
 
         return json.dumps(strategies, indent=3)
 
@@ -127,7 +170,7 @@ class StrategiesManager(object):
     # (queries[0] = user_ID, queries[1] = room_ID, queries[2] = strategy_ID (Irr, Env, Wea_strategy))
     def PUT(self, *path, **queries):
         input = json.loads(cherrypy.request.body.read()) 
-        strategies_dict = json.load(open("DATABASE/strategies.json", "r"))
+        strategies_dict = json.load(open("src/db/strategies.json", "r"))
 
         new_strategy = {"active": input["active"], "ip": input["ip"], "port": input["port"], "mqtt_topic_pub": input["mqtt_topic_pub"], "strategy": input["strategy"], "timestamp": time.time()}
 
@@ -137,7 +180,7 @@ class StrategiesManager(object):
         # THE JSON FILE HAS A STANDARD FORMAT IN WHICH THE SECTION FOR EACH STRATEGY ARE ALREADY DEFINED WITH DEFAULT VALUES (SEE catalog.json)
         # (Every time a user registers, hence defining the number of rooms, the entries for the strategies are created in catalog.json)
         strategies_dict[queries[0]][queries[1]][queries[2]] = new_strategy
-        json.dump(strategies_dict, open("DATABASE/strategies.json", "w"), indent=3)
+        json.dump(strategies_dict, open("src/db/strategies.json", "w"), indent=3)
         return
 
 
@@ -146,7 +189,7 @@ class BrokerManager(object):
 
     # Retrieve IP address and port of the broker in the platform
     def GET(self, *path):
-        broker_dict = json.load(open("DATABASE/broker.json", "r"))
+        broker_dict = json.load(open("src/db/broker.json", "r"))
 
         return json.dumps(broker_dict, indent=3)
 
@@ -155,7 +198,7 @@ class BrokerManager(object):
         input = json.loads(cherrypy.request.body.read())
         broker = {"ip": input["ip"], "port": input["port"]}
 
-        json.dump(broker, open("DATABASE/broker.json", "w"), indent=3)
+        json.dump(broker, open("src/db/broker.json", "w"), indent=3)
 
 
 class ThingSpeakBridgeManager(object):
@@ -163,7 +206,7 @@ class ThingSpeakBridgeManager(object):
 
     # Retrieve IP address, port and methods of the ThingSpeak_bridge in the platform
     def GET(self, *path):
-        ThingSpeak_bridge_dict = json.load(open("DATABASE/ThingSpeak_bridge.json", "r"))
+        ThingSpeak_bridge_dict = json.load(open("src/db/ThingSpeak_bridge.json", "r"))
 
         return json.dumps(ThingSpeak_bridge_dict, indent=3)
 
@@ -172,7 +215,7 @@ class ThingSpeakBridgeManager(object):
         input = json.loads(cherrypy.request.body.read())
         ThingSpeak_bridge = {"ip": input["ip"], "port": input["port"], "methods": input["methods"], "timestamp": time.time()}
 
-        json.dump(ThingSpeak_bridge, open("DATABASE/ThingSpeak_bridge.json", "w"), indent=3)
+        json.dump(ThingSpeak_bridge, open("src/db/ThingSpeak_bridge.json", "w"), indent=3)
 
 
 class WebPageManager(object):
@@ -180,7 +223,7 @@ class WebPageManager(object):
 
     # Retrieve IP address and port of the webPage in the platform
     def GET(self, *path):
-        webPage_dict = json.load(open("DATABASE/webPage.json", "r"))
+        webPage_dict = json.load(open("src/db/webPage.json", "r"))
 
         return json.dumps(webPage_dict, indent=3)
 
@@ -189,7 +232,7 @@ class WebPageManager(object):
         input = json.loads(cherrypy.request.body.read())
         webPage = {"ip": input["ip"], "port": input["port"], "timestamp": time.time()}
 
-        json.dump(webPage, open("DATABASE/webPage.json", "w"), indent=3)
+        json.dump(webPage, open("src/db/webPage.json", "w"), indent=3)
 
 
 class WeatherAPIManager(object):
@@ -197,7 +240,7 @@ class WeatherAPIManager(object):
 
     # Retrieve IP address and port of the weather_API used by the WEATHER_STRATEGIES
     def GET(self, *path):
-        weather_API_dict = json.load(open("DATABASE/weather_API.json", "r"))
+        weather_API_dict = json.load(open("src/db/weather_API.json", "r"))
 
         return json.dumps(weather_API_dict, indent=3)
 
@@ -206,13 +249,13 @@ class WeatherAPIManager(object):
         input = json.loads(cherrypy.request.body.read())
         weather_API = {"ip": input["ip"], "port": input["port"], "timestamp": time.time()}
 
-        json.dump(weather_API, open("DATABASE/weather_API.json", "w"), indent=3)
+        json.dump(weather_API, open("src/db/weather_API.json", "w"), indent=3)
 
 
 
 # Function used to remove the devices registered from more than 2 minutes
 def remove_oldest_device():
-    devices_dict = json.load(open("DATABASE/devices.json", "r"))
+    devices_dict = json.load(open("src/db/devices.json", "r"))
 
     for user in devices_dict:
 
@@ -223,12 +266,12 @@ def remove_oldest_device():
                if time.time()-device["timestamp"]>=9999999999:
                     room.pop("device_"+str(device["id"]))
 
-    json.dump(devices_dict, open("DATABASE/devices.json", "w"), indent=3)
+    json.dump(devices_dict, open("src/db/devices.json", "w"), indent=3)
 
 
 # Function used to remove the strategies registered from more than X minutes
 def remove_oldest_strategy():
-    strategies_dict = json.load(open("DATABASE/strategies.json", "r"))
+    strategies_dict = json.load(open("src/db/strategies.json", "r"))
 
     for user in strategies_dict:
 
@@ -239,27 +282,27 @@ def remove_oldest_strategy():
                if time.time()-strategy["timestamp"]>=9999999999:
                     strategy = {"active": "False", "ip": "", "port": "", "mqtt_topic_pub": "", "strategy": "", "timestamp": 0}
 
-    json.dump(strategies_dict, open("DATABASE/strategies.json", "w"), indent=3)
+    json.dump(strategies_dict, open("src/db/strategies.json", "w"), indent=3)
 
 
 # Function used to remove the ThingSpeak_bridge registered from more than X minutes
 def remove_oldest_ThingSpeak_bridge():
-    TS_bridge_dict = json.load(open("DATABASE/ThingSpeak_bridge.json", "r"))
+    TS_bridge_dict = json.load(open("src/db/ThingSpeak_bridge.json", "r"))
 
     if time.time()-TS_bridge_dict["timestamp"]>=9999999999:
         TS_bridge_dict = {"ip": "", "port": "", "methods": [], "timestamp": 0}
 
-    json.dump(TS_bridge_dict, open("DATABASE/ThingSpeak_bridge.json", "w"), indent=3)
+    json.dump(TS_bridge_dict, open("src/db/ThingSpeak_bridge.json", "w"), indent=3)
 
 
 # Function used to remove the webPage registered from more than X minutes
 def remove_oldest_webPage():
-    webPage_dict = json.load(open("DATABASE/webPage.json", "r"))
+    webPage_dict = json.load(open("src/db/webPage.json", "r"))
 
     if time.time()-webPage_dict["timestamp"]>=9999999999:
         webPage_dict = {"ip": "", "port": "", "timestamp": 0}
 
-    json.dump(webPage_dict, open("DATABASE/webPage.json", "w"), indent=3)
+    json.dump(webPage_dict, open("src/db/webPage.json", "w"), indent=3)
 
 
 
