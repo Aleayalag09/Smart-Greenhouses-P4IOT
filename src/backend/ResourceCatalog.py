@@ -120,6 +120,137 @@ class UserManager(object):
                 return output
             
         raise cherrypy.HTTPError(400, 'No user found')
+    
+class GreenHouseManager(object):
+    exposed = True
+
+    def GET(self, *path, **queries):
+        """
+        Function that get an especific user or all the users, each user will be call by his id
+        """
+        users = json.load(open("src/db/users.json", "r"))
+        
+        try:
+            id = queries['id']
+            greenHouseID = queries['greenHouseID']
+        
+        except:
+            raise cherrypy.HTTPError(400, 'Bad request')
+        
+        else:
+            if queries['greenHouseID']== "all":
+                for user in users:
+                    if user['id'] == int(id):
+                        return json.dumps(user['greenHouses'], indent=3)
+            
+            for user in users:
+                if user['id'] == int(id):
+                    for greenhouse in user['greenHouses']:
+                        if greenhouse['greenHouseID'] == int(greenHouseID):
+                            return json.dumps(greenhouse, indent=3)
+                
+        raise cherrypy.HTTPError(400, 'No user or greenhouse found')
+                        
+    
+    @cherrypy.tools.json_in()
+    def POST(self, *path, **queries):
+        """
+        This function create a new user
+        """
+        users = json.load(open("src/db/users.json", "r"))
+        try:
+            id = queries['id']
+        
+        except:
+            raise cherrypy.HTTPError(400, 'Bad request')
+        
+        for user in users:
+            if user['id'] == int(id):
+                greenHouseID = user['greenHouses'][len(user['greenHouses'])-1]['greenHouseID'] + 1
+                break
+        
+        new_greenhouse = {
+            "greenHouseName": "greenHouseName",
+            "greenHouseID": greenHouseID,
+            "city": "city",
+            "devicesList": []
+            }
+        
+        input = cherrypy.request.json
+        try:
+            new_greenhouse["greenHouseName"] = input['greenHouseName']
+            new_greenhouse["city"] = input['city']
+        except:
+            raise cherrypy.HTTPError(400, 'Incorrect parameter')
+        else:
+            user['greenHouses'].append(new_greenhouse)
+            user["timestamp"] = time.time()
+            json.dump(users, open("src/db/users.json", "w"), indent=3)
+            output=str(type(input))+"<br>"+str(input)
+            return output
+            
+
+    # INSERT A NEW USER OR UPDATE THE INFORMATIONS OF AN ALREADY EXISTING USER (if user_ID specified in queries)
+    @cherrypy.tools.json_in()
+    def PUT(self, *path, **queries): 
+        """
+        This function modify the personal data of the user
+        """
+        try: 
+            id = queries['id']
+            greenHouseID = queries['greenHouseID']
+        except:
+            raise cherrypy.HTTPError(400, 'Incorrect id')
+        
+        input = cherrypy.request.json
+        
+        users = json.load(open("src/db/users.json", "r"))
+        
+        keys_to_change = input.keys()
+            
+        key_not_allowed = ["greenHouseID","devicesList"]
+        
+        keys = list(set(keys_to_change)-set(key_not_allowed))
+        
+        if not keys:
+            raise cherrypy.HTTPError(400, 'Not value to change found')
+        
+        for user in users:
+            if user['id'] == int(id):
+                for greenHouse in user['greenHouses']:
+                    if greenHouse['greenHouseID'] == int(greenHouseID):
+                        for key in keys:
+                            greenHouse[key] = type(greenHouse[key])(input[key])
+                user["timestamp"] = time.time()
+                json.dump(users, open("src/db/users.json", "w"), indent=3)
+                output = str(type(user))+"<br>"+str(user)
+                return output
+            
+        raise cherrypy.HTTPError(400, 'No user or greenhouse found')
+    
+    def DELETE(self, *path, **queries):
+        """
+        This function delete an user by id
+        """
+        
+        try: 
+            id = queries['id']
+            greenHouseID = queries['greenHouseID']
+        except:
+            raise cherrypy.HTTPError(400, 'Incorrect id')
+        
+        users = json.load(open("src/db/users.json", "r"))
+        
+        for user in users:
+            if user['id'] == int(id):
+                for idx, greenHouse in enumerate(user['greenHouses']):
+                    if greenHouse['greenHouseID'] == int(greenHouseID):
+                        output = str(type(greenHouse))+"<br>"+str(greenHouse)
+                        user['greenHouses'].pop(idx)
+                        json.dump(users, open("src/db/users.json", "w"), indent=3)
+                        return output
+                    
+        raise cherrypy.HTTPError(400, 'No user or greenhouse found')
 
 class DeviceManager(object):
     exposed = True
@@ -315,6 +446,7 @@ if __name__=="__main__":
         }
     }
     cherrypy.tree.mount(UserManager(), '/user_manager', conf)
+    cherrypy.tree.mount(GreenHouseManager(), '/greenhouse_manager', conf)
     cherrypy.tree.mount(DeviceManager(), '/device_manager', conf)
     cherrypy.tree.mount(StrategiesManager(), '/strategies_manager', conf)
     cherrypy.tree.mount(BrokerManager(), '/broker_manager', conf)

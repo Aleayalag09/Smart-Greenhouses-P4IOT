@@ -1,0 +1,66 @@
+[
+   {
+      "userName": "Matteo_Impieri",
+      "password": "12345678",
+      "super_User": false,
+      "id": 0,
+      "name": "Matteo",
+      "surname": "Impieri",
+      "email_addresses": "Matteo_Impieri@P4IOT.com",
+      "country": "Italy",
+      "city": "Loano",
+      "greenHouses": [
+         {
+            "greenHouseName": "My_farm1",
+            "greenHouseID": 1,
+            "city": "Torino"
+         }
+      ],
+      "timestamp": 1663352259.46841
+   },
+   {
+      "userName": "Alejandro_Ayala",
+      "password": "123",
+      "super_User": false,
+      "id": 1,
+      "name": "Alejandro",
+      "surname": "Ayala",
+      "email_addresses": "Alejandro_Ayala@P4IOT.com",
+      "country": "Colombia",
+      "city": "Cali",
+      "greenHouses": [
+         {
+            "greenHouseName": "My_small_farm",
+            "greenHouseID": 0,
+            "city": "Cali"
+         }
+      ],
+      "timestamp": 1663095223.4624228
+   },
+   {
+      "userName": "Matteo_Bogoni",
+      "password": "123",
+      "super_User": false,
+      "id": 2,
+      "name": "Matteo",
+      "surname": "Bogoni",
+      "email_addresses": "Matteo_Bogoni@P4IOT.com",
+      "country": "Italy",
+      "city": "Torino",
+      "greenHouses": [],
+      "timestamp": 1663095768.1418948
+   },
+   {
+      "userName": "Valentina_Zamora",
+      "password": "123",
+      "super_User": false,
+      "id": 3,
+      "name": "Valentina",
+      "surname": "Zamora",
+      "email_addresses": "Valentina_Zamora@P4IOT.com",
+      "country": "Italy",
+      "city": "Torino",
+      "greenHouses": [],
+      "timestamp": 1663164394.84785
+   }
+]

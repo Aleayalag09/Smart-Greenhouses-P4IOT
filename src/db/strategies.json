@@ -1,0 +1,70 @@
+{
+    "user_0": {
+
+        "room_0": {
+
+            "Irr_strategy": {
+                
+                "active": "False",
+                "ip": "", 
+                "port": "",
+                "mqtt_topic_pub": "",
+                "strategy": "",
+                "timestamp": 0
+            },
+
+            "Env_strategy": {
+
+                "active": "False",
+                "ip": "", 
+                "port": "",
+                "mqtt_topic_pub": "",
+                "strategy": "",
+                "timestamp": 0
+            },
+
+            "Wea_strategy": {
+
+                "active": "False",
+                "ip": "", 
+                "port": "",
+                "mqtt_topic_pub": "",
+                "strategy": "",
+                "timestamp": 0
+            }
+        },
+
+        "room_1": {
+            
+            "Irr_strategy": {
+
+                "active": "False",
+                "ip": "", 
+                "port": "",
+                "mqtt_topic_pub": "",
+                "strategy": "",
+                "timestamp": 0
+            },
+
+            "Env_strategy": {
+
+                "active": "False", 
+                "ip": "", 
+                "port": "",
+                "mqtt_topic_pub": "",
+                "strategy": "",
+                "timestamp": 0
+            },
+
+            "Wea_strategy": {
+
+                "active": "False",
+                "ip": "", 
+                "port": "",
+                "mqtt_topic_pub": "",
+                "strategy": "",
+                "timestamp": 0
+            }
+        }
+    }
+}
