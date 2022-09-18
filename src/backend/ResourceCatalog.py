@@ -2,7 +2,6 @@ import json
 import cherrypy
 import time
 
-
 class UserManager(object):
     exposed = True
 
@@ -10,7 +9,7 @@ class UserManager(object):
         """
         Function that get an especific user or all the users, each user will be call by his id
         """
-        users = json.load(open("src/db/users.json", "r"))
+        users = json.load(open("src/db/catalog.json", "r"))
         
         try:
             id = queries['id']
@@ -33,7 +32,7 @@ class UserManager(object):
         """
         This function create a new user
         """
-        users = json.load(open("src/db/users.json", "r"))
+        users = json.load(open("src/db/catalog.json", "r"))
         new_user = {
             "userName": "userName",
             "password": "password",
@@ -60,7 +59,7 @@ class UserManager(object):
             raise cherrypy.HTTPError(400, 'Incorrect parameter')
         else:
             users.append(new_user)
-            json.dump(users, open("src/db/users.json", "w"), indent=3)
+            json.dump(users, open("src/db/catalog.json", "w"), indent=3)
             output=str(type(input))+"<br>"+str(input)
             return output
             
@@ -78,7 +77,7 @@ class UserManager(object):
         
         input = cherrypy.request.json
         
-        users = json.load(open("src/db/users.json", "r"))
+        users = json.load(open("src/db/catalog.json", "r"))
         
         keys_to_change = input.keys()
             
@@ -92,11 +91,14 @@ class UserManager(object):
         for user in users:
             if user['id'] == int(id):
                 for key in keys:
-                    user[key] = type(user[key])(input[key])
-                user["timestamp"] = time.time()
-                json.dump(users, open("src/db/users.json", "w"), indent=3)
-                output = str(type(user))+"<br>"+str(user)
-                return output
+                    try:
+                        user[key] = type(user[key])(input[key])
+                    except:
+                        raise cherrypy.HTTPError(400, 'No valid key')
+                    user["timestamp"] = time.time()
+                    json.dump(users, open("src/db/catalog.json", "w"), indent=3)
+                    output = str(type(user))+"<br>"+str(user)
+                    return output
             
         raise cherrypy.HTTPError(400, 'No user found')
     
@@ -110,13 +112,13 @@ class UserManager(object):
         except:
             raise cherrypy.HTTPError(400, 'Incorrect id')
         
-        users = json.load(open("src/db/users.json", "r"))
+        users = json.load(open("src/db/catalog.json", "r"))
         
         for idx, user in enumerate(users):
             if user['id'] == int(id):
                 output = str(type(user))+"<br>"+str(user)
                 users.pop(idx)
-                json.dump(users, open("src/db/users.json", "w"), indent=3)
+                json.dump(users, open("src/db/catalog.json", "w"), indent=3)
                 return output
             
         raise cherrypy.HTTPError(400, 'No user found')
@@ -128,7 +130,7 @@ class GreenHouseManager(object):
         """
         Function that get an especific greenhouse or all the greenhouses from an user.
         """
-        users = json.load(open("src/db/users.json", "r"))
+        users = json.load(open("src/db/catalog.json", "r"))
         
         try:
             id = queries['id']
@@ -157,7 +159,7 @@ class GreenHouseManager(object):
         """
         This function create a new greenhouse
         """
-        users = json.load(open("src/db/users.json", "r"))
+        users = json.load(open("src/db/catalog.json", "r"))
         try:
             id = queries['id']
         
@@ -188,7 +190,7 @@ class GreenHouseManager(object):
         else:
             user['greenHouses'].append(new_greenhouse)
             user["timestamp"] = time.time()
-            json.dump(users, open("src/db/users.json", "w"), indent=3)
+            json.dump(users, open("src/db/catalog.json", "w"), indent=3)
             output=str(type(input))+"<br>"+str(input)
             return output
             
@@ -205,7 +207,7 @@ class GreenHouseManager(object):
         
         input = cherrypy.request.json
         
-        users = json.load(open("src/db/users.json", "r"))
+        users = json.load(open("src/db/catalog.json", "r"))
         
         keys_to_change = input.keys()
             
@@ -221,11 +223,14 @@ class GreenHouseManager(object):
                 for greenHouse in user['greenHouses']:
                     if greenHouse['greenHouseID'] == int(greenHouseID):
                         for key in keys:
-                            greenHouse[key] = type(greenHouse[key])(input[key])
-                user["timestamp"] = time.time()
-                json.dump(users, open("src/db/users.json", "w"), indent=3)
-                output = str(type(user))+"<br>"+str(user)
-                return output
+                            try:
+                                greenHouse[key] = type(greenHouse[key])(input[key])
+                            except:
+                                raise cherrypy.HTTPError(400, 'No valid key')
+                            user["timestamp"] = time.time()
+                            json.dump(users, open("src/db/catalog.json", "w"), indent=3)
+                            output = str(type(user))+"<br>"+str(user)
+                            return output
             
         raise cherrypy.HTTPError(400, 'No user or greenhouse found')
     
@@ -240,7 +245,7 @@ class GreenHouseManager(object):
         except:
             raise cherrypy.HTTPError(400, 'Incorrect id')
         
-        users = json.load(open("src/db/users.json", "r"))
+        users = json.load(open("src/db/catalog.json", "r"))
         
         for user in users:
             if user['id'] == int(id):
@@ -248,7 +253,7 @@ class GreenHouseManager(object):
                     if greenHouse['greenHouseID'] == int(greenHouseID):
                         output = str(type(greenHouse))+"<br>"+str(greenHouse)
                         user['greenHouses'].pop(idx)
-                        json.dump(users, open("src/db/users.json", "w"), indent=3)
+                        json.dump(users, open("src/db/catalog.json", "w"), indent=3)
                         return output
                     
         raise cherrypy.HTTPError(400, 'No user or greenhouse found')
@@ -260,7 +265,7 @@ class DeviceManager(object):
         """
         Function that get an especific device or all the devices from a greenhouse.
         """
-        users = json.load(open("src/db/users.json", "r"))
+        users = json.load(open("src/db/catalog.json", "r"))
         
         try:
             id = queries['id']
@@ -293,9 +298,9 @@ class DeviceManager(object):
     @cherrypy.tools.json_in()
     def POST(self, *path, **queries):
         """
-        This function create a new greenhouse
+        This function create a new device
         """
-        users = json.load(open("src/db/users.json", "r"))
+        users = json.load(open("src/db/catalog.json", "r"))
         try:
             id = queries['id']
             greenHouseID = queries['greenHouseID']
@@ -351,14 +356,14 @@ class DeviceManager(object):
 
             greenhouse['devicesList'].append(new_device)
             user["timestamp"] = time.time()
-            json.dump(users, open("src/db/users.json", "w"), indent=3)
+            json.dump(users, open("src/db/catalog.json", "w"), indent=3)
             output=str(type(input))+"<br>"+str(input)
             return output
             
     @cherrypy.tools.json_in()
     def PUT(self, *path, **queries): 
         """
-        This function modify the information of the greenhouse
+        This function modify the information of the device
         """
         try: 
             id = queries['id']
@@ -369,11 +374,11 @@ class DeviceManager(object):
         
         input = cherrypy.request.json
         
-        users = json.load(open("src/db/users.json", "r"))
+        users = json.load(open("src/db/catalog.json", "r"))
         
         keys_to_change = input.keys()
         
-        if path == 'servicesDetails':
+        if path[0] == 'servicesDetails':
             key_not_allowed = ["serviceType","topic","path"]
             keys = list(set(keys_to_change)-set(key_not_allowed))
         else:
@@ -389,18 +394,31 @@ class DeviceManager(object):
                     if greenHouse['greenHouseID'] == int(greenHouseID):
                         for device in greenHouse['devicesList']:
                             if device["deviceID"] == int(deviceID):
-                                for key in keys:
-                                    device[key] = type(device[key])(input[key])
-                user["timestamp"] = time.time()
-                json.dump(users, open("src/db/users.json", "w"), indent=3)
-                output = str(type(user))+"<br>"+str(user)
-                return output
+                                if path[0] == 'servicesDetails':
+                                    for servicesDetail in device['servicesDetails']:
+                                        if servicesDetail['serviceType'] == path[1]:
+                                            for key in keys:
+                                                try:
+                                                    servicesDetail[key] = type(servicesDetail[key])(input[key])
+                                                except:
+                                                    raise cherrypy.HTTPError(400, 'No valid key')
+                                else:
+                                    for key in keys:
+                                        try:
+                                            device[key] = type(device[key])(input[key])
+                                        except:
+                                            raise cherrypy.HTTPError(400, 'No valid key')
+                                            
+                                        user["timestamp"] = time.time()
+                                        json.dump(users, open("src/db/catalog.json", "w"), indent=3)
+                                        output = str(type(user))+"<br>"+str(user)
+                                        return output
             
         raise cherrypy.HTTPError(400, 'No user or greenhouse found')
     
     def DELETE(self, *path, **queries):
         """
-        This function delete a greenhouse
+        This function delete a device
         """
         
         try: 
@@ -410,7 +428,7 @@ class DeviceManager(object):
         except:
             raise cherrypy.HTTPError(400, 'Incorrect id')
         
-        users = json.load(open("src/db/users.json", "r"))
+        users = json.load(open("src/db/catalog.json", "r"))
         
         for user in users:
             if user['id'] == int(id):
@@ -420,162 +438,179 @@ class DeviceManager(object):
                             if device['deviceID'] == int(deviceID):
                                 output = str(type(device))+"<br>"+str(device)
                                 greenHouse['devicesList'].pop(idx)
-                                json.dump(users, open("src/db/users.json", "w"), indent=3)
+                                json.dump(users, open("src/db/catalog.json", "w"), indent=3)
                                 return output
                     
         raise cherrypy.HTTPError(400, 'No user, greenhouse or device found')
 
-
 class StrategiesManager(object):
     exposed = True
 
-    # RETRIEVE THE INFORMATIONS ABOUT THE REGISTERED STRATEGIES (query must be equal to the "user_ID")
     def GET(self, *path, **queries):
-        # The user wants all the strategies for each room he manages
-        if len(queries) == 1:
-            strategies = json.load(open("src/db/strategies.json", "r"))[queries]
-
-        return json.dumps(strategies, indent=3)
-
-    # INSERT A NEW STRATEGY OR UPDATE THE INFORMATIONS OF AN ALREADY EXISTING STRATEGY
-    # (queries[0] = user_ID, queries[1] = room_ID, queries[2] = strategy_ID (Irr, Env, Wea_strategy))
-    def PUT(self, *path, **queries):
-        input = json.loads(cherrypy.request.body.read()) 
-        strategies_dict = json.load(open("src/db/strategies.json", "r"))
-
-        new_strategy = {"active": input["active"], "ip": input["ip"], "port": input["port"], "mqtt_topic_pub": input["mqtt_topic_pub"], "strategy": input["strategy"], "timestamp": time.time()}
-
-        # If we assume that the information about a device can be changed only sending again all the informations 
-        # (the entire json with the strategy description)
-
-        # THE JSON FILE HAS A STANDARD FORMAT IN WHICH THE SECTION FOR EACH STRATEGY ARE ALREADY DEFINED WITH DEFAULT VALUES (SEE catalog.json)
-        # (Every time a user registers, hence defining the number of rooms, the entries for the strategies are created in catalog.json)
-        strategies_dict[queries[0]][queries[1]][queries[2]] = new_strategy
-        json.dump(strategies_dict, open("src/db/strategies.json", "w"), indent=3)
-        return
-
-
-class BrokerManager(object):
-    exposed = True
-
-    # Retrieve IP address and port of the broker in the platform
-    def GET(self, *path):
-        broker_dict = json.load(open("src/db/broker.json", "r"))
-
-        return json.dumps(broker_dict, indent=3)
-
-    # Adds (or updates) IP address and port of the broker as a json string using PUT
-    def PUT(self, *path):
-        input = json.loads(cherrypy.request.body.read())
-        broker = {"ip": input["ip"], "port": input["port"]}
-
-        json.dump(broker, open("src/db/broker.json", "w"), indent=3)
-
-
-class ThingSpeakBridgeManager(object):
-    exposed = True
-
-    # Retrieve IP address, port and methods of the ThingSpeak_bridge in the platform
-    def GET(self, *path):
-        ThingSpeak_bridge_dict = json.load(open("src/db/ThingSpeak_bridge.json", "r"))
-
-        return json.dumps(ThingSpeak_bridge_dict, indent=3)
-
-    # Adds (or updates) IP address, port and methods (as a list) of the broker as a json string using PUT
-    def PUT(self, *path):
-        input = json.loads(cherrypy.request.body.read())
-        ThingSpeak_bridge = {"ip": input["ip"], "port": input["port"], "methods": input["methods"], "timestamp": time.time()}
-
-        json.dump(ThingSpeak_bridge, open("src/db/ThingSpeak_bridge.json", "w"), indent=3)
-
-
-class WebPageManager(object):
-    exposed = True
-
-    # Retrieve IP address and port of the webPage in the platform
-    def GET(self, *path):
-        webPage_dict = json.load(open("src/db/webPage.json", "r"))
-
-        return json.dumps(webPage_dict, indent=3)
-
-    # Adds (or updates) IP address and port of the webPage as a json string using PUT
-    def PUT(self, *path):
-        input = json.loads(cherrypy.request.body.read())
-        webPage = {"ip": input["ip"], "port": input["port"], "timestamp": time.time()}
-
-        json.dump(webPage, open("src/db/webPage.json", "w"), indent=3)
-
-
-class WeatherAPIManager(object):
-    exposed = True
-
-    # Retrieve IP address and port of the weather_API used by the WEATHER_STRATEGIES
-    def GET(self, *path):
-        weather_API_dict = json.load(open("src/db/weather_API.json", "r"))
-
-        return json.dumps(weather_API_dict, indent=3)
-
-    # Adds (or updates) IP address and port of the weather_API as a json string using PUT
-    def PUT(self, *path):
-        input = json.loads(cherrypy.request.body.read())
-        weather_API = {"ip": input["ip"], "port": input["port"], "timestamp": time.time()}
-
-        json.dump(weather_API, open("src/db/weather_API.json", "w"), indent=3)
-
-
-
-# Function used to remove the devices registered from more than 2 minutes
-def remove_oldest_device():
-    devices_dict = json.load(open("src/db/devices.json", "r"))
-
-    for user in devices_dict:
-
-        for room in user:
-
-            for device in room:
-
-               if time.time()-device["timestamp"]>=9999999999:
-                    room.pop("device_"+str(device["id"]))
-
-    json.dump(devices_dict, open("src/db/devices.json", "w"), indent=3)
-
-
-# Function used to remove the strategies registered from more than X minutes
-def remove_oldest_strategy():
-    strategies_dict = json.load(open("src/db/strategies.json", "r"))
-
-    for user in strategies_dict:
-
-        for room in user:
-
-            for strategy in room:
-
-               if time.time()-strategy["timestamp"]>=9999999999:
-                    strategy = {"active": "False", "ip": "", "port": "", "mqtt_topic_pub": "", "strategy": "", "timestamp": 0}
-
-    json.dump(strategies_dict, open("src/db/strategies.json", "w"), indent=3)
-
-
-# Function used to remove the ThingSpeak_bridge registered from more than X minutes
-def remove_oldest_ThingSpeak_bridge():
-    TS_bridge_dict = json.load(open("src/db/ThingSpeak_bridge.json", "r"))
-
-    if time.time()-TS_bridge_dict["timestamp"]>=9999999999:
-        TS_bridge_dict = {"ip": "", "port": "", "methods": [], "timestamp": 0}
-
-    json.dump(TS_bridge_dict, open("src/db/ThingSpeak_bridge.json", "w"), indent=3)
-
-
-# Function used to remove the webPage registered from more than X minutes
-def remove_oldest_webPage():
-    webPage_dict = json.load(open("src/db/webPage.json", "r"))
-
-    if time.time()-webPage_dict["timestamp"]>=9999999999:
-        webPage_dict = {"ip": "", "port": "", "timestamp": 0}
-
-    json.dump(webPage_dict, open("src/db/webPage.json", "w"), indent=3)
-
-
+        """
+        Function that get an especific strategy or all the strategies from a device.
+        """
+        users = json.load(open("src/db/catalog.json", "r"))
+        
+        try:
+            id = queries['id']
+            greenHouseID = queries['greenHouseID']
+            deviceID = queries['deviceID']
+            strategyID = queries['strategyID']
+        
+        except:
+            raise cherrypy.HTTPError(400, 'Bad request')
+        
+        else:
+            if queries['strategyID']== "all":
+                for user in users:
+                    if user['id'] == int(id):
+                        for greenhouse in user['greenHouses']:
+                            if greenhouse['greenHouseID'] == int(greenHouseID):
+                                for device in greenhouse['devicesList']:
+                                    if device['deviceID'] == int(deviceID):
+                                        return json.dumps(device['strategies'], indent=3)
+                        
+            for user in users:
+                if user['id'] == int(id):
+                    for greenhouse in user['greenHouses']:
+                        if greenhouse['greenHouseID'] == int(greenHouseID):
+                            for device in greenhouse['devicesList']:
+                                if device['deviceID'] == int(deviceID):
+                                    for strategy in device['strategies']:
+                                        if strategy["strategyID"] == int(strategyID):
+                                            return json.dumps(strategy, indent=3)
+                            
+                
+        raise cherrypy.HTTPError(400, 'No user, greenhouse, device or strategy found')
+                        
+    
+    @cherrypy.tools.json_in()
+    def POST(self, *path, **queries):
+        """
+        This function create a new strategy
+        """
+        users = json.load(open("src/db/catalog.json", "r"))
+        try:
+            id = queries['id']
+            greenHouseID = queries['greenHouseID']
+            deviceID = queries['deviceID']
+        
+        except:
+            raise cherrypy.HTTPError(400, 'Bad request')
+        
+        for user in users:
+            if user['id'] == int(id):
+                for greenhouse in user['greenHouses']:
+                    if greenhouse['greenHouseID'] == int(greenHouseID):
+                        for device in greenhouse['devicesList']:
+                            if device['deviceID'] == int(deviceID):
+                                if len(device['strategies']) == 0:
+                                    strategyID = 0
+                                else:                           
+                                    strategyID = device['strategies'][len(device['strategies'])-1]['strategyID'] + 1
+                                break   
+                
+        new_strategy = {
+            "strategyID": strategyID,
+            "time" : "00:00:00",
+            "water_quantity": 0,
+            "duration" : 0
+            }
+        
+        for measure in device["measureTypes"]:
+            new_strategy.update({measure : 0})
+     
+        keys = list(set(new_strategy.keys())-set(["strategyID"]))
+        input = cherrypy.request.json
+        try:
+            for key in keys:   
+                new_strategy[key] = input[key]
+        except:
+            raise cherrypy.HTTPError(400, 'Incorrect parameter')
+        else:
+            device['strategies'].append(new_strategy)
+            user["timestamp"] = time.time()
+            json.dump(users, open("src/db/catalog.json", "w"), indent=3)
+            output=str(type(input))+"<br>"+str(input)
+            return output
+            
+    @cherrypy.tools.json_in()
+    def PUT(self, *path, **queries): 
+        """
+        This function modify a strategy
+        """
+        try: 
+            id = queries['id']
+            greenHouseID = queries['greenHouseID']
+            deviceID = queries['deviceID']
+            strategyID = queries['strategyID']
+        except:
+            raise cherrypy.HTTPError(400, 'Incorrect id')
+        
+        input = cherrypy.request.json
+        
+        users = json.load(open("src/db/catalog.json", "r"))
+        
+        keys_to_change = input.keys()
+            
+        key_not_allowed = ["strategyID"]
+        
+        keys = list(set(keys_to_change)-set(key_not_allowed))
+        
+        if not keys:
+            raise cherrypy.HTTPError(400, 'Not value to change found')
+        
+        for user in users:
+            if user['id'] == int(id):
+                for greenHouse in user['greenHouses']:
+                    if greenHouse['greenHouseID'] == int(greenHouseID):
+                        for device in greenHouse['devicesList']:
+                            if device["deviceID"] == int(deviceID):
+                                for strategy in device['strategies']:
+                                    if strategy['strategyID'] == int(strategyID):
+                                        for key in keys:
+                                            try:
+                                                strategy[key] = type(strategy[key])(input[key])
+                                            except:
+                                                raise cherrypy.HTTPError(400, 'No valid key')
+                                            
+                                            user["timestamp"] = time.time()
+                                            json.dump(users, open("src/db/catalog.json", "w"), indent=3)
+                                            output = str(type(user))+"<br>"+str(user)
+                                            return output
+            
+        raise cherrypy.HTTPError(400, 'No user, greenhouse, device or strategy found')
+    
+    def DELETE(self, *path, **queries):
+        """
+        This function delete a strategy
+        """
+        
+        try: 
+            id = queries['id']
+            greenHouseID = queries['greenHouseID']
+            deviceID = queries['deviceID']
+            strategyID = queries['strategyID']
+        except:
+            raise cherrypy.HTTPError(400, 'Incorrect id')
+        
+        users = json.load(open("src/db/catalog.json", "r"))
+        
+        for user in users:
+            if user['id'] == int(id):
+                for greenHouse in user['greenHouses']:
+                    if greenHouse['greenHouseID'] == int(greenHouseID):
+                        for device in (greenHouse['devicesList']):
+                            if device['deviceID'] == int(deviceID):
+                                for idx, strategy in enumerate(device['strategies']):
+                                    if strategy['strategyID'] == int(strategyID):
+                                        output = str(type(strategy))+"<br>"+str(strategy)
+                                        device['strategies'].pop(idx)
+                                        json.dump(users, open("src/db/catalog.json", "w"), indent=3)
+                                        return output
+                    
+        raise cherrypy.HTTPError(400, 'No user, greenhouse, device or strategy found')
 
 if __name__=="__main__":
 
@@ -588,46 +623,10 @@ if __name__=="__main__":
     cherrypy.tree.mount(UserManager(), '/user_manager', conf)
     cherrypy.tree.mount(GreenHouseManager(), '/greenhouse_manager', conf)
     cherrypy.tree.mount(DeviceManager(), '/device_manager', conf)
-    cherrypy.tree.mount(StrategiesManager(), '/strategies_manager', conf)
-    cherrypy.tree.mount(BrokerManager(), '/broker_manager', conf)
-    cherrypy.tree.mount(ThingSpeakBridgeManager(), '/thingspeak_bridge_manager', conf)
-    cherrypy.tree.mount(WebPageManager(), '/webppage_manager', conf)
-    cherrypy.tree.mount(WeatherAPIManager(), '/weatherAPI_manager', conf)
-
+    cherrypy.tree.mount(StrategiesManager(), '/strategy_manager', conf)
 
     cherrypy.config.update({'server.socket_host': '127.0.0.1'})
     cherrypy.config.update({'server.socket_port': 8080})
 
     cherrypy.engine.start()
     cherrypy.engine.block()
-
-
-    last_remove_device = time.time()
-    last_remove_strategy = time.time()
-    last_remove_TS_bridge = time.time()
-    last_remove_webPage = time.time()
-
-    while True:
-        # Every 60 seconds it calls the function to remove the oldest device registered
-        if time.time()-last_remove_device >= 60:
-
-            last_remove_device = time.time()
-            remove_oldest_device()
-
-        # Every X seconds it calls the function to remove the oldest strategy registered
-        if time.time()-last_remove_strategy >= 360:
-
-            last_remove_strategy = time.time()
-            remove_oldest_strategy()
-
-        # Every X seconds it calls the function to remove the oldest ThingSpeak_bridge registered
-        if time.time()-last_remove_TS_bridge >= 360:
-
-            last_remove_TS_bridge = time.time()
-            remove_oldest_ThingSpeak_bridge()
-
-        # Every X seconds it calls the function to remove the oldest webPage registered
-        if time.time()-last_remove_webPage >= 360:
-
-            last_remove_webPage = time.time()
-            remove_oldest_webPage()
