@@ -1,106 +1,162 @@
-import os, os.path
 import json
 import urllib.request
-from MQTT.MyMQTT import *
+import paho.mqtt.client as PahoMQTT
 import time
 
 class WeatherController():
     
-    def __init__(self,clientID,rpiID,broker,port):
-        self.clientID = clientID
-        self.rpiID = rpiID
-        self.rtopic = '/'.join([self.clientID,self.rpiID]) + '/measurements' + '/#'
+    def __init__(self):
+        self.clientID = "Smart_Greenhouses_P4IOT_Weather_Controller"
+        self.catalog = None
+        self._paho_mqtt = PahoMQTT.Client(self.clientID,True) 
+        self.broker = None
+        self.port = None
+        self.topic = None
+        self.url = None
+        self.path = None
         self.__api = 'YOUR_API_KEY'
-        self.client = MyMQTT(clientID,broker,port,self)
-        self.city = None
-        self.temp = None
-        self.hum = None
-        self.payload = None
+        self.client = None
+        self.cities = {}
+        self.local_time = None
+        self.percentage = 0.98
+        
+    def getCatalog(self):
+        """
+        GET THE CATALOG
+        """
+        
+        self.catalog = json.loads(urllib.request.urlopen("http://127.0.0.1:8080/user_manager?id=all").read().decode())
+        
+    def getCities(self):
+        """
+        GET cities in the catalog
+        """
+        for user in self.catalog:
+            for greenHouse in user['greenHouses']:
+                self.cities[greenHouse['city']] = None                
+        return self.cities
     
-    def getlocation(self):
+    def getlocation(self,city):
         """
         This method takes the name of a place and extract the
         code key of that place.
         """
-        search_address = 'http://dataservice.accuweather.com/locations/v1/cities/search?apikey='+self.__api+'&q='+self.city+'&details=true'
+        search_address = 'http://dataservice.accuweather.com/locations/v1/cities/search?apikey='+self.__api+'&q='+city+'&details=true'
         with urllib.request.urlopen(search_address) as search_address:
             data = json.loads(search_address.read().decode())
         location_key = data[0]['Key']
         return location_key
     
-    def getWeather(self):
+    def getWeather(self,city):
         """
         This method ask the API Accuweather the weather 
         conditions using the key code of the place 
         and get a json of all the measuraments.
         """
-        key = self.getlocation()
+        key = self.getlocation(city)
         weatherUrl= 'http://dataservice.accuweather.com/currentconditions/v1/'+key+'?apikey='+self.__api+'&details=true'
         with urllib.request.urlopen(weatherUrl) as weatherUrl:
             data = json.loads(weatherUrl.read().decode())
         return data
     
-    def getMeasurements(self):
+    def getMeasurements(self,city):
         """
         This method extract from a json the measurements that our
         user is interest.
         """
-        data = self.getWeather()
-        self.temp = data[0]['Temperature']['Metric']['Value']
-        self.hum = data[0]['RelativeHumidity']
-        
-    def getInfo(self):
-        """
-        This method request the information 
-        """
-        None
-    
-    def openWindow(self):
-        """
-        This method extract from a json the measurements that our
-        user is interest.
-        """
-        None
-        
-    def start(self):
-        self.client.start()
+        data = self.getWeather(city)
+        temperature = data[0]['Temperature']['Metric']['Value']
+        humidity = data[0]['RelativeHumidity'] / 100
+        wind = data[0]["Wind"]["Speed"]['Metric']['Value']
+        pressure = data[0]['Pressure']['Metric']['Value']
+        precipitation = data[0]['PrecipitationSummary']['Precipitation']['Metric']['Value']
+        new_data = {}
+        new_data["Temperature"] = temperature
+        new_data["Humidity"] = humidity
+        new_data["Wind"] = wind
+        new_data["Pressure"] = pressure
+        new_data["Precipitation"] = precipitation
+        return new_data
 
-    def stop(self):
-        self.client.stop()
-        
-    def publish(self):
-        message=self.__message
-        self.client.myPublish(self.ttopic,message) 
-        
-    def subscribe(self):
-        self.client.mySubscribe(self.rtopic)
-        
-    def notify(self,topic,msg):
-        #Decode the JSON string
-        self.payload=json.loads(msg)
-        #encoding to JSON objects
-        # print(json.dumps(self.payload,indent=4))
+    def getMeasurementsCities(self):
+        cities = self.cities.keys()
+        for city in cities:
+            self.cities[city] = self.getMeasurements(city)
+        return self.cities
     
+    def getLocalTime(self):
+        
+        if time.localtime().tm_hour < 10:
+            hour = "0" + str(time.localtime().tm_hour)
+        else:
+            hour = str(time.localtime().tm_hour)
+        
+        if time.localtime().tm_min < 10:
+            min = "0" + str(time.localtime().tm_min)
+        else:
+            min = str(time.localtime().tm_min)
+            
+        if time.localtime().tm_sec < 10:
+            sec = "0" + str(time.localtime().tm_sec)
+        else:
+            sec = str(time.localtime().tm_sec)
+
+        self.local_time = hour + ":" + min + ":" + sec  
+        
+        return self.local_time
     
+        
+    def openWindowMQTT(self):
+        """
+        This method send a signal to open the window
+        """
+        return print("Window Open")
+
+    def openWindowREST(self):
+        """
+        This method send a signal to open the window
+        """
+        return print("Window Open")
     
+    def updateWindows(self):
+        
+        new_catalog = json.loads(urllib.request.urlopen("http://127.0.0.1:8080/user_manager?id=all").read().decode())
+        if self.catalog != new_catalog:
+            self.catalog = new_catalog
+            self.getCities()
+
+        self.getMeasurementsCities()
+        self.getLocalTime()
+        
+        for user in self.catalog:
+            if not user['greenHouses']:
+                break
+            for greenhouse in user['greenHouses']:
+                if not greenhouse['devicesList']:
+                    break
+                for device in greenhouse['devicesList']:
+                    if not device['strategies']:
+                        break
+                    strategies = sorted(device['strategies'], key=lambda d:d['time'], reverse=True)
+                    for strategy in strategies:
+                        if strategy['time'] < self.local_time:
+                            open_window = True
+                            for measurement in device['measureTypes']:
+                                if self.cities[greenhouse['city']][measurement] < strategy[measurement]*(1-self.percentage) or self.cities[greenhouse['city']][measurement] > strategy[measurement]*(1+self.percentage):
+                                    open_window = False
+                            if open_window:
+                                for service in device['availableServices']:
+                                    if service == "MQTT":
+                                        self.openWindowMQTT()
+                                    elif service == "REST":
+                                        self.openWindowREST()
+     
 if __name__ == '__main__':
-    conf=json.load(open("src/backend/settings.json"))
-    broker=conf["broker"]
-    port=conf["port"]
-    controller = WeatherController("Pepoclown","0",broker,port)
-    # controller.getMeasurements()
-    last_refresh = time.time()
-    controller.start()
-    while True:
-        time_start = time.time()
-        
-        if time_start-last_refresh >= 2:
-            controller.subscribe()
-            print(controller.payload)
-            last_refresh = time.time()
-    
-        
-        
-        
+    weather_controller = WeatherController()
+    # weather_controller.getCatalog()
+    # weather_controller.getCities()
+    # weather_controller.getMeasurementsCities()
+    # print(weather_controller.getLocalTime())
+    weather_controller.updateWindows()
     
     

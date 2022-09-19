@@ -51,7 +51,7 @@
                      },
                      {
                         "strategyID": 1,
-                        "time": "6:00:00",
+                        "time": "06:00:00",
                         "water_quantity": 0,
                         "duration": 10,
                         "Temperature": 15,
@@ -59,7 +59,7 @@
                      },
                      {
                         "strategyID": 2,
-                        "time": "8:00:00",
+                        "time": "08:00:00",
                         "water_quantity": 0,
                         "duration": 2,
                         "Temperature": 15,
