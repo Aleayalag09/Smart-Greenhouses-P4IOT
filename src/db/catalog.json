@@ -149,11 +149,57 @@
       "super_User": false,
       "id": 3,
       "name": "Valentina",
-      "surname": "Zamora",
+      "surname": "Mendoza",
       "email_addresses": "Valentina_Zamora@P4IOT.com",
       "country": "Italy",
       "city": "Torino",
-      "greenHouses": [],
-      "timestamp": 1663498231.4342632
+      "greenHouses": [
+         {
+            "greenHouseName": "MATICAS",
+            "greenHouseID": 0,
+            "city": "Medallo",
+            "devicesList": [
+               {
+                  "deviceName": "Tomates",
+                  "deviceID": 0,
+                  "measureTypes": [
+                     "Temperature",
+                     "Humidity"
+                  ],
+                  "availableServices": [
+                     "MQTT",
+                     "REST"
+                  ],
+                  "servicesDetails": [
+                     {
+                        "serviceType": "MQTT",
+                        "serviceIP": "mqtt.eclipse.org",
+                        "port": "1882",
+                        "topic": "Smart_GreenHouses_P4IOT/3/0/0"
+                     },
+                     {
+                        "serviceType": "REST",
+                        "serviceIP": "127.0.0.1",
+                        "port": "8080",
+                        "path": "/3/0/0"
+                     }
+                  ],
+                  "strategies": [
+                     {
+                        "strategyID": 0,
+                        "time": "10:00:00",
+                        "water_quantity": 2.3,
+                        "duration": 60,
+                        "Temperature": 25,
+                        "Humidity": 0.1,
+                        "GroundTemperature": 15
+                     }
+                  ],
+                  "lastUpdate": 1663513069.5789433
+               }
+            ]
+         }
+      ],
+      "timestamp": 1663590302.8258958
    }
 ]

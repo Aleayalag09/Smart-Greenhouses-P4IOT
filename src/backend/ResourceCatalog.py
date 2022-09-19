@@ -365,6 +365,7 @@ class DeviceManager(object):
         """
         This function modify the information of the device
         """
+        print(len(path))
         try: 
             id = queries['id']
             greenHouseID = queries['greenHouseID']
@@ -378,7 +379,7 @@ class DeviceManager(object):
         
         keys_to_change = input.keys()
         
-        if path[0] == 'servicesDetails':
+        if len(path) != 0 and path[0] == 'servicesDetails':
             key_not_allowed = ["serviceType","topic","path"]
             keys = list(set(keys_to_change)-set(key_not_allowed))
         else:
@@ -394,7 +395,7 @@ class DeviceManager(object):
                     if greenHouse['greenHouseID'] == int(greenHouseID):
                         for device in greenHouse['devicesList']:
                             if device["deviceID"] == int(deviceID):
-                                if path[0] == 'servicesDetails':
+                                if len(path) != 0 and path[0] == 'servicesDetails':
                                     for servicesDetail in device['servicesDetails']:
                                         if servicesDetail['serviceType'] == path[1]:
                                             for key in keys:
@@ -402,6 +403,7 @@ class DeviceManager(object):
                                                     servicesDetail[key] = type(servicesDetail[key])(input[key])
                                                 except:
                                                     raise cherrypy.HTTPError(400, 'No valid key')
+                                            break
                                 else:
                                     for key in keys:
                                         try:
@@ -409,10 +411,10 @@ class DeviceManager(object):
                                         except:
                                             raise cherrypy.HTTPError(400, 'No valid key')
                                             
-                                        user["timestamp"] = time.time()
-                                        json.dump(users, open("src/db/catalog.json", "w"), indent=3)
-                                        output = str(type(user))+"<br>"+str(user)
-                                        return output
+                user["timestamp"] = time.time()
+                json.dump(users, open("src/db/catalog.json", "w"), indent=3)
+                output = str(type(user))+"<br>"+str(user)
+                return output
             
         raise cherrypy.HTTPError(400, 'No user or greenhouse found')
     
