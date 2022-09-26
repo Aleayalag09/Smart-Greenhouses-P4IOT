@@ -2,7 +2,114 @@ from MQTT.MyMQTT import *
 import time
 import json
 import requests
+import urllib.request
+
+class WeatherController():
+    
+    def __init__(self):
+        self.clientID = "Smart_Greenhouses_P4IOT_Env_Mgr"
+        self.catalog = None
+        self._paho_mqtt = PahoMQTT.Client(self.clientID,True) 
+        self.broker = None
+        self.port = None
+        self.topic = None
+        self.url = None
+        self.path = None
+        self.client = None
+        
+    def getCatalog(self):
+        # GET THE CATALOG
+        self.catalog = json.loads(urllib.request.urlopen("http://127.0.0.1:8080/user_manager?id=all").read().decode())
+    
+    
+    def getMeasurements(self,city):
+        """
+        This method extract from a json the measurements that our
+        user is interest.
+        """
+        data = self.getWeather(city)
+        temperature = data[0]['Temperature']['Metric']['Value']
+        humidity = data[0]['RelativeHumidity'] / 100
+        wind = data[0]["Wind"]["Speed"]['Metric']['Value']
+        pressure = data[0]['Pressure']['Metric']['Value']
+        precipitation = data[0]['PrecipitationSummary']['Precipitation']['Metric']['Value']
+        new_data = {}
+        new_data["Temperature"] = temperature
+        new_data["Humidity"] = humidity
+        new_data["Wind"] = wind
+        new_data["Pressure"] = pressure
+        new_data["Precipitation"] = precipitation
+        return new_data
+
+    def getLocalTime(self):
+        
+        if time.localtime().tm_hour < 10:
+            hour = "0" + str(time.localtime().tm_hour)
+        else:
+            hour = str(time.localtime().tm_hour)
+        
+        if time.localtime().tm_min < 10:
+            min = "0" + str(time.localtime().tm_min)
+        else:
+            min = str(time.localtime().tm_min)
+            
+        if time.localtime().tm_sec < 10:
+            sec = "0" + str(time.localtime().tm_sec)
+        else:
+            sec = str(time.localtime().tm_sec)
+
+        self.local_time = hour + ":" + min + ":" + sec  
+        
+        return self.local_time
+    
+        
+    def openWindowMQTT(self):
+        """
+        This method send a signal to open the window
+        """
+        return print("Window Open")
+    
+    def updateStatus(self):
+        
+        new_catalog = json.loads(urllib.request.urlopen("http://127.0.0.1:8080/user_manager?id=all").read().decode())
+        if self.catalog != new_catalog:
+            self.catalog = new_catalog
+
+        #AQUÍ AGREGAR EL SUBSCRIBER DE LEER VENTANA
+        
+        for user in self.catalog:
+            if not user['greenHouses']:
+                break
+            for greenhouse in user['greenHouses']:
+                if not greenhouse['devicesList']:
+                    break
+                for device in greenhouse['devicesList']:
+                    if not device['strategies']:
+                        break
+                    strategies = sorted(device['strategies'], key=lambda d:d['time'], reverse=True)
+                    for strategy in strategies:
+                        if strategy['time'] < self.local_time:
+                            open_window = True
+                            for measurement in device['measureTypes']:
+                                if self.cities[greenhouse['city']][measurement] < strategy[measurement]*(1-self.percentage) or self.cities[greenhouse['city']][measurement] > strategy[measurement]*(1+self.percentage):
+                                    open_window = False
+                            if open_window:
+                                for service in device['availableServices']:
+                                    if service == "MQTT":
+                                        self.openWindowMQTT()
+                                    elif service == "REST":
+                                        self.openWindowREST()
+     
+if __name__ == '__main__':
+    weather_controller = WeatherController()
+    # weather_controller.getCatalog()
+    # weather_controller.getCities()
+    # weather_controller.getMeasurementsCities()
+    # print(weather_controller.getLocalTime())
+    weather_controller.updateWindows()
 '''
+
+OLD CODE
 TO DO
 
 (OK) Make a GET to the Catalog (< Web Page) to know the strategy, the topics.
@@ -20,7 +127,7 @@ If needed, new real-time parameters to the Devices
 (received Temp = 20 but the strategy says 22 so ⇒ 
 publish actuation to Device Temp = 22 and hence the device changes the temp, 
 until the next actuation)
-'''
+
 
 class ActivateEnvMgr:
     def __init__(self, clientID, topic,broker,port):
@@ -154,7 +261,7 @@ if __name__ == "__main__":
 				control_envMgr = ControlActuators("Strt1","IoT/Valen/actuator",broker,port)
 				control_envMgr.client.start()
 
-				'''
+				
 				Actuador 0, Humidifier:
 				Value: 0. Humidifier OFF.
 				Value: 1. Decrease temperature, water droplets, humidity are not affected.
@@ -166,7 +273,7 @@ if __name__ == "__main__":
 				Value: 0. Modulo OFF.
 				Value: 1. Decrease temperature.
 				Value: 2. Increase temperature.
-				'''
+				
 				 
 				if temp>temp_max and hum_min>hum>hum_max:
 					control_envMgr.publish([1,0,0])
@@ -186,4 +293,4 @@ if __name__ == "__main__":
 			else:
 				control_envMgr.client.stop()   
 				pass
-		
+'''
