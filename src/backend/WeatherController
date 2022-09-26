@@ -100,28 +100,19 @@ class WeatherController():
         
         return self.local_time
     
-    def start(self):
-        #manage connection to broker
-        self._paho_mqtt.connect(self.broker , self.port)
+    def openWindowMQTT(self,service):
+        self._paho_mqtt.connect(service['serviceIP'] , service['port'])
         self._paho_mqtt.loop_start()
-    
-    def stop (self):
+        msg = 1
+        self._paho_mqtt.publish(service['topic'] + "/window", json.dumps(msg), 2)
         self._paho_mqtt.loop_stop()
         self._paho_mqtt.disconnect()
+        return "The window was opened"
     
-        
-    def openWindowMQTT(self):
-        # publish a message with a certain topic
-        
-        
-        return print("Window Open")
-
-
-    def openWindowREST(self):
-        """
-        This method send a signal to open the window
-        """
-        return print("Window Open")
+    def openWindowREST(self,service):
+        data = 1
+        urllib.request(service['serviceIP']+":"+service['port']+service['path']+"/window", data=data) # this will make the method "POST"
+        return "The window was opened"
     
     def updateWindows(self):
         
@@ -152,15 +143,10 @@ class WeatherController():
                             if open_window:
                                 for service in device['servicesDetails']:
                                     if service['serviceType'] == "MQTT":
-                                        self._paho_mqtt.connect(service['serviceIP'] , service['port'])
-                                        self._paho_mqtt.loop_start()
-                                        msg = 1
-                                        self._paho_mqtt.publish(service['topic'] + "window", json.dumps(msg), 2)
-                                        self._paho_mqtt.loop_stop()
-                                        self._paho_mqtt.disconnect()
+                                        self.openWindowMQTT(service)
                                     elif service['serviceType'] == "REST":
-                                        data = 1
-                                        urllib.request(service['serviceIP']+":"+service['port']+service['path']+"/window", data=data) # this will make the method "POST"
+                                        self.openWindowREST(service)
+                                        
      
 if __name__ == '__main__':
     weather_controller = WeatherController()
