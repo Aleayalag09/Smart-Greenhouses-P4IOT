@@ -8,14 +8,9 @@ class WeatherController():
     def __init__(self):
         self.clientID = "Smart_Greenhouses_P4IOT_Weather_Controller"
         self.catalog = None
-        self._paho_mqtt = PahoMQTT.Client(self.clientID,True) 
-        self.broker = None
-        self.port = None
-        self.topic = None
-        self.url = None
-        self.path = None
+        # create an instance of paho.mqtt.client
+        self._paho_mqtt = PahoMQTT.Client(self.clientID,True)  
         self.__api = 'YOUR_API_KEY'
-        self.client = None
         self.cities = {}
         self.local_time = None
         self.percentage = 0.98
@@ -24,8 +19,8 @@ class WeatherController():
         """
         GET THE CATALOG
         """
-        
-        self.catalog = json.loads(urllib.request.urlopen("http://127.0.0.1:8080/user_manager?id=all").read().decode())
+        catalog = json.loads(urllib.request.urlopen("http://127.0.0.1:8080/user_manager?id=all").read().decode())
+        return catalog
         
     def getCities(self):
         """
@@ -105,22 +100,23 @@ class WeatherController():
         
         return self.local_time
     
-        
-    def openWindowMQTT(self):
-        """
-        This method send a signal to open the window
-        """
-        return print("Window Open")
-
-    def openWindowREST(self):
-        """
-        This method send a signal to open the window
-        """
-        return print("Window Open")
+    def openWindowMQTT(self,service):
+        self._paho_mqtt.connect(service['serviceIP'] , service['port'])
+        self._paho_mqtt.loop_start()
+        msg = 1
+        self._paho_mqtt.publish(service['topic'] + "/window", json.dumps(msg), 2)
+        self._paho_mqtt.loop_stop()
+        self._paho_mqtt.disconnect()
+        return "The window was opened"
+    
+    def openWindowREST(self,service):
+        data = 1
+        urllib.request(service['serviceIP']+":"+service['port']+service['path']+"/window", data=data) # this will make the method "POST"
+        return "The window was opened"
     
     def updateWindows(self):
         
-        new_catalog = json.loads(urllib.request.urlopen("http://127.0.0.1:8080/user_manager?id=all").read().decode())
+        new_catalog = self.getCatalog()
         if self.catalog != new_catalog:
             self.catalog = new_catalog
             self.getCities()
@@ -145,18 +141,15 @@ class WeatherController():
                                 if self.cities[greenhouse['city']][measurement] < strategy[measurement]*(1-self.percentage) or self.cities[greenhouse['city']][measurement] > strategy[measurement]*(1+self.percentage):
                                     open_window = False
                             if open_window:
-                                for service in device['availableServices']:
-                                    if service == "MQTT":
-                                        self.openWindowMQTT()
-                                    elif service == "REST":
-                                        self.openWindowREST()
+                                for service in device['servicesDetails']:
+                                    if service['serviceType'] == "MQTT":
+                                        self.openWindowMQTT(service)
+                                    elif service['serviceType'] == "REST":
+                                        self.openWindowREST(service)
+                                        
      
 if __name__ == '__main__':
     weather_controller = WeatherController()
-    # weather_controller.getCatalog()
-    # weather_controller.getCities()
-    # weather_controller.getMeasurementsCities()
-    # print(weather_controller.getLocalTime())
     weather_controller.updateWindows()
     
     
