@@ -1,3 +1,5 @@
+#Estoy haciendo una prueba
+#Segunda prueba
 from MQTT.MyMQTT import *
 import time
 import json
@@ -293,4 +295,5 @@ if __name__ == "__main__":
 			else:
 				control_envMgr.client.stop()   
 				pass
-'''
+
+
