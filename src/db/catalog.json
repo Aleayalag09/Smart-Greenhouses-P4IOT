@@ -108,7 +108,7 @@
             ]
          }
       ],
-      "timestamp": 1663497221.8229568
+      "timestamp": 1664433699.0798957
    },
    {
       "userName": "Alejandro_Ayala",
@@ -201,5 +201,69 @@
          }
       ],
       "timestamp": 1663590302.8258958
+   },
+   {
+      "userName": "Orlando",
+      "password": "passxfsdword",
+      "super_User": false,
+      "id": 4,
+      "name": "Orlando",
+      "surname": "Alberti",
+      "email_addresses": "OrlandoX",
+      "country": "Italy",
+      "city": "Bogota",
+      "greenHouses": [
+         {
+            "greenHouseName": "greenHouseName",
+            "greenHouseID": 0,
+            "city": "leticia",
+            "devicesList": [
+               {
+                  "deviceName": "my_sad_device",
+                  "deviceID": 0,
+                  "measureTypes": [
+                     "Temperature",
+                     "Humidity",
+                     "Wind"
+                  ],
+                  "actuatorsTypes": [
+                     "Humidifier",
+                     "Window"
+                  ],
+                  "availableServices": [
+                     "MQTT",
+                     "REST"
+                  ],
+                  "servicesDetails": [
+                     {
+                        "serviceType": "MQTT",
+                        "serviceIP": "mqtt.eclipse.org",
+                        "port": "1884",
+                        "topic": "Smart_GreenHouses_P4IOT/4/0/0"
+                     },
+                     {
+                        "serviceType": "REST",
+                        "serviceIP": "127.0.0.2",
+                        "port": "8081",
+                        "path": "/4/0/0"
+                     }
+                  ],
+                  "strategies": [
+                     {
+                        "strategyID": 0,
+                        "time": "02:00:00",
+                        "water_quantity": 3,
+                        "duration": 10,
+                        "Temperature": 32,
+                        "Humidity": 0,
+                        "Wind": 20
+                     }
+                  ],
+                  "lastUpdate": 1664434000.1094413
+               }
+            ]
+         }
+      ],
+      "timestamp": 1664434634.5441475
    }
 ]

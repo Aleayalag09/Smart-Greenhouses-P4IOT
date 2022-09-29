@@ -63,8 +63,6 @@ class UserManager(object):
             output=str(type(input))+"<br>"+str(input)
             return output
             
-
-    # INSERT A NEW USER OR UPDATE THE INFORMATIONS OF AN ALREADY EXISTING USER (if user_ID specified in queries)
     @cherrypy.tools.json_in()
     def PUT(self, *path, **queries): 
         """
@@ -95,10 +93,10 @@ class UserManager(object):
                         user[key] = type(user[key])(input[key])
                     except:
                         raise cherrypy.HTTPError(400, 'No valid key')
-                    user["timestamp"] = time.time()
-                    json.dump(users, open("src/db/catalog.json", "w"), indent=3)
-                    output = str(type(user))+"<br>"+str(user)
-                    return output
+                user["timestamp"] = time.time()
+                json.dump(users, open("src/db/catalog.json", "w"), indent=3)
+                output = str(type(user))+"<br>"+str(user)
+                return output
             
         raise cherrypy.HTTPError(400, 'No user found')
     
@@ -325,6 +323,7 @@ class DeviceManager(object):
             "deviceName": "deviceName",
             "deviceID": deviceID,
             "measureTypes": [],
+            "actuatorsTypes": [],
             "availableServices": [],
             "servicesDetails" : [],
             "strategies": [],
@@ -345,6 +344,7 @@ class DeviceManager(object):
         try:
             new_device["deviceName"] = input['deviceName']
             new_device["measureTypes"] = input['measureTypes']
+            new_device["actuatorsTypes"] = input['actuatorsTypes']
             new_device["availableServices"] = input['availableServices']
         except:
             raise cherrypy.HTTPError(400, 'Incorrect parameter')
@@ -365,7 +365,6 @@ class DeviceManager(object):
         """
         This function modify the information of the device
         """
-        print(len(path))
         try: 
             id = queries['id']
             greenHouseID = queries['greenHouseID']
@@ -500,7 +499,7 @@ class StrategiesManager(object):
         
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
-        
+
         for user in users:
             if user['id'] == int(id):
                 for greenhouse in user['greenHouses']:
@@ -525,8 +524,9 @@ class StrategiesManager(object):
      
         keys = list(set(new_strategy.keys())-set(["strategyID"]))
         input = cherrypy.request.json
+        
         try:
-            for key in keys:   
+            for key in keys:     
                 new_strategy[key] = input[key]
         except:
             raise cherrypy.HTTPError(400, 'Incorrect parameter')
@@ -577,10 +577,10 @@ class StrategiesManager(object):
                                             except:
                                                 raise cherrypy.HTTPError(400, 'No valid key')
                                             
-                                            user["timestamp"] = time.time()
-                                            json.dump(users, open("src/db/catalog.json", "w"), indent=3)
-                                            output = str(type(user))+"<br>"+str(user)
-                                            return output
+                                        user["timestamp"] = time.time()
+                                        json.dump(users, open("src/db/catalog.json", "w"), indent=3)
+                                        output = str(type(user))+"<br>"+str(user)
+                                        return output
             
         raise cherrypy.HTTPError(400, 'No user, greenhouse, device or strategy found')
     
