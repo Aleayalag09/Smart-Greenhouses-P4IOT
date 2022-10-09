@@ -1,5 +1,6 @@
-#Estoy haciendo una prueba
-#Segunda prueba
+# NEW VERSION IS test.py
+# It will transfer here after finish it.
+
 from MQTT.MyMQTT import *
 import time
 import json
