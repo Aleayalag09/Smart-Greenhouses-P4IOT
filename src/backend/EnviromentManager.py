@@ -109,6 +109,7 @@ if __name__ == '__main__':
     # weather_controller.getMeasurementsCities()
     # print(weather_controller.getLocalTime())
     weather_controller.updateWindows()
+
 '''
 
 OLD CODE
@@ -295,5 +296,5 @@ if __name__ == "__main__":
 			else:
 				control_envMgr.client.stop()   
 				pass
-
+'''
 
