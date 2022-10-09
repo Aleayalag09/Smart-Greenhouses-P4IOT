@@ -1,89 +1,177 @@
 import random
 import json
-from MQTT.MyMQTT import *
 import time
+import urllib.request
+import paho.mqtt.client as PahoMQTT
 
-class Controller():
-    def __init__(self,clientID,rpiID,broker,port):
-        self.clientID = clientID
-        self.rpiID = rpiID
-        self.ttopic = '/'.join([self.clientID,self.rpiID]) + '/measurements'
-        self.rtopic = '/'.join([self.clientID,self.rpiID]) + '/actuators'
-        self.client = MyMQTT(clientID + rpiID,broker,port,None)
-        self.__message = {
-			'clientID':self.clientID,
-			'rpiID':self.rpiID,
-			'Measurements':
-				[
-					{'n':'temperature','value':'', 'timestamp':'','unit':'C'},
-					{'n':'humidity','value':'', 'timestamp':'','unit':'%'}
-					]
-		    }
-        self.flg = True
+class Device():
+    def __init__(self, userID, greenHouseID, deviceID, city):
+        self.path = '/' + str(userID) + '/' + str(greenHouseID) + '/' + str(deviceID)
+        self.measurements = {}
+        self.actuators = {}
+        self.meteorological_measurements = {}
+        self.__api = 'YOUR_API_KEY'
+        self.city = city
+
+    def initMeasurements(self,measurements):
+        """
+        This method initializate the possible measurements
+        that a device could have.
+        """
         
+        temperature_range = [1.0,30.0]
+        humidity_range = [0.0,1.0]
+        wind_range = [0.0,80.0]
+        pressure_range = [1000.0, 1100.0]
+        precipitation_range = [0.0,4.0]
+        
+        for measure in measurements:
+            if measure == "Temperature":
+                self.measurements[measure] = round(random.uniform(temperature_range[0], temperature_range[1]),2)
+            elif measure == "Humidity":
+                self.measurements[measure] = round(random.uniform(humidity_range[0], humidity_range[1]),2)
+            elif measure == "Wind":
+                self.measurements[measure] = round(random.uniform(wind_range[0], wind_range[1]),2)
+            elif measure == "Pressure":
+                self.measurements[measure] = round(random.uniform(pressure_range[0], pressure_range[1]),2)
+            elif measure == "Precipitation":
+                self.measurements[measure] = round(random.uniform(precipitation_range[0], precipitation_range[1]),2)
+            else:
+                print("Bad measurement")
+        
+        self.environmentMeasurements()
+        self.measurements['timestamp'] = time.time()
+        
+    def initActuators(self,actuators):
+        """
+        This method initializate the possible actuators
+        that a device could have
+        """
+        for actuator in actuators:
+            self.actuators[actuator] = 0  
+            
     def readMeasurement(self):
         """
-        This method simulates how the raspberry pi take the
-        measurements from the DHT sensor.
+        This method simulates the read of the measurements.
         """
-        
-        if self.flg:
-            self.__message['Measurements'][0]['value']=random.randint(10,30)
-            self.__message['Measurements'][1]['value']=random.randint(50,90)
-            self.__message['Measurements'][0]['timestamp']=str(time.time())
-            self.__message['Measurements'][1]['timestamp']=str(time.time())
-            self.flg = False
+        actuators = self.actuators.keys()
+        measurements = self.measurements.keys()
+        if "Window" in actuators and self.actuators['Window'] == 1:
+            #Here should call the method environmentMeasurements, however the free trial doesn't allow too many requests.
+            for measure in measurements:
+                self.measurements[measure] = (self.measurements[measure] + self.meteorological_measurements[measure]) / 2
         else:
-            if self.__message['Measurements'][0]['value'] > 30 or self.__message['Measurements'][1]['value'] > 90:
-                self.__message['Measurements'][0]['value']= self.__message['Measurements'][0]['value'] - 1
-                self.__message['Measurements'][1]['value']= self.__message['Measurements'][1]['value'] - 1
-            elif self.__message['Measurements'][0]['value'] < 10 or self.__message['Measurements'][1]['value'] < 50:
-                self.__message['Measurements'][0]['value']= self.__message['Measurements'][0]['value'] + 1
-                self.__message['Measurements'][1]['value']= self.__message['Measurements'][1]['value'] + 1
-            else:
-                self.__message['Measurements'][0]['value']= self.__message['Measurements'][0]['value'] + random.randint(-1,1)
-                self.__message['Measurements'][1]['value']= self.__message['Measurements'][1]['value'] + random.randint(-1,1)
-            self.__message['Measurements'][0]['timestamp']=str(time.time())
-            self.__message['Measurements'][1]['timestamp']=str(time.time())
+            if "Humidifier" in actuators and self.actuators['Humidifier'] == 1:
+                if "Humidity" in measurements:
+                    self.measurements['Humidity'] = self.measurements["Humidity"] + "x" #insert value
+                if "Temperature" in measurements:
+                    self.measurements['Temperature'] = self.measurements["Temperature"] + "x" #insert value
+            #Keep with each actuator, each variable that affects            
+            pass
+            
+    def updateActuators(self):
+        """
+        This method change the values of each actuator.
+        """
+        pass
     
-    def setActuators(self):
+    def environmentMeasurements(self):
         """
-        This method simulates the different actuators that the
-        greenhouse should have, such as: fans, lights, windows, sinks,
-        etc.
+        This method get the weather variables of the city.
         """
-        None        
-      
-    def start(self):
-        self.client.start()
+        self.meteorological_measurements = self.getMeasurements()
+    
+    def sentMeasurements(self):
+        """
+        This method will change depending on the communication of the device.
+        """
+        
+    def getlocation(self):
+        """
+        This method takes the name of a place and extract the
+        code key of that place.
+        """
+        search_address = 'http://dataservice.accuweather.com/locations/v1/cities/search?apikey='+self.__api+'&q='+self.city+'&details=true'
+        with urllib.request.urlopen(search_address) as search_address:
+            data = json.loads(search_address.read().decode())
+        location_key = data[0]['Key']
+        return location_key
+    
+    def getWeather(self):
+        """
+        This method ask the API Accuweather the weather 
+        conditions using the key code of the place 
+        and get a json of all the measuraments.
+        """
+        key = self.getlocation()
+        weatherUrl= 'http://dataservice.accuweather.com/currentconditions/v1/'+key+'?apikey='+self.__api+'&details=true'
+        with urllib.request.urlopen(weatherUrl) as weatherUrl:
+            data = json.loads(weatherUrl.read().decode())
+        return data
+    
+    def getMeasurements(self):
+        """
+        This method extract from a json the measurements that our
+        user is interest.
+        """
+        data = self.getWeather()
+        temperature = data[0]['Temperature']['Metric']['Value']
+        humidity = data[0]['RelativeHumidity'] / 100
+        wind = data[0]["Wind"]["Speed"]['Metric']['Value']
+        pressure = data[0]['Pressure']['Metric']['Value']
+        precipitation = data[0]['PrecipitationSummary']['Precipitation']['Metric']['Value']
+        new_data = {}
+        new_data["Temperature"] = temperature
+        new_data["Humidity"] = humidity
+        new_data["Wind"] = wind
+        new_data["Pressure"] = pressure
+        new_data["Precipitation"] = precipitation
+        return new_data
 
-    def stop(self):
-        self.client.stop()
+class DeviceMQTT(Device):
+    """
+    Device that send measurements and receive actuators values throught MQTT
+    """
+    def __init__(self, userID, greenHouseID, deviceID, city, serviceIP, port):
+        super().__init__(userID, greenHouseID, deviceID, city)
+        self._paho_mqtt = PahoMQTT.Client("Smart_Greenhouses_P4IOT_Weather_Controller" + self.path ,True)
+        self.serviceIP = serviceIP
+        self.port = port
+        self.topic = "Smart_GreenHouses_P4IOT" + self.path
         
-    def publish(self):
-        message=self.__message
-        self.client.myPublish(self.ttopic,message) 
-        #print('published: ', message)
+    def sentMeasurements(self):
+        self._paho_mqtt.connect(self.serviceIP, self.port)
+        self._paho_mqtt.loop_start()
+        self._paho_mqtt.publish(self.topic, json.dumps(self.measurements), 2)
+        self._paho_mqtt.loop_stop()
+        self._paho_mqtt.disconnect()
         
-    def subscribe(self):
-        self.client.mySubscribe(self.rtopic)
+    def updateActuators(self):
+        pass
+    
+    def simulate(self,measurements,actuators):
+        self.initMeasurements(measurements)
+        self.initActuators(actuators)
+        while True:
+            self.sentMeasurements()
+            self.updateActuators()
+            self.readMeasurement()
+            time.sleep(1)
+        
+    
+class DeviceREST(Device):
+    def __init__(self, userID, greenHouseID, deviceID, city):
+        super().__init__(userID, greenHouseID, deviceID, city)
+    pass
+    
                         
 if __name__ == '__main__':
-    conf=json.load(open("src/backend/settings.json"))
-    broker=conf["broker"]
-    port=conf["port"]
-    last_refresh = time.time()
-    controller = Controller("Pepoclown","0",broker,port)
-    controller.start()
-    
-    while True:
-        
-        time_start = time.time()
-        
-        if time_start-last_refresh >= 2:
-            controller.readMeasurement()
-            controller.publish()
-            last_refresh = time.time()
-
+    measurements = ["Temperature", "Humidity"]
+    actuators = ['Fan', 'Humidifier']
+    Device1 = DeviceMQTT(0,0,0,"Torino","mqtt.eclipse.org","1883")
+    Device1.simulate(measurements,actuators)
+    # Device1.initActuators(actuators)
+    # print(Device1.measurements)     
+    # print(Device1.actuators)
         
         
