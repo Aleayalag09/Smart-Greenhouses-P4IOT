@@ -62,15 +62,9 @@ class WeatherController():
         data = self.getWeather(city)
         temperature = data[0]['Temperature']['Metric']['Value']
         humidity = data[0]['RelativeHumidity'] / 100
-        wind = data[0]["Wind"]["Speed"]['Metric']['Value']
-        pressure = data[0]['Pressure']['Metric']['Value']
-        precipitation = data[0]['PrecipitationSummary']['Precipitation']['Metric']['Value']
         new_data = {}
         new_data["Temperature"] = temperature
         new_data["Humidity"] = humidity
-        new_data["Wind"] = wind
-        new_data["Pressure"] = pressure
-        new_data["Precipitation"] = precipitation
         return new_data
 
     def getMeasurementsCities(self):
@@ -80,6 +74,9 @@ class WeatherController():
         return self.cities
     
     def getLocalTime(self):
+        """
+        
+        """
         
         if time.localtime().tm_hour < 10:
             hour = "0" + str(time.localtime().tm_hour)
