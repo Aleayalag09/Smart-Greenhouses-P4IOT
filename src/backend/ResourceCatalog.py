@@ -225,10 +225,10 @@ class GreenHouseManager(object):
                                 greenHouse[key] = type(greenHouse[key])(input[key])
                             except:
                                 raise cherrypy.HTTPError(400, 'No valid key')
-                            user["timestamp"] = time.time()
-                            json.dump(users, open("src/db/catalog.json", "w"), indent=3)
-                            output = str(type(user))+"<br>"+str(user)
-                            return output
+                        user["timestamp"] = time.time()
+                        json.dump(users, open("src/db/catalog.json", "w"), indent=3)
+                        output = str(type(user))+"<br>"+str(user)
+                        return output
             
         raise cherrypy.HTTPError(400, 'No user or greenhouse found')
     
@@ -349,6 +349,7 @@ class DeviceManager(object):
         except:
             raise cherrypy.HTTPError(400, 'Incorrect parameter')
         else:
+            # LOOK: ZIP(())PAIRWISE ITERATIONS
             for availableService in new_device["availableServices"]:
                 for service in servicesDetails:
                     if service['serviceType'] == availableService:
@@ -520,14 +521,23 @@ class StrategiesManager(object):
             }
         
         for measure in device["measureTypes"]:
-            new_strategy.update({measure : 0})
+            if measure == 'Temperature':
+                new_strategy.update({measure : 20})
+            if measure == 'Humidity':
+                new_strategy.update({measure : 0.7})
      
         keys = list(set(new_strategy.keys())-set(["strategyID"]))
         input = cherrypy.request.json
         
+        strategies = sorted(device['strategies'], key=lambda d:d['time'], reverse=True)
+        for strategy in strategies:
+            if strategy['time'] < input['time']:
+                for key in keys:
+                    new_strategy[key] =  strategy[key]
         try:
-            for key in keys:     
-                new_strategy[key] = input[key]
+            for key in keys: 
+                if input[key] != '':
+                    new_strategy[key] = input[key]
         except:
             raise cherrypy.HTTPError(400, 'Incorrect parameter')
         else:

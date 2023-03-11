@@ -1,5 +1,6 @@
 import paho.mqtt.client as PahoMQTT
 import json
+from pathlib import Path
 
 class MyMQTT:
     def __init__(self, clientID, broker, port, notifier):
@@ -54,3 +55,8 @@ class MyMQTT:
  
         self._paho_mqtt.loop_stop()
         self._paho_mqtt.disconnect()
+
+if __name__ == "__main__":
+    
+    
+    print(Path.cwd())
