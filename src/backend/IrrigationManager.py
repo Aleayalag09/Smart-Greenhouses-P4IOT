@@ -2,26 +2,52 @@ import sys
 import cherrypy
 import requests
 import time
+from datetime import datetime
 import json
 
 from MQTT.MyMQTT import *
 
 new_strat = False
-strategies = json.load(open("plants_Irr_strategies.json", "r"))
-        
+database = "src/db/irrigation_manager_db.json"
 
 class Strategy(object):
     exposed = True
  
     def POST(self, *path):
+        global database
+        global new_strat
         input = json.loads(cherrypy.request.body.read())
 
-        # 3 because: NAME OF THE PLANT, T_START, WATER_QNT corresponds to the first strategy
-        if len(input)>3:
-            Strategy_II(input)
+        try:
+            id = input['id']
+            greenHouseID = input['greenHouseID']
+            deviceID = input['deviceID']
+            time_start = input['time']
+            water_quantity = input['water_quantity']
+        
+        except:
+            raise cherrypy.HTTPError(400, 'Bad request')
+        
+        topic = id+"/"+greenHouseID+"/"+deviceID+"/irrigation/"
 
-        else:
-            Strategy_I(input)
+        database_dict = json.load(open(database, "r"))
+
+        update = False
+        for strategy in database_dict["strategies"]:
+
+            if strategy[0] == topic:
+                strategy[1] = time_start
+                strategy[2] = water_quantity
+                strategy[3] = time.time()
+
+                update = True
+
+        if update == False:
+            new_strategy = {"topic": topic, "time": time_start, "water_quantity": water_quantity, "last_update": time.time()}
+            database_dict["strategy"].append(new_strategy)
+
+        new_strat = True
+        json.dump(database_dict, open(database, "w"), indent=3)
 
 
 class MQTT_publisher(object):
@@ -44,75 +70,32 @@ class MQTT_publisher(object):
         self.client.myPublish(topic, self.__message)
 
 
-# IS IT A GLOBAL VARIABLE? DOES I CALL THE SAME INSTANCE OF MQTT_PUBLISHER EITHER IN THE MAIN AND IN THE DIFFERENT STRATEGIES 
-publisher = MQTT_publisher()
-
-
-def Strategy_I(input):
-    global new_strat
-    new_strat = True
-
-    strategies_dict = json.load(open("plants_Irr_strategies.json", "r"))
-    
-    # FORMATTED INFO OF THE STRATEGY
-    value = {"plant": input["plant"], "t_start": input["t_start"], "water_qnt": input["water_qnt"]}
-
-    # IF IT IS PRESENT A STRATEGY OF ANY TYPE FOR THE SAME PLANT MUST BE FIRSTLY REMOVED
-    for strat in strategies_dict["Strategy_II"]:
-
-        if strat["plant"] == input["plant"]:
-            strategies_dict["Strategy_II"].remove(strat)
-
-    for strat in strategies_dict["Strategy_I"]:
-
-        if strat["plant"] == input["plant"]:
-            strat = value
-            return
-
-    strategies_dict["Strategy_I"].append(value)
-    json.dump(strategies_dict, open("plants_Irr_strategies.json", "w"), indent=3)
-
-
-def Strategy_II(input):
-    global new_strat
-    new_strat = True
-    
-    strategies_dict = json.load(open("plants_Irr_strategies.json", "r"))
-    
-    # FORMATTED INFO OF THE STRATEGY
-    value = {"plant": input["plant"], "t_start": input["t_start"], "t_stop": input["t_stop"], "water_x_min": input["water_x_min"]}
-
-    # IF IT IS PRESENT A STRATEGY OF ANY TYPE FOR THE SAME PLANT MUST BE FIRSTLY REMOVED
-    for strat in strategies_dict["Strategy_I"]:
-
-        if strat["plant"] == input["plant"]:
-            strategies_dict["Strategy_II"].remove(strat)
-
-    for strat in strategies_dict["Strategy_II"]:
-
-        if strat["plant"] == input["plant"]:
-            strat = value
-            return
-
-    strategies_dict["Strategy_II"].append(value)
-    json.dump(strategies_dict, open("plants_Irr_strategies.json", "w"), indent=3)
-
-
-# REGISTER CONTINOUSLY THE STRATEGIES TO THE ?????
+# REGISTER CONTINOUSLY THE STRATEGIES TO THE RESOURCE CATALOG
 def refresh():
-    payload = {'ip': "IP of the RESOURCE_CATALOG", 'port': "PORT of the RESOURCE_CATALOG",
-               'functions': ["user_manager", "device_manager", "broker"]}
-    url = 'URL of the SERVICE_CATALOG (?)'
+    payload = {'ip': "IP of the IrrigationManager", 'port': "PORT of the IrrigationManager",
+               'functions': ["strategy"]}
+    url = 'URL of the RESOURCE_CATALOG/POST managers'
     
     requests.post(url, payload)
 
 
 # DIRECT REQUEST TO THE RESOURCE CATALOG? IF WE USE THE SERVICE CATALOG WE NEED TO CONTACT IT BEFORE IN ORDER TO OBTAIN URL AND FUNCTIONS OF THE RESOURCE CATALOG
 def broker():
-    url = 'URL of the RESOURCE_CATALOG/broker'
+    global database
 
+    url = 'URL of the RESOURCE_CATALOG/GET broker'
     broker = requests.get(url)
-    json.dump(broker, open("broker.json", "w"), indent=3)
+
+    try:
+        ip = broker['ip']
+        port = broker["port"]
+    
+    except:
+        raise cherrypy.HTTPError(400, 'Bad request')
+
+    database_dict = json.load(open(database, "r"))
+    database_dict["broker"] = broker
+    json.dump(database_dict, open(database, "w"), indent=3)
 
 
 if __name__=="__main__":
@@ -133,49 +116,33 @@ if __name__=="__main__":
 
 
     last_refresh = time.time() 
-    # DO WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG?
+    # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
     refresh()
 
     # CAN THE MQTT BROKER CHANGE THROUGH TIME? I SUPPOSE NOT IN THIS CASE
-    # CONTROL OF THE CORRECT RECEPTION OF THE BROKER?
     broker()
-    broker_dict = json.load(open("broker.json", "r"))
+    broker_dict = json.load(open(database, "r"))["broker"]
     
+    publisher = MQTT_publisher()
     publisher.__init__(broker_dict["broker"], broker_dict["port"])
     publisher.start()
 
     while True:
-        time_start = time.time()
+        timestamp = time.time()
+        time_start = datetime.fromtimestamp(timestamp)
+        time_start = time_start.strftime("%H:%M:%S")
 
-        if time_start-last_refresh >= 60:
+        if timestamp-last_refresh >= 300:
 
             last_refresh = time.time()
             refresh()
 
         if new_strat:
 
-            strategies = json.load(open("plants_Irr_strategies.json", "r"))
+            strategies = json.load(open(database, "r"))[strategies]
+            new_strat = False
 
-        # CYCLE OVER THE STRATEGY OF TYPE I: IF THE TIME OF THE SYSTEM CORRESPONDS WITH THE TYME IN WHICH THE PLANT HAS
-        # TO RECEIVE THE WATER THE FUNCTION PUBLISH THE WATER QUANTITY ON A TOPIC SPECIFIC FOR THE PLANT
-        for strat in strategies["Strategy_I"]:
+        for strat in strategies:
 
-            time_now = time.time()
-            if time_start==strat["t_start"] or time_now==strat["t_start"] or (time_start<strat["t_start"] and time_now>strat["t_start"]):
-
-                publisher.publish("Greenhouse1/Irr_Strategies/Strategy_I/"+strat["plant"], strat["water_qnt"])
-
-        # CYCLE OVER THE STRATEGY OF TYPE II: IF THE TIME OF THE SYSTEM CORRESPONDS WITH THE TYME IN WHICH THE PLANT HAS
-        # TO START RECEIVING THE WATER THE FUNCTION PUBLISH THE WATER X MINUTE NEEDED ON A TOPIC SPECIFIC FOR THE PLANT AND
-        # WHEN THE SYSTEM TIME IS EQUAL TO THE STOP_TIME OF THE CONTROL STRATEGY IT PUBLISH A STOP FLAG ON THE (SAME) TOPIC
-        for strat in strategies["Strategy_II"]:
-
-            time_now = time.time()
-            if time_start==strat["t_start"] or time_now==strat["t_start"] or (time_start<strat["t_start"] and time_now>strat["t_start"]):
-
-                # the device connector will be able to handle different strategies depending on which topic is published anything
-                publisher.publish("Greenhouse1/Irr_Strategies/Strategy_II/"+strat["plant"], strat["water_x_minute"])
-            
-            if time_start==strat["t_stop"] or time_now==strat["t_stop"] or (time_start<strat["t_stop"] and time_now>strat["t_stop"]):
-
-                publisher.publish("Greenhouse1/Irr_Strategies/Strategy_II/"+strat["plant"], "STOP")
+            if time_start==strat["time"]:
+                publisher.publish(strat["topic"], strat["water_qnt"])
