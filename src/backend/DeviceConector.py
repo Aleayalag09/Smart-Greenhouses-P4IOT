@@ -21,21 +21,12 @@ class Device():
         
         temperature_range = [1.0,30.0]
         humidity_range = [0.0,1.0]
-        wind_range = [0.0,80.0]
-        pressure_range = [1000.0, 1100.0]
-        precipitation_range = [0.0,4.0]
         
         for measure in measurements:
             if measure == "Temperature":
                 self.measurements[measure] = round(random.uniform(temperature_range[0], temperature_range[1]),2)
             elif measure == "Humidity":
                 self.measurements[measure] = round(random.uniform(humidity_range[0], humidity_range[1]),2)
-            elif measure == "Wind":
-                self.measurements[measure] = round(random.uniform(wind_range[0], wind_range[1]),2)
-            elif measure == "Pressure":
-                self.measurements[measure] = round(random.uniform(pressure_range[0], pressure_range[1]),2)
-            elif measure == "Precipitation":
-                self.measurements[measure] = round(random.uniform(precipitation_range[0], precipitation_range[1]),2)
             else:
                 print("Bad measurement")
         
@@ -117,15 +108,9 @@ class Device():
         data = self.getWeather()
         temperature = data[0]['Temperature']['Metric']['Value']
         humidity = data[0]['RelativeHumidity'] / 100
-        wind = data[0]["Wind"]["Speed"]['Metric']['Value']
-        pressure = data[0]['Pressure']['Metric']['Value']
-        precipitation = data[0]['PrecipitationSummary']['Precipitation']['Metric']['Value']
         new_data = {}
         new_data["Temperature"] = temperature
         new_data["Humidity"] = humidity
-        new_data["Wind"] = wind
-        new_data["Pressure"] = pressure
-        new_data["Precipitation"] = precipitation
         return new_data
 
 class DeviceMQTT(Device):
@@ -157,18 +142,13 @@ class DeviceMQTT(Device):
             self.updateActuators()
             self.readMeasurement()
             time.sleep(1)
-        
-    
-class DeviceREST(Device):
-    def __init__(self, userID, greenHouseID, deviceID, city):
-        super().__init__(userID, greenHouseID, deviceID, city)
-    pass
     
                         
 if __name__ == '__main__':
     measurements = ["Temperature", "Humidity"]
     actuators = ['Fan', 'Humidifier']
     Device1 = DeviceMQTT(0,0,0,"Torino","mqtt.eclipse.org","1883")
+    Device2 = DeviceMQTT(0,0,1,"Torino","mqtt.eclipse.org","1883")
     Device1.simulate(measurements,actuators)
     # Device1.initActuators(actuators)
     # print(Device1.measurements)     
