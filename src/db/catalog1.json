@@ -1,0 +1,38 @@
+{"projectOwner": "Group29",
+ "projectName": "Smart_GreenHouses_P4IOT",
+  "lastUpdate": "2022-09-13 16:36",
+ "usersList": [{"userName": "Matteo_Impieri",
+                "password": "12345678",
+                "super_User": false,
+                "id": 0,
+                "name": "Matteo",
+                "surname": "Impieri",
+                "email_addresses": "Matteo_Impieri@P4IOT.com",
+                "country": "Italy",
+                "city": "Loano",
+                "greenHouses:" : [{"greenHouseID" : 1}, {"greenHouseID": 2}]}],
+
+"greenHousesList": [{"id": 1,
+            "greenHouseName": "My_farm1",
+            "greenHouseID": 1,
+            "city" : "Torino",
+            "devices:" : [{"deviceID" : 1}, {"deviceID" : 2}]}],
+   
+"devicesList": [{"deviceID": 1,
+                "deviceName": "DHT11",
+                "measureType": ["Temperature, Humidity"],
+                "servieDetail": {
+                    "serviceType": "MQTT",
+                    "serviceIP": "mqtt.eclipse.org",
+                    "port": "1883",
+                    "topic": "Smart_GreenHouses_P4IOT/0/1/0"}},
+                    {"deviceID": 2      ,
+                    "deviceName": "DHT11",
+                    "measureType": ["Temperature, Humidity"],
+                    "servieDetail": {
+                        "serviceType": "MQTT",
+                        "serviceIP": "mqtt.eclipse.org",
+                        "port": "1883",
+                        "topic": "Smart_GreenHouses_P4IOT/0/1/0"}}]
+}
+                
