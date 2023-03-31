@@ -43,7 +43,7 @@ class Device():
             
     def readMeasurement(self):
         """
-        This method simulates the read of the measurements.
+        This method simulates the read of the measurements. 
         """
         actuators = self.actuators.keys()
         measurements = self.measurements.keys()
