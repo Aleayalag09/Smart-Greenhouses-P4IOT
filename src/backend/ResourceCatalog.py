@@ -2,14 +2,15 @@ import json
 import cherrypy
 import time
 
-class UserManager(object):
+class User(object):
     exposed = True
 
     def GET(self, *path, **queries):
         """
-        Function that get an especific user or all the users, each user will be call by his id
+        Function that get a specific user or all the users, each user will be called by his id
         """
-        users = json.load(open("src/db/catalog.json", "r"))
+        db = json.load(open("src/db/catalog.json", "r"))
+        users = db["users"]
         
         try:
             id = queries['id']
@@ -27,12 +28,12 @@ class UserManager(object):
                 
             raise cherrypy.HTTPError(400, 'No user found')
     
-    @cherrypy.tools.json_in()
     def POST(self, *path, **queries):
         """
         This function create a new user
         """
-        users = json.load(open("src/db/catalog.json", "r"))
+        db = json.load(open("src/db/catalog.json", "r"))
+        users = db["users"]
         new_user = {
             "userName": "userName",
             "password": "password",
@@ -43,10 +44,11 @@ class UserManager(object):
             "email_addresses": "email",
             "country": "country",
             "city": "city",
+            "MQTTBaseTopic": "baseTopic",
             "greenHouses": [],
             "timestamp": time.time()
         }
-        input = cherrypy.request.json
+        input = json.loads(cherrypy.request.body.read())
         try:
             new_user["userName"] = input['userName']
             new_user["password"] = input['password']
@@ -55,15 +57,16 @@ class UserManager(object):
             new_user["email_addresses"] = input['email_addresses']
             new_user["country"] = input['country']
             new_user["city"] = input['city']
+            new_user["MQTTBaseTopic"] = input['MQTTBaseTopic']
         except:
-            raise cherrypy.HTTPError(400, 'Incorrect parameter')
+            raise cherrypy.HTTPError(400, 'Wrong parameter')
         else:
             users.append(new_user)
-            json.dump(users, open("src/db/catalog.json", "w"), indent=3)
+            db["users"] = users
+            json.dump(db, open("src/db/catalog.json", "w"), indent=3)
             output=str(type(input))+"<br>"+str(input)
             return output
             
-    @cherrypy.tools.json_in()
     def PUT(self, *path, **queries): 
         """
         This function modify the personal data of the user
@@ -71,11 +74,12 @@ class UserManager(object):
         try: 
             id = queries['id']
         except:
-            raise cherrypy.HTTPError(400, 'Incorrect id')
+            raise cherrypy.HTTPError(400, 'Bad request')
         
-        input = cherrypy.request.json
+        input = json.loads(cherrypy.request.body.read())
         
-        users = json.load(open("src/db/catalog.json", "r"))
+        db = json.load(open("src/db/catalog.json", "r"))
+        users = db["users"]
         
         keys_to_change = input.keys()
             
@@ -84,7 +88,7 @@ class UserManager(object):
         keys = list(set(keys_to_change)-set(key_not_allowed))
         
         if not keys:
-            raise cherrypy.HTTPError(400, 'Not value to change found')
+            raise cherrypy.HTTPError(400, 'No value to change found')
         
         for user in users:
             if user['id'] == int(id):
@@ -94,7 +98,8 @@ class UserManager(object):
                     except:
                         raise cherrypy.HTTPError(400, 'No valid key')
                 user["timestamp"] = time.time()
-                json.dump(users, open("src/db/catalog.json", "w"), indent=3)
+                db["users"] = users
+                json.dump(db, open("src/db/catalog.json", "w"), indent=3)
                 output = str(type(user))+"<br>"+str(user)
                 return output
             
@@ -108,27 +113,31 @@ class UserManager(object):
         try: 
             id = queries['id']
         except:
-            raise cherrypy.HTTPError(400, 'Incorrect id')
+            raise cherrypy.HTTPError(400, 'Bad request')
         
-        users = json.load(open("src/db/catalog.json", "r"))
+        db = json.load(open("src/db/catalog.json", "r"))
+        users = db["users"]
         
         for idx, user in enumerate(users):
             if user['id'] == int(id):
                 output = str(type(user))+"<br>"+str(user)
                 users.pop(idx)
-                json.dump(users, open("src/db/catalog.json", "w"), indent=3)
+                db["users"] = users
+                json.dump(db, open("src/db/catalog.json", "w"), indent=3)
                 return output
             
         raise cherrypy.HTTPError(400, 'No user found')
     
-class GreenHouseManager(object):
+
+class GreenHouse(object):
     exposed = True
 
     def GET(self, *path, **queries):
         """
-        Function that get an especific greenhouse or all the greenhouses from an user.
+        Function that get a specific greenhouse or all the greenhouses from an user.
         """
-        users = json.load(open("src/db/catalog.json", "r"))
+        db = json.load(open("src/db/catalog.json", "r"))
+        users = db["users"]
         
         try:
             id = queries['id']
@@ -151,48 +160,61 @@ class GreenHouseManager(object):
                 
         raise cherrypy.HTTPError(400, 'No user or greenhouse found')
                         
-    
-    @cherrypy.tools.json_in()
     def POST(self, *path, **queries):
         """
         This function create a new greenhouse
         """
-        users = json.load(open("src/db/catalog.json", "r"))
+        db = json.load(open("src/db/catalog.json", "r"))
+        users = db["users"]
         try:
-            id = queries['id']
+            id = int(queries['id'])
         
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
         
+        userPres = False
+        userNum = 0
         for user in users:
-            if user['id'] == int(id):
+            if user['id'] == id:
+                userPres = True
                 if len(user['greenHouses']) == 0:
                     greenHouseID = 0
                 else:
                     greenHouseID = user['greenHouses'][len(user['greenHouses'])-1]['greenHouseID'] + 1
                 break
-        
-        new_greenhouse = {
-            "greenHouseName": "greenHouseName",
-            "greenHouseID": greenHouseID,
-            "city": "city",
-            "devicesList": []
+            userNum += 1
+
+        if userPres:
+            strat_dict = {
+                "strat": [],
+                "active": False,
+                "timestamp": -1
             }
-        
-        input = cherrypy.request.json
-        try:
-            new_greenhouse["greenHouseName"] = input['greenHouseName']
-            new_greenhouse["city"] = input['city']
-        except:
-            raise cherrypy.HTTPError(400, 'Incorrect parameter')
-        else:
-            user['greenHouses'].append(new_greenhouse)
-            user["timestamp"] = time.time()
-            json.dump(users, open("src/db/catalog.json", "w"), indent=3)
-            output=str(type(input))+"<br>"+str(input)
-            return output
             
-    @cherrypy.tools.json_in()
+            new_greenhouse = {
+                "greenHouseName": "greenHouseName",
+                "greenHouseID": greenHouseID,
+                "city": "city",
+                "deviceConnector": {},
+                "strategies": {"irrigation": strat_dict, "environment": strat_dict, "windows": strat_dict}
+                }
+            
+            input = json.loads(cherrypy.request.body.read())
+            try:
+                new_greenhouse["greenHouseName"] = input['greenHouseName']
+                new_greenhouse["city"] = input['city']
+            except:
+                raise cherrypy.HTTPError(400, 'Wrong parameter')
+            else:
+                users[userNum]['greenHouses'].append(new_greenhouse)
+                users[userNum]["timestamp"] = time.time()
+                db["users"] = users
+                json.dump(db, open("src/db/catalog.json", "w"), indent=3)
+                output=str(type(input))+"<br>"+str(input)
+                return output
+        else:
+            raise cherrypy.HTTPError(400, 'No user found')
+            
     def PUT(self, *path, **queries): 
         """
         This function modify the information of the greenhouse
@@ -201,20 +223,21 @@ class GreenHouseManager(object):
             id = queries['id']
             greenHouseID = queries['greenHouseID']
         except:
-            raise cherrypy.HTTPError(400, 'Incorrect id')
+            raise cherrypy.HTTPError(400, 'Bad request')
         
-        input = cherrypy.request.json
+        input = json.loads(cherrypy.request.body.read())
         
-        users = json.load(open("src/db/catalog.json", "r"))
+        db = json.load(open("src/db/catalog.json", "r"))
+        users = db["users"]
         
         keys_to_change = input.keys()
             
-        key_not_allowed = ["greenHouseID","devicesList"]
+        key_not_allowed = ["greenHouseID","deviceConnector", "strategies"]
         
         keys = list(set(keys_to_change)-set(key_not_allowed))
         
         if not keys:
-            raise cherrypy.HTTPError(400, 'Not value to change found')
+            raise cherrypy.HTTPError(400, 'No value to change found')
         
         for user in users:
             if user['id'] == int(id):
@@ -226,7 +249,8 @@ class GreenHouseManager(object):
                             except:
                                 raise cherrypy.HTTPError(400, 'No valid key')
                         user["timestamp"] = time.time()
-                        json.dump(users, open("src/db/catalog.json", "w"), indent=3)
+                        db["users"] = users
+                        json.dump(db, open("src/db/catalog.json", "w"), indent=3)
                         output = str(type(user))+"<br>"+str(user)
                         return output
             
@@ -241,9 +265,10 @@ class GreenHouseManager(object):
             id = queries['id']
             greenHouseID = queries['greenHouseID']
         except:
-            raise cherrypy.HTTPError(400, 'Incorrect id')
+            raise cherrypy.HTTPError(400, 'Bad request')
         
-        users = json.load(open("src/db/catalog.json", "r"))
+        db = json.load(open("src/db/catalog.json", "r"))
+        users = db["users"]
         
         for user in users:
             if user['id'] == int(id):
@@ -251,378 +276,257 @@ class GreenHouseManager(object):
                     if greenHouse['greenHouseID'] == int(greenHouseID):
                         output = str(type(greenHouse))+"<br>"+str(greenHouse)
                         user['greenHouses'].pop(idx)
-                        json.dump(users, open("src/db/catalog.json", "w"), indent=3)
+                        user["timestamp"] = time.time()
+                        db["users"] = users
+                        json.dump(db, open("src/db/catalog.json", "w"), indent=3)
                         return output
                     
         raise cherrypy.HTTPError(400, 'No user or greenhouse found')
 
-class DeviceManager(object):
+class Strategy(object):
     exposed = True
 
     def GET(self, *path, **queries):
         """
-        Function that get an especific device or all the devices from a greenhouse.
+        Function that get a specific strategy (Irrigation, Environment, Windows) or all the strategies from a device.
         """
-        users = json.load(open("src/db/catalog.json", "r"))
+        db = json.load(open("src/db/catalog.json", "r"))
+        users = db["users"]
         
         try:
             id = queries['id']
             greenHouseID = queries['greenHouseID']
-            deviceID = queries['deviceID']
+            strategyType = queries['strategyType']
         
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
         
         else:
-            if queries['deviceID']== "all":
+            if queries['strategyType']== "all":
                 for user in users:
                     if user['id'] == int(id):
                         for greenhouse in user['greenHouses']:
                             if greenhouse['greenHouseID'] == int(greenHouseID):
-                                 return json.dumps(greenhouse['devicesList'], indent=3)
+                                return json.dumps(greenhouse['strategies'], indent=3)
                         
             for user in users:
                 if user['id'] == int(id):
                     for greenhouse in user['greenHouses']:
                         if greenhouse['greenHouseID'] == int(greenHouseID):
-                            for device in greenhouse['devicesList']:
-                                if device['deviceID'] == int(deviceID):
-                                    return json.dumps(device, indent=3)
+                            try:
+                                strategy = greenhouse['strategies'][strategyType]
+                            except:
+                                raise cherrypy.HTTPError(400, 'Wrong strategy type')
+                            else:
+                                return json.dumps(strategy, indent=3)
                             
                 
-        raise cherrypy.HTTPError(400, 'No user, greenhouse or device found')
+        raise cherrypy.HTTPError(400, 'No user, greenhouse or strategy found')
                         
-    
-    @cherrypy.tools.json_in()
     def POST(self, *path, **queries):
         """
-        This function create a new device
+        This function create a new strategy (if you want to update one strategy you must first delete it and then create a new one)
         """
-        users = json.load(open("src/db/catalog.json", "r"))
+        db = json.load(open("src/db/catalog.json", "r"))
+        users = db["users"]
         try:
             id = queries['id']
             greenHouseID = queries['greenHouseID']
+            strategyType = queries['strategyType']
         
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
         
-        for user in users:
-            if user['id'] == int(id):
-                for greenhouse in user['greenHouses']:
-                    if greenhouse['greenHouseID'] == int(greenHouseID):
-                        if len(greenhouse['devicesList']) == 0:
-                            deviceID = 0
-                        else:                           
-                            deviceID = greenhouse['devicesList'][len(greenhouse['devicesList'])-1]['deviceID'] + 1
-                        device_path = '/' + str(user['id']) + '/' + str(greenhouse['greenHouseID']) + '/' + str(deviceID)
-                        break
-                    
-        
-        
-        new_device = {
-            "deviceName": "deviceName",
-            "deviceID": deviceID,
-            "measureTypes": [],
-            "actuatorsTypes": [],
-            "availableServices": [],
-            "servicesDetails" : [],
-            "strategies": [],
-            "lastUpdate" : time.time()
-            }
-        
-        servicesDetails = [{"serviceType": "MQTT",
-                                    "serviceIP": "mqtt.eclipse.org",
-                                    "port" : "1883",
-                                    "topic": "Smart_GreenHouses_P4IOT" + device_path},
-                                 
-                                 {"serviceType": "REST",
-                                    "serviceIP": "127.0.0.1",
-                                    "port" : "8080",
-                                    "path": device_path}]
-        
-        input = cherrypy.request.json
-        try:
-            new_device["deviceName"] = input['deviceName']
-            new_device["measureTypes"] = input['measureTypes']
-            new_device["actuatorsTypes"] = input['actuatorsTypes']
-            new_device["availableServices"] = input['availableServices']
-        except:
-            raise cherrypy.HTTPError(400, 'Incorrect parameter')
-        else:
-            # LOOK: ZIP(())PAIRWISE ITERATIONS
-            for availableService in new_device["availableServices"]:
-                for service in servicesDetails:
-                    if service['serviceType'] == availableService:
-                        new_device["servicesDetails"].append(service)
+        input = json.loads(cherrypy.request.body.read())
 
-            greenhouse['devicesList'].append(new_device)
-            user["timestamp"] = time.time()
-            json.dump(users, open("src/db/catalog.json", "w"), indent=3)
-            output=str(type(input))+"<br>"+str(input)
-            return output
-            
-    @cherrypy.tools.json_in()
+        if strategyType == "irrigation":
+            for user in users:
+                if user['id'] == int(id):
+                    for greenhouse in user['greenHouses']:
+                        if greenhouse['greenHouseID'] == int(greenHouseID):
+                            if len(greenhouse['strategies']['irrigation']['strat']) == 0:
+                                strategyID = 0
+                            else:                           
+                                strategyID = greenhouse['strategies']['irrigation']['strat'][len(greenhouse['strategies']['irrigation']['strat'])-1]['id'] + 1
+
+                            try: 
+                                stime = input["time"]
+                                water_quantity = input["water_quantity"]
+                                activeStrat = input["activeStrat"]
+                                activeIrr = input["activeIrr"]
+                            except:
+                                raise cherrypy.HTTPError(400, 'Wrong parameters')
+                            else:
+                                new_strat = {
+                                    "id": strategyID,
+                                    "time" : stime,
+                                    "water_quantity": water_quantity,
+                                    "active" : activeStrat
+                                }
+
+                                greenhouse['strategies']['irrigation']['strat'].append(new_strat)
+                                greenhouse['strategies']['irrigation']['active'] = activeIrr
+                                greenhouse['strategies']['irrigation']['timestamp'] = time.time()
+
+                                user['timestamp'] = time.time()
+                                db["users"] = users
+                                json.dump(db, open("src/db/catalog.json", "w"), indent=3)
+                                output=str(type(input))+"<br>"+str(input)
+                                return output
+
+        elif strategyType == "environment" or strategyType == "windows":   
+            for user in users:
+                if user['id'] == int(id):
+                    for greenhouse in user['greenHouses']:
+                        if greenhouse['greenHouseID'] == int(greenHouseID):
+
+                            if strategyType == "environment":
+                                try:
+                                    temperature = input["temperature"]
+                                    humidity = input["humidity"]
+                                    active = input["input"]
+                                except:
+                                    raise cherrypy.HTTPError(400, 'Wrong parameters')
+                                else:
+                                    new_strat = {
+                                        "temperature": temperature,
+                                        "humidity" : humidity
+                                    }
+
+                                    greenhouse['strategies']['environment']["strat"] = new_strat
+                                    greenhouse['strategies']['environment']['active'] = active
+                                    greenhouse['strategies']['environment']['timestamp'] = time.time()
+
+                            elif strategyType == "windows":
+                                try:
+                                    active = input["input"]
+                                except:
+                                    raise cherrypy.HTTPError(400, 'Wrong parameters')
+                                else:
+                                    greenhouse['strategies']['windows']['active'] = active
+                                    greenhouse['strategies']['windows']['timestamp'] = time.time()
+                            
+                            user['timestamp'] = time.time()
+                            db["users"] = users
+                            json.dump(db, open("src/db/catalog.json", "w"), indent=3)
+                            output=str(type(input))+"<br>"+str(input)
+                            return output
+                        
+        else:
+            raise cherrypy.HTTPError(400, 'Wrong strategy type')
+        
+        raise cherrypy.HTTPError(400, 'No user or greenhouse found')
+
     def PUT(self, *path, **queries): 
         """
-        This function modify the information of the device
+        This function modify the state of activity of a strategy
         """
         try: 
             id = queries['id']
             greenHouseID = queries['greenHouseID']
-            deviceID = queries['deviceID']
+            strategyType = queries['strategyType']
+            active = queries['active']
         except:
-            raise cherrypy.HTTPError(400, 'Incorrect id')
+            raise cherrypy.HTTPError(400, 'Bad request')
         
-        input = cherrypy.request.json
-        
-        users = json.load(open("src/db/catalog.json", "r"))
-        
-        keys_to_change = input.keys()
-        
-        if len(path) != 0 and path[0] == 'servicesDetails':
-            key_not_allowed = ["serviceType","topic","path"]
-            keys = list(set(keys_to_change)-set(key_not_allowed))
-        else:
-            key_not_allowed = ["deviceID", "servicesDetails","lastUpdate","strategies"]
-            keys = list(set(keys_to_change)-set(key_not_allowed))
-        
-        if not keys:
-            raise cherrypy.HTTPError(400, 'Not value to change found')
-        
+        db = json.load(open("src/db/catalog.json", "r"))
+        users = db["users"]
+
         for user in users:
             if user['id'] == int(id):
-                for greenHouse in user['greenHouses']:
-                    if greenHouse['greenHouseID'] == int(greenHouseID):
-                        for device in greenHouse['devicesList']:
-                            if device["deviceID"] == int(deviceID):
-                                if len(path) != 0 and path[0] == 'servicesDetails':
-                                    for servicesDetail in device['servicesDetails']:
-                                        if servicesDetail['serviceType'] == path[1]:
-                                            for key in keys:
-                                                try:
-                                                    servicesDetail[key] = type(servicesDetail[key])(input[key])
-                                                except:
-                                                    raise cherrypy.HTTPError(400, 'No valid key')
-                                            break
-                                else:
-                                    for key in keys:
-                                        try:
-                                            device[key] = type(device[key])(input[key])
-                                        except:
-                                            raise cherrypy.HTTPError(400, 'No valid key')
-                                            
-                user["timestamp"] = time.time()
-                json.dump(users, open("src/db/catalog.json", "w"), indent=3)
-                output = str(type(user))+"<br>"+str(user)
-                return output
+                for greenhouse in user['greenHouses']:
+                    if greenhouse['greenHouseID'] == int(greenHouseID):
+                        
+                        if strategyType == "irrigation":
+                            try:
+                                input = json.loads(cherrypy.request.body.read())
+                                strategyID = int(input["strategyID"])
+                                activeStrat = input["activeStrat"]
+                            except:
+                                pass
+                            else:
+                                greenhouse['strategies']['irrigation']["strat"][strategyID]['active'] = activeStrat
+
+                        try:
+                            greenhouse['strategies'][strategyType]["active"] = active
+                            greenhouse['strategies'][strategyType]["timestamp"] = time.time()
+                        except:
+                            raise cherrypy.HTTPError(400, 'Wrong strategy type')
+                        else:
+                            user["timestamp"] = time.time()
+                            db["users"] = users
+                            json.dump(db, open("src/db/catalog.json", "w"), indent=3)
+                            output = str(type(user))+"<br>"+str(user)
+                            return output
             
         raise cherrypy.HTTPError(400, 'No user or greenhouse found')
     
     def DELETE(self, *path, **queries):
         """
-        This function delete a device
+        This function delete a strategy (if you want to modify one you must delete it before and then create a new one)
         """
         
         try: 
             id = queries['id']
             greenHouseID = queries['greenHouseID']
-            deviceID = queries['deviceID']
-        except:
-            raise cherrypy.HTTPError(400, 'Incorrect id')
-        
-        users = json.load(open("src/db/catalog.json", "r"))
-        
-        for user in users:
-            if user['id'] == int(id):
-                for greenHouse in user['greenHouses']:
-                    if greenHouse['greenHouseID'] == int(greenHouseID):
-                        for idx, device in enumerate(greenHouse['devicesList']):
-                            if device['deviceID'] == int(deviceID):
-                                output = str(type(device))+"<br>"+str(device)
-                                greenHouse['devicesList'].pop(idx)
-                                json.dump(users, open("src/db/catalog.json", "w"), indent=3)
-                                return output
-                    
-        raise cherrypy.HTTPError(400, 'No user, greenhouse or device found')
-
-class StrategiesManager(object):
-    exposed = True
-
-    def GET(self, *path, **queries):
-        """
-        Function that get an especific strategy or all the strategies from a device.
-        """
-        users = json.load(open("src/db/catalog.json", "r"))
-        
-        try:
-            id = queries['id']
-            greenHouseID = queries['greenHouseID']
-            deviceID = queries['deviceID']
-            strategyID = queries['strategyID']
-        
+            strategyType = queries['strategyType']
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
         
-        else:
-            if queries['strategyID']== "all":
-                for user in users:
-                    if user['id'] == int(id):
-                        for greenhouse in user['greenHouses']:
-                            if greenhouse['greenHouseID'] == int(greenHouseID):
-                                for device in greenhouse['devicesList']:
-                                    if device['deviceID'] == int(deviceID):
-                                        return json.dumps(device['strategies'], indent=3)
-                        
-            for user in users:
-                if user['id'] == int(id):
-                    for greenhouse in user['greenHouses']:
-                        if greenhouse['greenHouseID'] == int(greenHouseID):
-                            for device in greenhouse['devicesList']:
-                                if device['deviceID'] == int(deviceID):
-                                    for strategy in device['strategies']:
-                                        if strategy["strategyID"] == int(strategyID):
-                                            return json.dumps(strategy, indent=3)
-                            
-                
-        raise cherrypy.HTTPError(400, 'No user, greenhouse, device or strategy found')
-                        
-    
-    @cherrypy.tools.json_in()
-    def POST(self, *path, **queries):
-        """
-        This function create a new strategy
-        """
-        users = json.load(open("src/db/catalog.json", "r"))
-        try:
-            id = queries['id']
-            greenHouseID = queries['greenHouseID']
-            deviceID = queries['deviceID']
-        
-        except:
-            raise cherrypy.HTTPError(400, 'Bad request')
+        db = json.load(open("src/db/catalog.json", "r"))
+        users = db["users"]
 
+        strat_dict = {
+                "strat": [],
+                "active": False,
+                "timestamp": time.time()
+            }
+        
         for user in users:
             if user['id'] == int(id):
                 for greenhouse in user['greenHouses']:
                     if greenhouse['greenHouseID'] == int(greenHouseID):
-                        for device in greenhouse['devicesList']:
-                            if device['deviceID'] == int(deviceID):
-                                if len(device['strategies']) == 0:
-                                    strategyID = 0
-                                else:                           
-                                    strategyID = device['strategies'][len(device['strategies'])-1]['strategyID'] + 1
-                                break   
-                
-        new_strategy = {
-            "strategyID": strategyID,
-            "time" : "00:00:00",
-            "water_quantity": 0,
-            "duration" : 0
-            }
-        
-        for measure in device["measureTypes"]:
-            if measure == 'Temperature':
-                new_strategy.update({measure : 20})
-            if measure == 'Humidity':
-                new_strategy.update({measure : 0.7})
-     
-        keys = list(set(new_strategy.keys())-set(["strategyID"]))
-        input = cherrypy.request.json
-        
-        strategies = sorted(device['strategies'], key=lambda d:d['time'], reverse=True)
-        for strategy in strategies:
-            if strategy['time'] < input['time']:
-                for key in keys:
-                    new_strategy[key] =  strategy[key]
-        try:
-            for key in keys: 
-                if input[key] != '':
-                    new_strategy[key] = input[key]
-        except:
-            raise cherrypy.HTTPError(400, 'Incorrect parameter')
-        else:
-            device['strategies'].append(new_strategy)
-            user["timestamp"] = time.time()
-            json.dump(users, open("src/db/catalog.json", "w"), indent=3)
-            output=str(type(input))+"<br>"+str(input)
-            return output
-            
-    @cherrypy.tools.json_in()
-    def PUT(self, *path, **queries): 
-        """
-        This function modify a strategy
-        """
-        try: 
-            id = queries['id']
-            greenHouseID = queries['greenHouseID']
-            deviceID = queries['deviceID']
-            strategyID = queries['strategyID']
-        except:
-            raise cherrypy.HTTPError(400, 'Incorrect id')
-        
-        input = cherrypy.request.json
-        
-        users = json.load(open("src/db/catalog.json", "r"))
-        
-        keys_to_change = input.keys()
-            
-        key_not_allowed = ["strategyID"]
-        
-        keys = list(set(keys_to_change)-set(key_not_allowed))
-        
-        if not keys:
-            raise cherrypy.HTTPError(400, 'Not value to change found')
-        
-        for user in users:
-            if user['id'] == int(id):
-                for greenHouse in user['greenHouses']:
-                    if greenHouse['greenHouseID'] == int(greenHouseID):
-                        for device in greenHouse['devicesList']:
-                            if device["deviceID"] == int(deviceID):
-                                for strategy in device['strategies']:
-                                    if strategy['strategyID'] == int(strategyID):
-                                        for key in keys:
-                                            try:
-                                                strategy[key] = type(strategy[key])(input[key])
-                                            except:
-                                                raise cherrypy.HTTPError(400, 'No valid key')
-                                            
-                                        user["timestamp"] = time.time()
-                                        json.dump(users, open("src/db/catalog.json", "w"), indent=3)
-                                        output = str(type(user))+"<br>"+str(user)
-                                        return output
-            
-        raise cherrypy.HTTPError(400, 'No user, greenhouse, device or strategy found')
-    
-    def DELETE(self, *path, **queries):
-        """
-        This function delete a strategy
-        """
-        
-        try: 
-            id = queries['id']
-            greenHouseID = queries['greenHouseID']
-            deviceID = queries['deviceID']
-            strategyID = queries['strategyID']
-        except:
-            raise cherrypy.HTTPError(400, 'Incorrect id')
-        
-        users = json.load(open("src/db/catalog.json", "r"))
-        
-        for user in users:
-            if user['id'] == int(id):
-                for greenHouse in user['greenHouses']:
-                    if greenHouse['greenHouseID'] == int(greenHouseID):
-                        for device in (greenHouse['devicesList']):
-                            if device['deviceID'] == int(deviceID):
-                                for idx, strategy in enumerate(device['strategies']):
-                                    if strategy['strategyID'] == int(strategyID):
-                                        output = str(type(strategy))+"<br>"+str(strategy)
-                                        device['strategies'].pop(idx)
-                                        json.dump(users, open("src/db/catalog.json", "w"), indent=3)
-                                        return output
+                        
+                        if strategyType == "irrigation":
+                            try:
+                                strategyID = queries["strategyID"]
+                            except:
+                                greenhouse['strategies']['irrigation'] = strat_dict
+                                user["timestamp"] = time.time()
+                                db["users"] = users
+                                json.dump(users, open("src/db/catalog.json", "w"), indent=3)
+                                output = str(type(user))+"<br>"+str(user)
+                                return output
+                            else:
+                                try:
+                                    greenhouse['strategies']['irrigation']['strat'][strategyID]
+                                except:
+                                    raise cherrypy.HTTPError(400, 'Strategy not found')
+                                else:
+                                    for i in range(len(greenhouse['strategies']['irrigation']['strat'])):
+                                        if i>strategyID:
+                                            greenhouse['strategies']['irrigation']['strat'][i]["id"] -= 1
+
+                                    greenhouse['strategies']['irrigation']['strat'].pop(strategyID)
+                                    greenhouse['strategies']['irrigation']["timestamp"] = time.time()
+                                    user["timestamp"] = time.time()
+                                    db["users"] = users
+                                    json.dump(users, open("src/db/catalog.json", "w"), indent=3)
+                                    output = str(type(user))+"<br>"+str(user)
+                                    return output
+                        else:
+                            try:
+                                greenhouse['strategies'][strategyType] = strat_dict
+                            except:
+                                raise cherrypy.HTTPError(400, 'Wrong strategy type')
+                            else:
+                                user["timestamp"] = time.time()
+                                db["users"] = users
+                                json.dump(users, open("src/db/catalog.json", "w"), indent=3)
+                                output = str(type(user))+"<br>"+str(user)
+                                return output
                     
-        raise cherrypy.HTTPError(400, 'No user, greenhouse, device or strategy found')
+        raise cherrypy.HTTPError(400, 'No user, greenhouse or strategy found')
 
 if __name__=="__main__":
 
@@ -632,10 +536,9 @@ if __name__=="__main__":
             'tools.sessions.on': True,
         }
     }
-    cherrypy.tree.mount(UserManager(), '/user_manager', conf)
-    cherrypy.tree.mount(GreenHouseManager(), '/greenhouse_manager', conf)
-    cherrypy.tree.mount(DeviceManager(), '/device_manager', conf)
-    cherrypy.tree.mount(StrategiesManager(), '/strategy_manager', conf)
+    cherrypy.tree.mount(User(), '/user', conf)
+    cherrypy.tree.mount(GreenHouse(), '/greenhouse', conf)
+    cherrypy.tree.mount(Strategy(), '/strategy', conf)
 
     cherrypy.config.update({'server.socket_host': '127.0.0.1'})
     cherrypy.config.update({'server.socket_port': 8080})
