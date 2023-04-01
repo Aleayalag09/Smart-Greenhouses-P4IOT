@@ -1,269 +1,157 @@
-[
+{ 
+   "managers": 
    {
-      "userName": "Matteo_Impieri",
-      "password": "12345678",
-      "super_User": false,
-      "id": 0,
-      "name": "Matteo",
-      "surname": "Impieri",
-      "email_addresses": "Matteo_Impieri@P4IOT.com",
-      "country": "Italy",
-      "city": "Loano",
-      "greenHouses": [
+      "irrigation": [
          {
-            "greenHouseName": "My_farm1",
-            "greenHouseID": 1,
-            "city": "Torino",
-            "devicesList": [
-               {
-                  "deviceName": "my happy device",
-                  "deviceID": 0,
-                  "measureTypes": [
-                     "Temperature",
-                     "Humidity"
-                  ],
-                  "availableServices": [
-                     "MQTT",
-                     "REST"
-                  ],
-                  "servicesDetails": [
-                     {
-                        "serviceType": "MQTT",
-                        "serviceIP": "mqtt.eclipse.org",
-                        "port": "1883",
-                        "topic": "Smart_GreenHouses_P4IOT/0/1/0"
-                     },
-                     {
-                        "serviceType": "REST",
-                        "serviceIP": "127.0.0.1",
-                        "port": "8080",
-                        "path": "/0/1/0"
-                     }
-                  ],
-                  "strategies": [
-                     {
-                        "strategyID": 0,
-                        "time": "14:00:00",
-                        "water_quantity": 2,
-                        "duration": 60,
-                        "Temperature": 25,
-                        "Humidity": 0.3
-                     },
-                     {
-                        "strategyID": 1,
-                        "time": "06:00:00",
-                        "water_quantity": 0,
-                        "duration": 10,
-                        "Temperature": 15,
-                        "Humidity": 0.8
-                     },
-                     {
-                        "strategyID": 2,
-                        "time": "08:00:00",
-                        "water_quantity": 0,
-                        "duration": 2,
-                        "Temperature": 15,
-                        "Humidity": 0.8
-                     },
-                     {
-                        "strategyID": 3,
-                        "time": "15:00:00",
-                        "water_quantity": 0,
-                        "duration": 2,
-                        "Temperature": 13,
-                        "Humidity": 0.8
-                     },
-                     {
-                        "strategyID": 4,
-                        "time": "15:00:00",
-                        "water_quantity": 0,
-                        "duration": 2,
-                        "Temperature": 13,
-                        "Humidity": 0.8
-                     }
-                  ],
-                  "lastUpdate": 1663497809.8657904
-               },
-               {
-                  "deviceName": "my sad device",
-                  "deviceID": 1,
-                  "measureTypes": [
-                     "Temperature",
-                     "Humidity"
-                  ],
-                  "availableServices": [
-                     "MQTT"
-                  ],
-                  "servicesDetails": [
-                     {
-                        "serviceType": "MQTT",
-                        "serviceIP": "mqtt.eclipse.org",
-                        "port": "1883",
-                        "topic": "Smart_GreenHouses_P4IOT/0/1/1"
-                     }
-                  ],
-                  "strategies": [],
-                  "lastUpdate": 1663497858.4591079
-               }
-            ]
+            "ip": "127.0.0.1",
+            "port": 8080,
+            "functions": 
+            [
+               "regStrategy"
+            ],
+            "timestamp": 1664433699.0798957
          }
       ],
+      "environment": [
+         {
+            "ip": "127.0.0.1",
+            "port": 8080,
+            "functions": 
+            [
+               "regStrategy"
+            ],
+            "timestamp": 1664433699.0798957
+         }
+      ],
+      "windows": [
+         {
+            "ip": "127.0.0.1",
+            "port": 8080,
+            "functions": 
+            [
+               "regStrategy"
+            ],
+            "timestamp": 1664433699.0798957
+         }
+      ]
+   },
+   "thingspeak_adaptor": [
+      {
+         "ip": "127.0.0.1",
+         "port": 8080,
+         "functions": [],
+         "timestamp": 1664433699.0798957
+      }
+   ],
+   "thingspeak": 
+   {
+      "ip": "127.0.0.1",
+      "port": 8080,
       "timestamp": 1664433699.0798957
    },
+   "weather_API":
    {
-      "userName": "Alejandro_Ayala",
-      "password": "123",
-      "super_User": false,
-      "id": 1,
-      "name": "Alejandro",
-      "surname": "Ayala",
-      "email_addresses": "Alejandro_Ayala@P4IOT.com",
-      "country": "Colombia",
-      "city": "Cali",
-      "greenHouses": [
-         {
-            "greenHouseName": "My_small_farm",
-            "greenHouseID": 0,
-            "city": "Cali",
-            "devicesList": []
-         }
-      ],
-      "timestamp": 1663095223.4624228
+      "ip": "127.0.0.1",
+      "port": 8080,
+      "timestamp": 1664433699.0798957
    },
+   "broker":
    {
-      "userName": "Matteo_Bogoni",
-      "password": "x",
-      "super_User": false,
-      "id": 2,
-      "name": "Matteo",
-      "surname": "Bogoni",
-      "email_addresses": "Matteo_Bogoni@P4IOT.com",
-      "country": "Italy",
-      "city": "Torino",
-      "greenHouses": [],
-      "timestamp": 1664460546.1595817
+      "ip": "test.mosquitto.org",
+      "port": 1883,
+      "timestamp": 1664433699.0798957
    },
+   "webpage": 
    {
-      "userName": "Valentina_Zamora",
-      "password": "123",
-      "super_User": false,
-      "id": 3,
-      "name": "Valentina",
-      "surname": "Mendoza",
-      "email_addresses": "Valentina_Zamora@P4IOT.com",
-      "country": "Italy",
-      "city": "Torino",
-      "greenHouses": [
-         {
-            "greenHouseName": "MATICAS",
-            "greenHouseID": 0,
-            "city": "Medallo",
-            "devicesList": [
+      "ip": "127.0.0.1",
+      "port": 8080,
+      "timestamp": 1664433699.0798957
+   },
+   "users": [
+      {
+         "userName": "Matteo_Impieri",
+         "password": "12345678",
+         "super_User": false,
+         "id": 0,
+         "name": "Matteo",
+         "surname": "Impieri",
+         "email_addresses": "Matteo_Impieri@P4IOT.com",
+         "country": "Italy",
+         "city": "Loano",
+         "MQTTBaseTopic": "IoT_project",
+         "greenHouses": [
+            {
+               "greenHouseName": "My_farm1",
+               "greenHouseID": 0,
+               "city": "Torino",
+               "deviceConnector": 
                {
-                  "deviceName": "Tomates",
-                  "deviceID": 0,
-                  "measureTypes": [
-                     "Temperature",
-                     "Humidity"
+                  "ip":  "127.0.0.1",
+                  "port": 8080,
+                  "devices": 
+                  {
+                     "sensors": 
+                     [
+                        "temperature",
+                        "humidity"
+                     ],
+                     "actuators": 
+                     [
+                        "temperature",
+                        "humidity",
+                        "irrigation",
+                        "windows"
+                     ]
+                  },
+                  "functions":
+                  [
+                     "regTemp",
+                     "regHum",
+                     "regIrr",
+                     "regWin"
                   ],
-                  "availableServices": [
-                     "MQTT",
-                     "REST"
-                  ],
-                  "servicesDetails": [
-                     {
-                        "serviceType": "MQTT",
-                        "serviceIP": "mqtt.eclipse.org",
-                        "port": "1882",
-                        "topic": "Smart_GreenHouses_P4IOT/3/0/0"
-                     },
-                     {
-                        "serviceType": "REST",
-                        "serviceIP": "127.0.0.1",
-                        "port": "8080",
-                        "path": "/3/0/0"
-                     }
-                  ],
-                  "strategies": [
-                     {
-                        "strategyID": 0,
-                        "time": "10:00:00",
-                        "water_quantity": 2.3,
-                        "duration": 60,
-                        "Temperature": 25,
-                        "Humidity": 0.1,
-                        "GroundTemperature": 15
-                     }
-                  ],
-                  "lastUpdate": 1663513069.5789433
-               }
-            ]
-         }
-      ],
-      "timestamp": 1663590302.8258958
-   },
-   {
-      "userName": "Orlando",
-      "password": "passxfsdword",
-      "super_User": false,
-      "id": 4,
-      "name": "Orlando",
-      "surname": "Alberti",
-      "email_addresses": "OrlandoX",
-      "country": "Italy",
-      "city": "Bogota",
-      "greenHouses": [
-         {
-            "greenHouseName": "greenHouseName",
-            "greenHouseID": 0,
-            "city": "leticia",
-            "devicesList": [
+                  "timestamp": 1664433699.0798957
+               },
+               "strategies":
                {
-                  "deviceName": "my_sad_device",
-                  "deviceID": 0,
-                  "measureTypes": [
-                     "Temperature",
-                     "Humidity",
-                     "Wind"
-                  ],
-                  "actuatorsTypes": [
-                     "Humidifier",
-                     "Window"
-                  ],
-                  "availableServices": [
-                     "MQTT",
-                     "REST"
-                  ],
-                  "servicesDetails": [
-                     {
-                        "serviceType": "MQTT",
-                        "serviceIP": "mqtt.eclipse.org",
-                        "port": "1884",
-                        "topic": "Smart_GreenHouses_P4IOT/4/0/0"
+                  "irrigation": 
+                  {
+                     "strat":[
+                        {
+                           "id": 0,
+                           "time": "07:00:00",
+                           "water_quantity": 2,
+                           "active": false
+                        },
+                        {
+                           "id": 1,
+                           "time": "14:00:00",
+                           "water_quantity": 2,
+                           "active": true
+                        }
+                     ],
+                     "active": true,
+                     "timestamp": 1664433699.0798957
+                  },
+                  "environment": 
+                  {
+                     "strat": {
+                        "temperature": 25,
+                        "humidity": 0.3
                      },
-                     {
-                        "serviceType": "REST",
-                        "serviceIP": "127.0.0.2",
-                        "port": "8081",
-                        "path": "/4/0/0"
-                     }
-                  ],
-                  "strategies": [
-                     {
-                        "strategyID": 0,
-                        "time": "02:00:00",
-                        "water_quantity": 3,
-                        "duration": 10,
-                        "Temperature": 32,
-                        "Humidity": 0,
-                        "Wind": 20
-                     }
-                  ],
-                  "lastUpdate": 1664434000.1094413
+                     "active": true,
+                     "timestamp": 1664433699.0798957
+                  },
+                  "windows":
+                  {
+                     "strat": false,
+                     "active": true,
+                     "timestamp": 1664433699.0798957
+                  }
                }
-            ]
-         }
-      ],
-      "timestamp": 1664434634.5441475
-   }
-]
+            }
+         ],
+         "timestamp": 1664433699.0798957
+      }
+   ]
+}
