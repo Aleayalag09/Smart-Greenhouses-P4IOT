@@ -10,7 +10,7 @@ from MQTT.MyMQTT import *
 new_strat = False
 database = "src/db/irrigation_manager_db.json"
 
-class Strategy(object):
+class RegStrategy(object):
     exposed = True
  
     def POST(self, *path):
@@ -19,7 +19,7 @@ class Strategy(object):
         input = json.loads(cherrypy.request.body.read())
 
         try:
-            id = input['id']
+            userID = input['userID']
             greenHouseID = input['greenHouseID']
             deviceID = input['deviceID']
             time_start = input['time']
@@ -28,7 +28,7 @@ class Strategy(object):
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
         
-        topic = id+"/"+greenHouseID+"/"+deviceID+"/irrigation/"
+        topic = userID+"/"+greenHouseID+"/"+deviceID
 
         database_dict = json.load(open(database, "r"))
 
@@ -106,7 +106,7 @@ if __name__=="__main__":
             'tools.sessions.on': True,
         }
     }
-    cherrypy.tree.mount(Strategy(), '/strategy', conf)
+    cherrypy.tree.mount(RegStrategy(), '/regStrategy', conf)
 
     cherrypy.config.update({'server.socket_host': '127.0.0.1'})
     cherrypy.config.update({'server.socket_port': 8080})

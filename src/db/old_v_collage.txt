@@ -1,0 +1,428 @@
+
+{
+    "userName": "Matteo_Bogoni",
+    "password": "x",
+    "super_User": false,
+    "id": 2,
+    "name": "Matteo",
+    "surname": "Bogoni",
+    "email_addresses": "Matteo_Bogoni@P4IOT.com",
+    "country": "Italy",
+    "city": "Torino",
+    "greenHouses": [],
+    "timestamp": 1664460546.1595817
+ },
+ {
+    "userName": "Valentina_Zamora",
+    "password": "123",
+    "super_User": false,
+    "id": 3,
+    "name": "Valentina",
+    "surname": "Mendoza",
+    "email_addresses": "Valentina_Zamora@P4IOT.com",
+    "country": "Italy",
+    "city": "Torino",
+    "greenHouses": [
+       {
+          "greenHouseName": "MATICAS",
+          "greenHouseID": 0,
+          "city": "Medallo",
+          "devicesList": [
+             {
+                "deviceName": "Tomates",
+                "deviceID": 0,
+                "measureTypes": [
+                   "Temperature",
+                   "Humidity"
+                ],
+                "availableServices": [
+                   "MQTT",
+                   "REST"
+                ],
+                "servicesDetails": [
+                   {
+                      "serviceType": "MQTT",
+                      "serviceIP": "mqtt.eclipse.org",
+                      "port": "1882",
+                      "topic": "Smart_GreenHouses_P4IOT/3/0/0"
+                   },
+                   {
+                      "serviceType": "REST",
+                      "serviceIP": "127.0.0.1",
+                      "port": "8080",
+                      "path": "/3/0/0"
+                   }
+                ],
+                "strategies": [
+                   {
+                      "strategyID": 0,
+                      "time": "10:00:00",
+                      "water_quantity": 2.3,
+                      "duration": 60,
+                      "Temperature": 25,
+                      "Humidity": 0.1,
+                      "GroundTemperature": 15
+                   }
+                ],
+                "lastUpdate": 1663513069.5789433
+             }
+          ]
+       }
+    ],
+    "timestamp": 1663590302.8258958
+ },
+ {
+    "userName": "Orlando",
+    "password": "passxfsdword",
+    "super_User": false,
+    "id": 4,
+    "name": "Orlando",
+    "surname": "Alberti",
+    "email_addresses": "OrlandoX",
+    "country": "Italy",
+    "city": "Bogota",
+    "greenHouses": [
+       {
+          "greenHouseName": "greenHouseName",
+          "greenHouseID": 0,
+          "city": "leticia",
+          "devicesList": [
+             {
+                "deviceName": "my_sad_device",
+                "deviceID": 0,
+                "measureTypes": [
+                   "Temperature",
+                   "Humidity",
+                   "Wind"
+                ],
+                "actuatorsTypes": [
+                   "Humidifier",
+                   "Window"
+                ],
+                "availableServices": [
+                   "MQTT",
+                   "REST"
+                ],
+                "servicesDetails": [
+                   {
+                      "serviceType": "MQTT",
+                      "serviceIP": "mqtt.eclipse.org",
+                      "port": "1884",
+                      "topic": "Smart_GreenHouses_P4IOT/4/0/0"
+                   },
+                   {
+                      "serviceType": "REST",
+                      "serviceIP": "127.0.0.2",
+                      "port": "8081",
+                      "path": "/4/0/0"
+                   }
+                ],
+                "strategies": [
+                   {
+                      "strategyID": 0,
+                      "time": "02:00:00",
+                      "water_quantity": 3,
+                      "duration": 10,
+                      "Temperature": 32,
+                      "Humidity": 0,
+                      "Wind": 20
+                   }
+                ],
+                "lastUpdate": 1664434000.1094413
+             }
+          ]
+       }
+    ],
+    "timestamp": 1664434634.5441475
+ }
+]
+
+
+
+
+
+
+
+
+"devicesList": [
+ {
+    "deviceName": "my happy device",
+    "deviceID": 0,
+    "measureTypes": [
+       "Temperature",
+       "Humidity"
+    ],
+    "availableServices": [
+       "MQTT",
+       "REST"
+    ],
+    "servicesDetails": [
+       {
+          "serviceType": "MQTT",
+          "serviceIP": "mqtt.eclipse.org",
+          "port": "1883",
+          "topic": "Smart_GreenHouses_P4IOT/0/1/0"
+       },
+       {
+          "serviceType": "REST",
+          "serviceIP": "127.0.0.1",
+          "port": "8080",
+          "path": "/0/1/0"
+       }
+    ],
+    "strategies": [
+       {
+          "strategyID": 0,
+          "time": "14:00:00",
+          "water_quantity": 2,
+          "duration": 60,
+          "Temperature": 25,
+          "Humidity": 0.3
+       },
+       {
+          "strategyID": 1,
+          "time": "06:00:00",
+          "water_quantity": 0,
+          "duration": 10,
+          "Temperature": 15,
+          "Humidity": 0.8
+       },
+       {
+          "strategyID": 2,
+          "time": "08:00:00",
+          "water_quantity": 0,
+          "duration": 2,
+          "Temperature": 15,
+          "Humidity": 0.8
+       },
+       {
+          "strategyID": 3,
+          "time": "15:00:00",
+          "water_quantity": 0,
+          "duration": 2,
+          "Temperature": 13,
+          "Humidity": 0.8
+       },
+       {
+          "strategyID": 4,
+          "time": "15:00:00",
+          "water_quantity": 0,
+          "duration": 2,
+          "Temperature": 13,
+          "Humidity": 0.8
+       }
+    ],
+    "lastUpdate": 1663497809.8657904
+ },
+ {
+    "deviceName": "my sad device",
+    "deviceID": 1,
+    "measureTypes": [
+       "Temperature",
+       "Humidity"
+    ],
+    "availableServices": [
+       "MQTT"
+    ],
+    "servicesDetails": [
+       {
+          "serviceType": "MQTT",
+          "serviceIP": "mqtt.eclipse.org",
+          "port": "1883",
+          "topic": "Smart_GreenHouses_P4IOT/0/1/1"
+       }
+    ],
+    "strategies": [],
+    "lastUpdate": 1663497858.4591079
+ }
+]
+}
+
+class DeviceManager(object):
+    exposed = True
+
+    def GET(self, *path, **queries):
+        """
+        Function that get an especific device or all the devices from a greenhouse.
+        """
+        users = json.load(open("src/db/catalog.json", "r"))
+        
+        try:
+            id = queries['id']
+            greenHouseID = queries['greenHouseID']
+            deviceID = queries['deviceID']
+        
+        except:
+            raise cherrypy.HTTPError(400, 'Bad request')
+        
+        else:
+            if queries['deviceID']== "all":
+                for user in users:
+                    if user['id'] == int(id):
+                        for greenhouse in user['greenHouses']:
+                            if greenhouse['greenHouseID'] == int(greenHouseID):
+                                 return json.dumps(greenhouse['devicesList'], indent=3)
+                        
+            for user in users:
+                if user['id'] == int(id):
+                    for greenhouse in user['greenHouses']:
+                        if greenhouse['greenHouseID'] == int(greenHouseID):
+                            for device in greenhouse['devicesList']:
+                                if device['deviceID'] == int(deviceID):
+                                    return json.dumps(device, indent=3)
+                            
+                
+        raise cherrypy.HTTPError(400, 'No user, greenhouse or device found')
+                        
+    
+    @cherrypy.tools.json_in()
+    def POST(self, *path, **queries):
+        """
+        This function create a new device
+        """
+        users = json.load(open("src/db/catalog.json", "r"))
+        try:
+            id = queries['id']
+            greenHouseID = queries['greenHouseID']
+        
+        except:
+            raise cherrypy.HTTPError(400, 'Bad request')
+        
+        for user in users:
+            if user['id'] == int(id):
+                for greenhouse in user['greenHouses']:
+                    if greenhouse['greenHouseID'] == int(greenHouseID):
+                        if len(greenhouse['devicesList']) == 0:
+                            deviceID = 0
+                        else:                           
+                            deviceID = greenhouse['devicesList'][len(greenhouse['devicesList'])-1]['deviceID'] + 1
+                        device_path = '/' + str(user['id']) + '/' + str(greenhouse['greenHouseID']) + '/' + str(deviceID)
+                        break
+                    
+        
+        
+        new_device = {
+            "deviceName": "deviceName",
+            "deviceID": deviceID,
+            "measureTypes": [],
+            "actuatorsTypes": [],
+            "availableServices": [],
+            "servicesDetails" : [],
+            "strategies": [],
+            "lastUpdate" : time.time()
+            }
+        
+        servicesDetails = [{"serviceType": "MQTT",
+                                    "serviceIP": "mqtt.eclipse.org",
+                                    "port" : "1883",
+                                    "topic": "Smart_GreenHouses_P4IOT" + device_path},
+                                 
+                                 {"serviceType": "REST",
+                                    "serviceIP": "127.0.0.1",
+                                    "port" : "8080",
+                                    "path": device_path}]
+        
+        input = cherrypy.request.json
+        try:
+            new_device["deviceName"] = input['deviceName']
+            new_device["measureTypes"] = input['measureTypes']
+            new_device["actuatorsTypes"] = input['actuatorsTypes']
+            new_device["availableServices"] = input['availableServices']
+        except:
+            raise cherrypy.HTTPError(400, 'Incorrect parameter')
+        else:
+            # LOOK: ZIP(())PAIRWISE ITERATIONS
+            for availableService in new_device["availableServices"]:
+                for service in servicesDetails:
+                    if service['serviceType'] == availableService:
+                        new_device["servicesDetails"].append(service)
+
+            greenhouse['devicesList'].append(new_device)
+            user["timestamp"] = time.time()
+            json.dump(users, open("src/db/catalog.json", "w"), indent=3)
+            output=str(type(input))+"<br>"+str(input)
+            return output
+            
+    @cherrypy.tools.json_in()
+    def PUT(self, *path, **queries): 
+        """
+        This function modify the information of the device
+        """
+        try: 
+            id = queries['id']
+            greenHouseID = queries['greenHouseID']
+            deviceID = queries['deviceID']
+        except:
+            raise cherrypy.HTTPError(400, 'Incorrect id')
+        
+        input = cherrypy.request.json
+        
+        users = json.load(open("src/db/catalog.json", "r"))
+        
+        keys_to_change = input.keys()
+        
+        if len(path) != 0 and path[0] == 'servicesDetails':
+            key_not_allowed = ["serviceType","topic","path"]
+            keys = list(set(keys_to_change)-set(key_not_allowed))
+        else:
+            key_not_allowed = ["deviceID", "servicesDetails","lastUpdate","strategies"]
+            keys = list(set(keys_to_change)-set(key_not_allowed))
+        
+        if not keys:
+            raise cherrypy.HTTPError(400, 'Not value to change found')
+        
+        for user in users:
+            if user['id'] == int(id):
+                for greenHouse in user['greenHouses']:
+                    if greenHouse['greenHouseID'] == int(greenHouseID):
+                        for device in greenHouse['devicesList']:
+                            if device["deviceID"] == int(deviceID):
+                                if len(path) != 0 and path[0] == 'servicesDetails':
+                                    for servicesDetail in device['servicesDetails']:
+                                        if servicesDetail['serviceType'] == path[1]:
+                                            for key in keys:
+                                                try:
+                                                    servicesDetail[key] = type(servicesDetail[key])(input[key])
+                                                except:
+                                                    raise cherrypy.HTTPError(400, 'No valid key')
+                                            break
+                                else:
+                                    for key in keys:
+                                        try:
+                                            device[key] = type(device[key])(input[key])
+                                        except:
+                                            raise cherrypy.HTTPError(400, 'No valid key')
+                                            
+                user["timestamp"] = time.time()
+                json.dump(users, open("src/db/catalog.json", "w"), indent=3)
+                output = str(type(user))+"<br>"+str(user)
+                return output
+            
+        raise cherrypy.HTTPError(400, 'No user or greenhouse found')
+    
+    def DELETE(self, *path, **queries):
+        """
+        This function delete a device
+        """
+        
+        try: 
+            id = queries['id']
+            greenHouseID = queries['greenHouseID']
+            deviceID = queries['deviceID']
+        except:
+            raise cherrypy.HTTPError(400, 'Incorrect id')
+        
+        users = json.load(open("src/db/catalog.json", "r"))
+        
+        for user in users:
+            if user['id'] == int(id):
+                for greenHouse in user['greenHouses']:
+                    if greenHouse['greenHouseID'] == int(greenHouseID):
+                        for idx, device in enumerate(greenHouse['devicesList']):
+                            if device['deviceID'] == int(deviceID):
+                                output = str(type(device))+"<br>"+str(device)
+                                greenHouse['devicesList'].pop(idx)
+                                json.dump(users, open("src/db/catalog.json", "w"), indent=3)
+                                return output
+                    
+        raise cherrypy.HTTPError(400, 'No user, greenhouse or device found')
