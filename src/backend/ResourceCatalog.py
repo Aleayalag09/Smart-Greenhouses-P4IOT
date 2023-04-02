@@ -482,7 +482,7 @@ class Strategy(object):
                                 pass
                             else:
                                 greenhouse['strategies']['irrigation']["strat"][strategyID]['active'] = activeStrat
-
+###########################################################################################################################################
                         try:
                             greenhouse['strategies'][strategyType]["active"] = active
                             greenhouse['strategies'][strategyType]["timestamp"] = time.time()
@@ -594,24 +594,250 @@ def brokerLoader():
 
     json.dump(db, open("src/db/catalog.json", "w"), indent=3)
 
+
+# In the POST process the function must create the dictionary structure that will be added to the list in the database (like the managers)
 class ThingSpeakAdaptor(object):
     exposed = True
 
     def GET(self, *path, **queries):
         """
-        Function that get the ThingSpeak adaptor endpoints and timestamp
+        Function that get the ThingSpeak adaptors endpoints, functions and timestamp
         """
         db = json.load(open("src/db/catalog.json", "r"))
-        thingspeak_adaptor = db["thingspeak_adaptor"]
+        thingspeak_adaptors = db["thingspeak_adaptors"]
         
-        return json.dumps(thingspeak_adaptor, indent=3)
+        return json.dumps(thingspeak_adaptors, indent=3)
     
     def POST(self, *path, **queries):
         """
-        This function updates the broker endpoints and timestamp
-        (for future developments)
+        This function updates the ThingSpeak adaptors endpoints and timestamp
         """
         pass
+
+
+class ThingSpeak(object):
+    exposed = True
+
+    def GET(self, *path, **queries):
+        """
+        Function that get the ThingSpeak endpoints and timestamp
+        """
+        db = json.load(open("src/db/catalog.json", "r"))
+        thingspeak = db["thingspeak"]
+        
+        return json.dumps(thingspeak, indent=3)
+    
+def thingSpeakLoader():
+    db = json.load(open("src/db/catalog.json", "r"))
+    thingspeak = json.load(open("src/db/thingspeak.json", "r"))
+
+    db["thingspeak"]["ip"] = thingspeak["ip"]
+    db["thingspeak"]["port"] = thingspeak["port"]
+    db["thingspeak"]["timestamp"] = time.time()
+
+    json.dump(db, open("src/db/catalog.json", "w"), indent=3)
+
+
+# In the POST process the function must create the dictionary structure that will be added to the list in the database (like the managers)
+class WebPage(object):
+    exposed = True
+
+    def GET(self, *path, **queries):
+        """
+        Function that get the webpages endpoints and timestamp
+        """
+        db = json.load(open("src/db/catalog.json", "r"))
+        webpages = db["webpages"]
+        
+        return json.dumps(webpages, indent=3)
+    
+    def POST(self, *path, **queries):
+        """
+        This function updates the webpages endpoints and timestamp
+        """
+        pass
+
+
+class WeatherAPI(object):
+    exposed = True
+
+    def GET(self, *path, **queries):
+        """
+        Function that get the weather API endpoints and timestamp
+        """
+        db = json.load(open("src/db/catalog.json", "r"))
+        weather_API = db["weather_API"]
+        
+        return json.dumps(weather_API, indent=3)
+    
+def weatherAPILoader():
+    db = json.load(open("src/db/catalog.json", "r"))
+    weather_API = json.load(open("src/db/weatherAPI.json", "r"))
+
+    db["weather_API"]["ip"] = weather_API["ip"]
+    db["weather_API"]["port"] = weather_API["port"]
+    db["weather_API"]["timestamp"] = time.time()
+
+    json.dump(db, open("src/db/catalog.json", "w"), indent=3)
+
+
+class IrrigationManager(object):
+    exposed = True
+
+    def GET(self, *path, **queries):
+        """
+        Function that get the irrigation managers endpoints and timestamp
+        """
+        db = json.load(open("src/db/catalog.json", "r"))
+        irr_manager = db["managers"]["irrigation"]
+        
+        return json.dumps(irr_manager, indent=3)
+    
+    def POST(self, *path, **queries):
+        """
+        This function updates and adds the irrigation managers (endpoints, functions and timestamp)
+        """
+        db = json.load(open("src/db/catalog.json", "r"))
+        input = json.loads(cherrypy.request.body.read())
+
+        try:
+            ip = input["ip"]
+            port = input["port"]
+            functions = input["functions"]
+        except:
+            raise cherrypy.HTTPError(400, 'Wrong parameters')
+
+        manager_dict = {
+            "ip": ip,
+            "port": port,
+            "functions": functions,
+            "timestamp": time.time()
+        }
+        if len(db["managers"]["irrigation"]) == 0:
+            db["managers"]["irrigation"].append(manager_dict)
+        else:
+            update = False
+            for irr_manager in db["managers"]["irrigation"]:
+                if irr_manager["ip"] == ip and irr_manager["port"] == port:
+                    irr_manager["functions"] = functions
+                    irr_manager["timestamp"] = time.time()
+                    update = True
+            
+            if update == False:
+                db["managers"]["irrigation"].append(manager_dict)
+
+        json.dump(db, open("src/db/catalog.json", "w"), indent=3)
+            
+
+class EnvironmentManager(object):
+    exposed = True
+
+    def GET(self, *path, **queries):
+        """
+        Function that get the environment managers endpoints and timestamp
+        """
+        db = json.load(open("src/db/catalog.json", "r"))
+        env_manager = db["managers"]["environment"]
+        
+        return json.dumps(env_manager, indent=3)
+    
+    def POST(self, *path, **queries):
+        """
+        This function updates and adds the enviroment managers (endpoints, functions and timestamp)
+        """
+        db = json.load(open("src/db/catalog.json", "r"))
+        input = json.loads(cherrypy.request.body.read())
+
+        try:
+            ip = input["ip"]
+            port = input["port"]
+            functions = input["functions"]
+        except:
+            raise cherrypy.HTTPError(400, 'Wrong parameters')
+
+        manager_dict = {
+            "ip": ip,
+            "port": port,
+            "functions": functions,
+            "timestamp": time.time()
+        }
+        if len(db["managers"]["environment"]) == 0:
+            db["managers"]["environment"].append(manager_dict)
+        else:
+            update = False
+            for irr_manager in db["managers"]["environment"]:
+                if irr_manager["ip"] == ip and irr_manager["port"] == port:
+                    irr_manager["functions"] = functions
+                    irr_manager["timestamp"] = time.time()
+                    update = True
+            
+            if update == False:
+                db["managers"]["environment"].append(manager_dict)
+        
+        json.dump(db, open("src/db/catalog.json", "w"), indent=3)
+
+
+class WindowsManager(object):
+    exposed = True
+
+    def GET(self, *path, **queries):
+        """
+        Function that get the windows managers endpoints and timestamp
+        """
+        db = json.load(open("src/db/catalog.json", "r"))
+        win_manager = db["managers"]["windows"]
+        
+        return json.dumps(win_manager, indent=3)
+    
+    def POST(self, *path, **queries):
+        """
+        This function updates and adds the windows managers (endpoints, functions and timestamp)
+        """
+        db = json.load(open("src/db/catalog.json", "r"))
+        input = json.loads(cherrypy.request.body.read())
+
+        try:
+            ip = input["ip"]
+            port = input["port"]
+            functions = input["functions"]
+        except:
+            raise cherrypy.HTTPError(400, 'Wrong parameters')
+
+        manager_dict = {
+            "ip": ip,
+            "port": port,
+            "functions": functions,
+            "timestamp": time.time()
+        }
+        if len(db["managers"]["windows"]) == 0:
+            db["managers"]["windows"].append(manager_dict)
+        else:
+            update = False
+            for irr_manager in db["managers"]["windows"]:
+                if irr_manager["ip"] == ip and irr_manager["port"] == port:
+                    irr_manager["functions"] = functions
+                    irr_manager["timestamp"] = time.time()
+                    update = True
+            
+            if update == False:
+                db["managers"]["windows"].append(manager_dict)
+
+        json.dump(db, open("src/db/catalog.json", "w"), indent=3)
+
+
+
+def remove_from_db(category = "", idx = -1):
+
+    db = json.load(open("src/db/catalog.json", "r"))
+    category = category.split("/")
+
+    if len(category) == 2:
+        db[category[0]][category[1]].pop(idx)
+    else:
+        db[category[0]].pop(idx)
+
+    json.dump(db, open("src/db/catalog.json", "w"), indent=3)
+    
 
 
 if __name__=="__main__":
@@ -626,7 +852,8 @@ if __name__=="__main__":
     cherrypy.tree.mount(GreenHouse(), '/greenhouse', conf)
     cherrypy.tree.mount(Strategy(), '/strategy', conf)
     cherrypy.tree.mount(Broker(), '/broker', conf)
-    cherrypy.tree.mount(ThingSpeakBridge(), '/thingspeak_bridge', conf)
+    cherrypy.tree.mount(ThingSpeakAdaptor(), '/thingspeak_adaptor', conf)
+    cherrypy.tree.mount(ThingSpeak(), '/thingspeak', conf)
     cherrypy.tree.mount(WebPage(), '/webpage', conf)
     cherrypy.tree.mount(WeatherAPI(), '/weatherAPI', conf)
     cherrypy.tree.mount(IrrigationManager(), '/irrigation_manager', conf)
@@ -638,3 +865,67 @@ if __name__=="__main__":
 
     cherrypy.engine.start()
     cherrypy.engine.block()
+
+    db = json.load(open("src/db/catalog.json", "r"))
+
+    # BOOT: retrieve the BROKER ENDPOINTS from a json file
+    brokerLoader()
+
+    # BOOT: retrieve the THINGSPEAK ENDPOINTS from a json file
+    thingSpeakLoader()
+
+    # BOOT: retrieve the WEATHER API ENDPOINTS from a json file
+    weatherAPILoader()
+    
+    # BOOT: retrieve the THINGSPEAK ADAPTORS ENDPOINTS from the database (catalog.json)
+    thingspeak_adaptors = db["thingspeak_adaptors"]
+    timeout_adaptor = 300 
+
+    # BOOT: retrieve the WEBPAGE ENDPOINTS from a json file
+    webpages = db["webpages"]
+    timeout_webpage = 1200
+
+    # BOOT: retrieve the IRRIGATION MANAGERS ENDPOINTS from a json file
+    irrigation_managers = db["managers"]["irrigation"]
+    timeout_irr_manager = 120
+
+    # BOOT: retrieve the ENVIRONMENT MANAGERS ENDPOINTS from a json file
+    environment_managers = db["managers"]["environment"]
+    timeout_env_manager = 120
+
+    # BOOT: retrieve the WINDOWS MANAGERS ENDPOINTS from a json file
+    windows_managers = db["managers"]["windows"]
+    timeout_win_manager = 120
+
+    
+    while True:
+        timestamp = time.time()
+        
+        for idx, adaptor in enumerate(thingspeak_adaptors):
+            if timestamp - float(adaptor["timestamp"]) >= timeout_adaptor:
+                remove_from_db("thingspeak_adaptor", idx)
+
+        for idx, webpage in enumerate(webpages):
+            if timestamp - float(webpage["timestamp"]) >= timeout_webpage:
+                remove_from_db("webpage", idx)
+
+        for idx, manager in enumerate(irrigation_managers):
+            if timestamp - float(manager["timestamp"]) >= timeout_irr_manager:
+                remove_from_db("managers/irrigation", idx)
+
+        for idx, manager in enumerate(environment_managers):
+            if timestamp - float(manager["timestamp"]) >= timeout_env_manager:
+                remove_from_db("managers/environment", idx)
+
+        for idx, manager in enumerate(windows_managers):
+            if timestamp - float(manager["timestamp"]) >= timeout_win_manager:
+                remove_from_db("managers/windows", idx)
+            
+
+        # time.sleep(60)
+        db = json.load(open("src/db/catalog.json", "r"))
+        thingspeak_adaptors = db["thingspeak_adaptors"]
+        webpages = db["webpages"]
+        irrigation_managers = db["managers"]["irrigation"]
+        environment_managers = db["managers"]["environment"]
+        windows_managers = db["managers"]["windows"]
