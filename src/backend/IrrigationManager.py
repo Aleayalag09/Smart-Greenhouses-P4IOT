@@ -33,7 +33,7 @@ class RegStrategy(object):
         except:
             raise cherrypy.HTTPError(400, 'Wrong input')
         
-        topic = userID+"/"+greenHouseID+"/irrigation/"+stratID
+        topic = str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
         database_dict = json.load(open(database, "r"))
     
         new_strategy = {"topic": topic, "time": time_start, "water_quantity": water_quantity, "active": activeStrat, "timestamp": time.time()}
@@ -94,7 +94,7 @@ class RegStrategy(object):
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
         
-        topic = userID+"/"+greenHouseID+"/irrigation/"+stratID
+        topic = str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
         database_dict = json.load(open(database, "r"))
 
         idx = 0
@@ -191,7 +191,7 @@ def getStrategies():
         except:
             raise cherrypy.HTTPError(400, 'Wrong parameters')
         else:
-            topic = userID+"/"+greenHouseID+"/irrigation/"+stratID
+            topic = str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
             strategy_dict["topic"] = topic
             strategy_dict["time"] = time_start
             strategy_dict["water_quantity"] = water_quantity
