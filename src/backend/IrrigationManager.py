@@ -9,11 +9,15 @@ from MQTT.MyMQTT import *
 
 new_strat = False
 database = "src/db/irrigation_manager_db.json"
+resourceCatalogIP = ""
 
 class RegStrategy(object):
     exposed = True
  
     def POST(self, *path):
+        """
+        This function logs a new strategy and updates the state of activity of the greenhouse 
+        """
         global database
         global new_strat
         input = json.loads(cherrypy.request.body.read())
@@ -21,31 +25,91 @@ class RegStrategy(object):
         try:
             userID = input['userID']
             greenHouseID = input['greenHouseID']
-            deviceID = input['deviceID']
+            stratID = input['stratID']
             time_start = input['time']
             water_quantity = input['water_quantity']
+            activeStrat = input['activeStrat']
+            activeIrr = input['activeIrr']
+        except:
+            raise cherrypy.HTTPError(400, 'Wrong input')
         
+        topic = userID+"/"+greenHouseID+"/irrigation/"+stratID
+        database_dict = json.load(open(database, "r"))
+    
+        new_strategy = {"topic": topic, "time": time_start, "water_quantity": water_quantity, "active": activeStrat, "timestamp": time.time()}
+        database_dict["strategies"].append(new_strategy)
+
+        if activeIrr == False:
+            for strat in database_dict["strategies"]:
+                split_topic = strat["topic"].split("/")
+                if split_topic[0] == userID and split_topic[1] == greenHouseID:
+                    strat["active"] = activeIrr
+
+        new_strat = True
+        json.dump(database_dict, open(database, "w"), indent=3)
+
+    def PUT(self, *path, **queries):
+        """
+        This function modify the state of activity of a strategy or a greenhouse
+        """
+        global database 
+        global new_strat
+        input = json.loads(cherrypy.request.body.read())
+        database_dict = json.load(open(database, "r"))
+
+        try:
+            userID = input['userID']
+            greenHouseID = input['greenHouseID']
+            activeIrr = input['activeIrr']
+        except:
+            raise cherrypy.HTTPError(400, 'Wrong input')
+        try:
+            stratID = input['stratID']
+            activeStrat = input['activeStrat']
+        except:
+            for strat in database_dict["strategies"]:
+                split_topic = strat["topic"].split("/")
+                if split_topic[0] == userID and split_topic[1] == greenHouseID:
+                    strat["active"] = activeIrr
+        else:
+            for strat in database_dict["strategies"]:
+                split_topic = strat["topic"].split("/")
+                if split_topic[0] == userID and split_topic[1] == greenHouseID and split_topic[3] == stratID:
+                    strat["active"] = activeStrat
+        
+        new_strat = True
+        json.dump(database_dict, open(database, "w"), indent=3)
+
+    def DELETE(self, *path, **queries):
+        """
+        This function delete a strategy
+        """
+        global database
+        global new_strat
+
+        try:
+            userID = queries['userID']
+            greenHouseID = queries['greenHouseID']
+            stratID = queries['stratID']
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
         
-        topic = userID+"/"+greenHouseID+"/"+deviceID
-
+        topic = userID+"/"+greenHouseID+"/irrigation/"+stratID
         database_dict = json.load(open(database, "r"))
 
-        update = False
-        for strategy in database_dict["strategies"]:
+        idx = 0
+        for strat in database_dict:
+            if strat["topic"] == topic:
+                break
+            else:
+                idx += 1
+        database_dict["strategies"].pop(idx)
 
-            if strategy[0] == topic:
-                strategy[1] = time_start
-                strategy[2] = water_quantity
-                strategy[3] = time.time()
-
-                update = True
-
-        if update == False:
-            new_strategy = {"topic": topic, "time": time_start, "water_quantity": water_quantity, "last_update": time.time()}
-            database_dict["strategy"].append(new_strategy)
-
+        for strat in database_dict:
+            split_topic = strat["topic"].split("/")
+            if split_topic[0] == userID and split_topic[1] == greenHouseID and int(split_topic[3]) > stratID:
+                strat["topic"] = userID+"/"+greenHouseID+"/irrigation/"+str(int(split_topic[3])-1)
+        
         new_strat = True
         json.dump(database_dict, open(database, "w"), indent=3)
 
@@ -70,31 +134,73 @@ class MQTT_publisher(object):
         self.client.myPublish(topic, self.__message)
 
 
-# REGISTER CONTINOUSLY THE STRATEGIES TO THE RESOURCE CATALOG
+# REGISTER CONTINOUSLY THE MANAGER TO THE RESOURCE CATALOG
 def refresh():
     payload = {'ip': "IP of the IrrigationManager", 'port': "PORT of the IrrigationManager",
-               'functions': ["strategy"]}
+               'functions': ["regStrategy"]}
     url = 'URL of the RESOURCE_CATALOG/POST managers'
     
     requests.post(url, payload)
 
 
-# DIRECT REQUEST TO THE RESOURCE CATALOG? IF WE USE THE SERVICE CATALOG WE NEED TO CONTACT IT BEFORE IN ORDER TO OBTAIN URL AND FUNCTIONS OF THE RESOURCE CATALOG
-def broker():
+# CONTACT THE GET INTERFACE FOR THE BROKER ON THE CATALOG REST API (obtains ip, port and timestamp for future controls)
+def getBroker():
     global database
 
-    url = 'URL of the RESOURCE_CATALOG/GET broker'
-    broker = requests.get(url)
+    url = 'URL of the RESOURCE_CATALOG/broker'
+    broker = requests.get(url).json()
 
     try:
         ip = broker['ip']
         port = broker["port"]
     
     except:
-        raise cherrypy.HTTPError(400, 'Bad request')
+        raise cherrypy.HTTPError(400, 'Wrong parameters')
 
     database_dict = json.load(open(database, "r"))
-    database_dict["broker"] = broker
+    database_dict["broker"]["ip"] = ip
+    database_dict["broker"]["port"] = port
+    database_dict["broker"]["timestamp"] = time.time()
+    json.dump(database_dict, open(database, "w"), indent=3)
+
+
+# BOOT FUNCTION USED TO GET ACTIVE STRATEGIES FROM THE RESOURCE CATALOG
+def getStrategies():
+    global database
+
+    url = 'URL of the RESOURCE_CATALOG/strategy/manager'
+    params = {"strategyType": "irrigation"}
+    strategies = requests.get(url, params=params).json()
+
+    strategy_list = []
+    strategy_dict = {
+        "topic": "",
+        "time": "00:00:00",
+        "water_quantity": -1,
+        "active": False,
+        "timestamp": -1 
+    }
+    for strat in strategies:
+        try:
+            userID = strat['userID']
+            greenHouseID = strat["greenHouseID"]
+            stratID = strat["strat"]["id"]
+            time_start = strat["strat"]["time"]
+            water_quantity = strat["strat"]["water_quantity"]
+            active = strat["strat"]["active"]
+        except:
+            raise cherrypy.HTTPError(400, 'Wrong parameters')
+        else:
+            topic = userID+"/"+greenHouseID+"/irrigation/"+stratID
+            strategy_dict["topic"] = topic
+            strategy_dict["time"] = time_start
+            strategy_dict["water_quantity"] = water_quantity
+            strategy_dict["active"] = active
+            strategy_dict["timestamp"] = time.time()
+            strategy_list.append(strategy_dict)
+
+    database_dict = json.load(open(database, "r"))
+    database_dict["strategies"] = strategy_list
     json.dump(database_dict, open(database, "w"), indent=3)
 
 
@@ -120,8 +226,13 @@ if __name__=="__main__":
     refresh()
 
     # CAN THE MQTT BROKER CHANGE THROUGH TIME? I SUPPOSE NOT IN THIS CASE
-    broker()
+    getBroker()
+
+    # BOOT FUNCTION TO RETRIEVE STARTING STRATEGIES
+    getStrategies()
+    
     broker_dict = json.load(open(database, "r"))["broker"]
+    strategies = json.load(open(database, "r"))["strategies"]
     
     publisher = MQTT_publisher()
     publisher.__init__(broker_dict["broker"], broker_dict["port"])
@@ -132,17 +243,18 @@ if __name__=="__main__":
         time_start = datetime.fromtimestamp(timestamp)
         time_start = time_start.strftime("%H:%M:%S")
 
-        if timestamp-last_refresh >= 300:
+        if timestamp-last_refresh >= 120:
 
             last_refresh = time.time()
             refresh()
 
         if new_strat:
 
-            strategies = json.load(open(database, "r"))[strategies]
+            strategies = json.load(open(database, "r"))["strategies"]
             new_strat = False
 
         for strat in strategies:
-
-            if time_start==strat["time"]:
-                publisher.publish(strat["topic"], strat["water_qnt"])
+            
+            # AGGIUNGERE UN RANGE DI CONTROLLO IN MODO DA NON RISCHIARE DI PERDERE IL COMANDO PER QUESTIONE DI SECONDI
+            if strat["time"] == time_start and strat["active"] == True:
+                publisher.publish(strat["topic"], strat["water_quantity"])
