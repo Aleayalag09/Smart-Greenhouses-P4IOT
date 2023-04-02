@@ -1,4 +1,3 @@
-import sys
 import cherrypy
 import requests
 import time
@@ -14,7 +13,7 @@ resourceCatalogIP = ""
 class RegStrategy(object):
     exposed = True
  
-    def POST(self, *path):
+    def POST(self, *path, **queries):
         """
         This function logs a new strategy and updates the state of activity of the greenhouse 
         """
@@ -25,11 +24,11 @@ class RegStrategy(object):
         try:
             userID = input['userID']
             greenHouseID = input['greenHouseID']
+            activeIrr = input['active']
             stratID = input['stratID']
             time_start = input['time']
             water_quantity = input['water_quantity']
             activeStrat = input['activeStrat']
-            activeIrr = input['activeIrr']
         except:
             raise cherrypy.HTTPError(400, 'Wrong input')
         
@@ -60,7 +59,7 @@ class RegStrategy(object):
         try:
             userID = input['userID']
             greenHouseID = input['greenHouseID']
-            activeIrr = input['activeIrr']
+            activeIrr = input['active']
         except:
             raise cherrypy.HTTPError(400, 'Wrong input')
         try:
