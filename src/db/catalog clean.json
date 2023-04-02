@@ -1,0 +1,41 @@
+{ 
+   "managers": 
+   {
+      "irrigation": [
+
+      ],
+      "environment": [
+
+      ],
+      "windows": [
+
+      ]
+   },
+   "thingspeak_adaptors": [
+      
+   ],
+   "webpages": [
+      
+   ],
+   "thingspeak": 
+   {
+      "ip": "",
+      "port": -1,
+      "timestamp": -1
+   },
+   "weather_API":
+   {
+      "ip": "",
+      "port": -1,
+      "timestamp": -1
+   },
+   "broker":
+   {
+      "ip": "",
+      "port": -1,
+      "timestamp": -1
+   },
+   "users": [
+      
+   ]
+}

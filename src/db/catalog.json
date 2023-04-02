@@ -35,11 +35,18 @@
          }
       ]
    },
-   "thingspeak_adaptor": [
+   "thingspeak_adaptors": [
       {
          "ip": "127.0.0.1",
          "port": 8080,
          "functions": [],
+         "timestamp": 1664433699.0798957
+      }
+   ],
+   "webpages": [
+      {
+         "ip": "127.0.0.1",
+         "port": 8080,
          "timestamp": 1664433699.0798957
       }
    ],
@@ -59,12 +66,6 @@
    {
       "ip": "test.mosquitto.org",
       "port": 1883,
-      "timestamp": 1664433699.0798957
-   },
-   "webpage": 
-   {
-      "ip": "127.0.0.1",
-      "port": 8080,
       "timestamp": 1664433699.0798957
    },
    "users": [

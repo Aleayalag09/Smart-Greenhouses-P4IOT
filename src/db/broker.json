@@ -1,4 +1,4 @@
 {
-    "broker": "test.mosquitto.org",
+    "ip": "test.mosquitto.org",
     "port": 1883
 }
