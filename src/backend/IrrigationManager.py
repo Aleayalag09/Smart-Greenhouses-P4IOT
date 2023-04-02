@@ -230,6 +230,8 @@ if __name__=="__main__":
 
     # BOOT FUNCTION TO RETRIEVE STARTING STRATEGIES
     getStrategies()
+
+    refresh_freq = 60
     
     broker_dict = json.load(open(database, "r"))["broker"]
     strategies = json.load(open(database, "r"))["strategies"]
@@ -243,7 +245,7 @@ if __name__=="__main__":
         time_start = datetime.fromtimestamp(timestamp)
         time_start = time_start.strftime("%H:%M:%S")
 
-        if timestamp-last_refresh >= 120:
+        if timestamp-last_refresh >= refresh_freq:
 
             last_refresh = time.time()
             refresh()
