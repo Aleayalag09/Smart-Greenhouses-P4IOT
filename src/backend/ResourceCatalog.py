@@ -2,6 +2,7 @@ import json
 import cherrypy
 import time
 
+
 class User(object):
     exposed = True
 
@@ -44,7 +45,7 @@ class User(object):
             "email_addresses": "email",
             "country": "country",
             "city": "city",
-            "MQTTBaseTopic": "baseTopic",
+            "MQTTBaseTopic": "baseTopic/",
             "greenHouses": [],
             "timestamp": time.time()
         }
@@ -57,7 +58,7 @@ class User(object):
             new_user["email_addresses"] = input['email_addresses']
             new_user["country"] = input['country']
             new_user["city"] = input['city']
-            new_user["MQTTBaseTopic"] = input['MQTTBaseTopic']
+            new_user["MQTTBaseTopic"] = input['MQTTBaseTopic']+"/"
         except:
             raise cherrypy.HTTPError(400, 'Wrong parameter')
         else:
@@ -283,6 +284,7 @@ class GreenHouse(object):
                     
         raise cherrypy.HTTPError(400, 'No user or greenhouse found')
 
+
 class Strategy(object):
     exposed = True
 
@@ -299,6 +301,40 @@ class Strategy(object):
             strategyType = queries['strategyType']
         
         except:
+            try:
+                if path[0] != "manager":
+                    raise Exception
+                strategyType = queries['strategyType']
+                if strategyType != "irrigation" and strategyType != "environment" and strategyType != "windows":
+                    raise Exception
+            except:
+                pass
+            else:
+                strategy_list = []
+                strategy_dict = {
+                    "userID": -1,
+                    "greenHouseID": -1,
+                    "strat": {}
+                }
+                for user in users:
+                    for greenhouse in user['greenHouses']:
+
+                        if strategyType == "irrigation":
+                            for strat in greenhouse["strategies"]["irrigation"]["strat"]:
+                                if strat["active"] == True:
+                                    strategy_dict["userID"] = user["id"]
+                                    strategy_dict["greenHouseID"] = greenhouse["greenHouseID"]
+                                    strategy_dict["strat"] = strat
+                                    strategy_list.append(strategy_dict)
+                        else:
+                            if greenhouse["strategies"][strategyType]["active"] == True:
+                                strategy_dict["userID"] = user["id"]
+                                strategy_dict["greenHouseID"] = greenhouse["greenHouseID"]
+                                strategy_dict["strat"] = greenhouse["strategies"][strategyType]
+                                strategy_list.append(strategy_dict)
+
+                return json.dumps(strategy_list, indent=3)
+
             raise cherrypy.HTTPError(400, 'Bad request')
         
         else:
@@ -494,7 +530,7 @@ class Strategy(object):
                                 greenhouse['strategies']['irrigation'] = strat_dict
                                 user["timestamp"] = time.time()
                                 db["users"] = users
-                                json.dump(users, open("src/db/catalog.json", "w"), indent=3)
+                                json.dump(db, open("src/db/catalog.json", "w"), indent=3)
                                 output = str(type(user))+"<br>"+str(user)
                                 return output
                             else:
@@ -511,7 +547,7 @@ class Strategy(object):
                                     greenhouse['strategies']['irrigation']["timestamp"] = time.time()
                                     user["timestamp"] = time.time()
                                     db["users"] = users
-                                    json.dump(users, open("src/db/catalog.json", "w"), indent=3)
+                                    json.dump(db, open("src/db/catalog.json", "w"), indent=3)
                                     output = str(type(user))+"<br>"+str(user)
                                     return output
                         else:
@@ -522,11 +558,61 @@ class Strategy(object):
                             else:
                                 user["timestamp"] = time.time()
                                 db["users"] = users
-                                json.dump(users, open("src/db/catalog.json", "w"), indent=3)
+                                json.dump(db, open("src/db/catalog.json", "w"), indent=3)
                                 output = str(type(user))+"<br>"+str(user)
                                 return output
                     
         raise cherrypy.HTTPError(400, 'No user, greenhouse or strategy found')
+    
+
+class Broker(object):
+    exposed = True
+
+    def GET(self, *path, **queries):
+        """
+        Function that get the broker endpoints and timestamp
+        """
+        db = json.load(open("src/db/catalog.json", "r"))
+        broker = db["broker"]
+        
+        return json.dumps(broker, indent=3)
+    
+    def POST(self, *path, **queries):
+        """
+        This function updates the broker endpoints and timestamp
+        (for future developments)
+        """
+        pass
+
+def brokerLoader():
+    db = json.load(open("src/db/catalog.json", "r"))
+    broker = json.load(open("src/db/broker.json", "r"))
+
+    db["broker"]["ip"] = broker["ip"]
+    db["broker"]["port"] = broker["port"]
+    db["broker"]["timestamp"] = time.time()
+
+    json.dump(db, open("src/db/catalog.json", "w"), indent=3)
+
+class ThingSpeakAdaptor(object):
+    exposed = True
+
+    def GET(self, *path, **queries):
+        """
+        Function that get the ThingSpeak adaptor endpoints and timestamp
+        """
+        db = json.load(open("src/db/catalog.json", "r"))
+        thingspeak_adaptor = db["thingspeak_adaptor"]
+        
+        return json.dumps(thingspeak_adaptor, indent=3)
+    
+    def POST(self, *path, **queries):
+        """
+        This function updates the broker endpoints and timestamp
+        (for future developments)
+        """
+        pass
+
 
 if __name__=="__main__":
 
@@ -539,6 +625,13 @@ if __name__=="__main__":
     cherrypy.tree.mount(User(), '/user', conf)
     cherrypy.tree.mount(GreenHouse(), '/greenhouse', conf)
     cherrypy.tree.mount(Strategy(), '/strategy', conf)
+    cherrypy.tree.mount(Broker(), '/broker', conf)
+    cherrypy.tree.mount(ThingSpeakBridge(), '/thingspeak_bridge', conf)
+    cherrypy.tree.mount(WebPage(), '/webpage', conf)
+    cherrypy.tree.mount(WeatherAPI(), '/weatherAPI', conf)
+    cherrypy.tree.mount(IrrigationManager(), '/irrigation_manager', conf)
+    cherrypy.tree.mount(EnvironmentManager(), '/environment_manager', conf)
+    cherrypy.tree.mount(WindowsManager(), '/windows_manager', conf)
 
     cherrypy.config.update({'server.socket_host': '127.0.0.1'})
     cherrypy.config.update({'server.socket_port': 8080})
