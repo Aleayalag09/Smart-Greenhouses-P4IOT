@@ -1019,7 +1019,6 @@ class WindowsManager(object):
         json.dump(db, open("src/db/catalog.json", "w"), indent=3)
 
 
-
 def remove_from_db(category = "", idx = -1):
     db = json.load(open("src/db/catalog.json", "r"))
     category = category.split("/")
@@ -1042,7 +1041,6 @@ def remove_from_db(category = "", idx = -1):
         db[category[0]].pop(idx)
 
     json.dump(db, open("src/db/catalog.json", "w"), indent=3)
-
 
 
 def post_to_strat_manager(strategyType = "", strat_info = {}):
