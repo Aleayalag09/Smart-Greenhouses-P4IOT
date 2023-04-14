@@ -35,7 +35,13 @@ class RegStrategy(object):
         topic = str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
         database_dict = json.load(open(database, "r"))
     
-        new_strategy = {"topic": topic, "time": time_start, "water_quantity": water_quantity, "active": activeStrat, "timestamp": time.time()}
+        new_strategy = {
+            "topic": topic, 
+            "time": time_start, 
+            "water_quantity": water_quantity, 
+            "active": activeStrat, 
+            "timestamp": time.time()
+        }
         database_dict["strategies"].append(new_strategy)
 
         if activeIrr == False:
@@ -49,7 +55,7 @@ class RegStrategy(object):
 
     def PUT(self, *path, **queries):
         """
-        This function modify the state of activity of a strategy or a greenhouse
+        This function modify the state of activity of a specific strategy or all strategies
         """
         global database 
         global new_strat
@@ -91,26 +97,47 @@ class RegStrategy(object):
             greenHouseID = queries['greenHouseID']
             stratID = queries['stratID']
         except:
-            raise cherrypy.HTTPError(400, 'Bad request')
-        
-        topic = str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
-        database_dict = json.load(open(database, "r"))
-
-        idx = 0
-        for strat in database_dict:
-            if strat["topic"] == topic:
-                break
+            try:
+                # If no stratID is passed it means that all the strategies must be eliminated
+                userID = queries['userID']
+                greenHouseID = queries['greenHouseID']
+            except: 
+                pass
             else:
-                idx += 1
-        database_dict["strategies"].pop(idx)
+                database_dict = json.load(open(database, "r"))
 
-        for strat in database_dict:
-            split_topic = strat["topic"].split("/")
-            if split_topic[0] == userID and split_topic[1] == greenHouseID and int(split_topic[3]) > stratID:
-                strat["topic"] = userID+"/"+greenHouseID+"/irrigation/"+str(int(split_topic[3])-1)
-        
-        new_strat = True
-        json.dump(database_dict, open(database, "w"), indent=3)
+                idxs = []
+                for idx, strat in enumerate(database_dict["strategies"]):
+                    split_topic = strat["topic"].split("/")
+                    if split_topic[0] == userID and split_topic[1] == greenHouseID:
+                        idxs.append(idx)
+
+                for idx in idxs:
+                    database_dict["strategies"].pop(idx)
+                
+                new_strat = True
+                json.dump(database_dict, open(database, "w"), indent=3)
+
+            raise cherrypy.HTTPError(400, 'Bad request')
+        else:
+            topic = str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
+            database_dict = json.load(open(database, "r"))
+
+            idx = 0
+            for strat in database_dict["strategies"]:
+                if strat["topic"] == topic:
+                    break
+                else:
+                    idx += 1
+            database_dict["strategies"].pop(idx)
+
+            for strat in database_dict["strategies"]:
+                split_topic = strat["topic"].split("/")
+                if split_topic[0] == userID and split_topic[1] == greenHouseID and int(split_topic[3]) > stratID:
+                    strat["topic"] = userID+"/"+greenHouseID+"/irrigation/"+str(int(split_topic[3])-1)
+            
+            new_strat = True
+            json.dump(database_dict, open(database, "w"), indent=3)
 
 
 class MQTT_publisher(object):
@@ -176,7 +203,7 @@ def getStrategies():
         "topic": "",
         "time": "00:00:00",
         "water_quantity": -1,
-        "active": True,
+        "active": False,
         "timestamp": -1 
     }
     for strat in strategies:
