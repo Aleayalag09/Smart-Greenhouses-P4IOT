@@ -364,7 +364,7 @@ class Strategy(object):
                                 }
                                 strategy_dict["userID"] = user["id"]
                                 strategy_dict["greenHouseID"] = greenhouse["greenHouseID"]
-                                strategy_dict["strat"] = greenhouse["strategies"]["weather"]
+                                strategy_dict["strat"] = greenhouse["strategies"]["weather"]["strat"]
                                 # Must be added the information of the city that is not present inside the strategy in the catalog db 
                                 strategy_dict["city"] = user["city"]
                                 strategy_dict["active"] = greenhouse["strategies"]["weather"]["active"]
@@ -372,7 +372,7 @@ class Strategy(object):
                             else:
                                 strategy_dict["userID"] = user["id"]
                                 strategy_dict["greenHouseID"] = greenhouse["greenHouseID"]
-                                strategy_dict["strat"] = greenhouse["strategies"][strategyType]
+                                strategy_dict["strat"] = greenhouse["strategies"][strategyType]["strat"]
                                 strategy_dict["active"] = greenhouse["strategies"][strategyType]["active"]
                                 strategy_list.append(strategy_dict)
 
@@ -1065,14 +1065,17 @@ def post_to_strat_manager(strategyType = "", strat_info = {}):
             'activeStrat': strat_info["activeStrat"]
         }
     elif strategyType == "weather":
-        payload = {
-            'userID': strat_info["userID"], 
-            'greenHouseID': strat_info["greenHouseID"],
-            'active': strat_info["active"],
-            'temperature': strat_info["temperature"],
-            "humidity": strat_info["humidity"],
-            "city": db["users"]["city"]
-        }
+        for user in db["users"]:
+            if user["id"] == strat_info["userID"]:
+                payload = {
+                    'userID': strat_info["userID"], 
+                    'greenHouseID': strat_info["greenHouseID"],
+                    'active': strat_info["active"],
+                    'temperature': strat_info["temperature"],
+                    "humidity": strat_info["humidity"],
+                    "city": user["city"]
+                }
+                break
     else:
         payload = {
             'userID': strat_info["userID"], 
