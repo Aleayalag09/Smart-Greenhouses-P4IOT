@@ -176,7 +176,7 @@ def getStrategies():
         "topic": "",
         "time": "00:00:00",
         "water_quantity": -1,
-        "active": False,
+        "active": True,
         "timestamp": -1 
     }
     for strat in strategies:
@@ -186,7 +186,8 @@ def getStrategies():
             stratID = strat["strat"]["id"]
             time_start = strat["strat"]["time"]
             water_quantity = strat["strat"]["water_quantity"]
-            active = strat["strat"]["active"]
+            active_strat = strat["strat"]["active"]
+            active = strat["active"]
         except:
             raise cherrypy.HTTPError(400, 'Wrong parameters')
         else:
@@ -194,7 +195,10 @@ def getStrategies():
             strategy_dict["topic"] = topic
             strategy_dict["time"] = time_start
             strategy_dict["water_quantity"] = water_quantity
-            strategy_dict["active"] = active
+            if active == False:
+                strategy_dict["active"] = False
+            else:
+                strategy_dict["active"] = active_strat
             strategy_dict["timestamp"] = time.time()
             strategy_list.append(strategy_dict)
 
