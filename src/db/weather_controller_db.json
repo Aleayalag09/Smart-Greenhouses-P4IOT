@@ -9,8 +9,7 @@
     "strategies": [
         
         {
-            "topic": "0/0/weather/0",
-            "time": "07:00:00",
+            "topic": "0/0/weather",
             "temperature": 20,
             "humidity": 0.2,
             "city": "Loano",          
@@ -19,8 +18,7 @@
         },
 
         {
-            "topic": "0/0/weather/0",
-            "time": "07:00:00",
+            "topic": "1/0/weather",
             "temperature": 20,
             "humidity": 0.2,
             "city": "Loano",            
@@ -30,7 +28,6 @@
 
         {
             "topic": "id/greenHouseID/weather/strategyID",
-            "time": "00:00:00",
             "temperature": -1,
             "humidity": -1,
             "city": "",

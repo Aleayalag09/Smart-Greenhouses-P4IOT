@@ -23,7 +23,7 @@
             "timestamp": 1664433699.0798957
          }
       ],
-      "windows": [
+      "weather": [
          {
             "ip": "127.0.0.1",
             "port": 8080,
@@ -144,8 +144,12 @@
                      "active": true,
                      "timestamp": 1664433699.0798957
                   },
-                  "windows":
+                  "weather":
                   {
+                     "strat": {
+                        "temperature": 25,
+                        "humidity": 0.3
+                     },
                      "active": true,
                      "timestamp": 1664433699.0798957
                   }
