@@ -27,7 +27,7 @@
         },
 
         {
-            "topic": "id/greenHouseID/weather/strategyID",
+            "topic": "id/greenHouseID/weather",
             "temperature": -1,
             "humidity": -1,
             "city": "",
