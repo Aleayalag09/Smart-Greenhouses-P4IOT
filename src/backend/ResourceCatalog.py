@@ -1048,7 +1048,7 @@ def post_to_strat_manager(strategyType = "", strat_info = {}):
 
     # We suppose that there is just one manager per type (and we take just the first of the list)
     try:
-        manager_info = db["managers"]["strategy"][0]
+        manager_info = db["managers"][strategyType][0]
     except:
         raise Exception("No manager present for that strategy")
     
@@ -1086,7 +1086,7 @@ def put_to_strat_manager(strategyType = "", strat_info = {}):
 
     # We suppose that there is just one manager per type (and we take just the first of the list)
     try:
-        manager_info = db["managers"]["strategy"][0]
+        manager_info = db["managers"][strategyType][0]
     except:
         raise Exception("No manager present for that strategy")
     
@@ -1131,7 +1131,7 @@ def delete_to_strat_manager(strategyType = "", strat_info = {}):
 
     # We suppose that there is just one manager per type (and we take just the first of the list)
     try:
-        manager_info = db["managers"]["strategy"][0]
+        manager_info = db["managers"][strategyType][0]
     except:
         raise Exception("No manager present for that strategy")
     
