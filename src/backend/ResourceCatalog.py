@@ -41,7 +41,7 @@ class User(object):
             "userName": "userName",
             "password": "password",
             "super_User": False,
-            "id": users[len(users)-1]['id'] + 1,
+            "id": -1,
             "name": "name",
             "surname": "surname",
             "email_addresses": "email",
@@ -55,6 +55,7 @@ class User(object):
         try:
             new_user["userName"] = input['userName']
             new_user["password"] = input['password']
+            new_user["id"] = input["id"]
             new_user["name"] = input['name']
             new_user["surname"] = input['surname']
             new_user["email_addresses"] = input['email_addresses']
@@ -185,51 +186,40 @@ class GreenHouse(object):
         
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
-        
-        try:
-            greenHouseID = -1
-            userNum = 0
-            for user in users:
-                if user['id'] == int(id):
-                    if len(user['greenHouses']) == 0:
-                        greenHouseID = 0
-                    else:
-                        greenHouseID = user['greenHouses'][len(user['greenHouses'])-1]['greenHouseID'] + 1
-                    break
-                userNum += 1
 
-            if greenHouseID == -1:
-                raise cherrypy.HTTPError(400, 'No user found')
-        
-            strat_dict = {
-                "strat": [],
-                "active": False,
-                "timestamp": -1
-            }
-            
-            new_greenhouse = {
-                "greenHouseName": "greenHouseName",
-                "greenHouseID": greenHouseID,
-                "city": "city",
-                "deviceConnectors": [],
-                "strategies": {"irrigation": strat_dict, "environment": strat_dict, "weather": strat_dict}
+        for user in users:
+            if user['id'] == int(id):
+
+                strat_dict = {
+                    "strat": [],
+                    "active": False,
+                    "timestamp": -1
                 }
-            
-            input = json.loads(cherrypy.request.body.read())
-            try:
-                new_greenhouse["greenHouseName"] = input['greenHouseName']
-                new_greenhouse["city"] = input['city']
-            except:
-                raise cherrypy.HTTPError(400, 'Wrong parameter')
-            else:
-                users[userNum]['greenHouses'].append(new_greenhouse)
-                users[userNum]["timestamp"] = time.time()
-                db["users"] = users
-                json.dump(db, open("src/db/catalog.json", "w"), indent=3)
-                output=str(type(input))+"<br>"+str(input)
-                return output
-        except:
-            raise cherrypy.HTTPError(400, 'No user found')
+                
+                new_greenhouse = {
+                    "greenHouseName": "greenHouseName",
+                    "greenHouseID": -1,
+                    "city": "city",
+                    "deviceConnectors": [],
+                    "strategies": {"irrigation": strat_dict, "environment": strat_dict, "weather": strat_dict}
+                }
+                
+                input = json.loads(cherrypy.request.body.read())
+                try:
+                    new_greenhouse["greenHouseName"] = input['greenHouseName']
+                    new_greenhouse["city"] = input['city']
+                    new_greenhouse["greenHouseID"] = input["greenHouseID"]
+                except:
+                    raise cherrypy.HTTPError(400, 'Wrong parameter')
+                else:
+                    user['greenHouses'].append(new_greenhouse)
+                    user["timestamp"] = time.time()
+                    db["users"] = users
+                    json.dump(db, open("src/db/catalog.json", "w"), indent=3)
+                    output=str(type(input))+"<br>"+str(input)
+                    return output
+        
+        raise cherrypy.HTTPError(400, 'No user found')
             
     def PUT(self, *path, **queries): 
         """
@@ -436,8 +426,7 @@ class Strategy(object):
                                 try: 
                                     stime = input["time"]
                                     water_quantity = input["water_quantity"]
-                                    activeStrat = input["activeStrat"]
-                                    activeIrr = input["activeIrr"]
+                                    activeStrat = input["active"]
                                 except:
                                     raise cherrypy.HTTPError(400, 'Wrong parameters')
                                 else:
@@ -449,7 +438,12 @@ class Strategy(object):
                                     }
 
                                     greenhouse['strategies']['irrigation']['strat'].append(new_strat)
-                                    greenhouse['strategies']['irrigation']['active'] = activeIrr
+
+                                    # If the new strategy is set to be active then the Irrigation strategy as a whole turn active to (if other single strategies are off remains off)
+
+                                    if activeStrat:
+                                        greenhouse['strategies']['irrigation']['active'] = activeStrat
+                                    activeIrr = greenhouse['strategies']['irrigation']['active']
                                     greenhouse['strategies']['irrigation']['timestamp'] = time.time()
 
                                     user['timestamp'] = time.time()
