@@ -133,9 +133,9 @@ class User(object):
                         'userID': id, 
                         'greenHouseID': i
                     }
-                    delete_to_strat_manager("irrigation", delete_manager_dict)
-                    delete_to_strat_manager("environment", delete_manager_dict)
-                    delete_to_strat_manager("weather", delete_manager_dict)
+                    delete_to_manager_and_adaptor("irrigation", delete_manager_dict)
+                    delete_to_manager_and_adaptor("environment", delete_manager_dict)
+                    delete_to_manager_and_adaptor("weather", delete_manager_dict)
 
                 output = str(type(user))+"<br>"+str(user)
                 return output
@@ -289,9 +289,9 @@ class GreenHouse(object):
                                 'userID': id, 
                                 'greenHouseID': greenHouseID
                             }
-                            delete_to_strat_manager("irrigation", delete_manager_dict)
-                            delete_to_strat_manager("environment", delete_manager_dict)
-                            delete_to_strat_manager("weather", delete_manager_dict)
+                            delete_to_manager_and_adaptor("irrigation", delete_manager_dict)
+                            delete_to_manager_and_adaptor("environment", delete_manager_dict)
+                            delete_to_manager_and_adaptor("weather", delete_manager_dict)
 
                             output = str(type(greenHouse))+"<br>"+str(greenHouse)
                             return output
@@ -459,7 +459,7 @@ class Strategy(object):
                                         'water_quantity': water_quantity,
                                         'activeStrat': activeStrat
                                     }
-                                    post_to_strat_manager("irrigation", post_manager_dict)
+                                    post_to_manager_and_adaptor("irrigation", post_manager_dict)
 
                                     output=str(type(input))+"<br>"+str(input)
                                     return output
@@ -500,7 +500,7 @@ class Strategy(object):
                                 db["users"] = users
                                 json.dump(db, open("src/db/catalog.json", "w"), indent=3)
 
-                                post_to_strat_manager(strategyType, post_manager_dict)
+                                post_to_manager_and_adaptor(strategyType, post_manager_dict)
 
                                 output=str(type(input))+"<br>"+str(input)
                                 return output
@@ -568,7 +568,7 @@ class Strategy(object):
                                         'greenHouseID': greenHouseID,
                                         'active': active
                                     }
-                                put_to_strat_manager(strategyType, put_manager_dict)
+                                put_to_manager(strategyType, put_manager_dict)
 
                                 output = str(type(user))+"<br>"+str(user)
                                 return output
@@ -617,7 +617,7 @@ class Strategy(object):
                                         'userID': id, 
                                         'greenHouseID': greenHouseID
                                     }
-                                    delete_to_strat_manager("irrigation", delete_manager_dict)
+                                    delete_to_manager_and_adaptor("irrigation", delete_manager_dict)
 
                                     output = str(type(user))+"<br>"+str(user)
                                     return output
@@ -643,7 +643,7 @@ class Strategy(object):
                                             'greenHouseID': greenHouseID,
                                             'stratID': strategyID
                                         }
-                                        delete_to_strat_manager("irrigation", delete_manager_dict)
+                                        delete_to_manager_and_adaptor("irrigation", delete_manager_dict)
 
                                         output = str(type(user))+"<br>"+str(user)
                                         return output
@@ -661,7 +661,7 @@ class Strategy(object):
                                         'userID': id, 
                                         'greenHouseID': greenHouseID
                                     }
-                                    delete_to_strat_manager(strategyType, delete_manager_dict)
+                                    delete_to_manager_and_adaptor(strategyType, delete_manager_dict)
 
                                     output = str(type(user))+"<br>"+str(user)
                                     return output
@@ -802,7 +802,36 @@ class ThingSpeakAdaptor(object):
         """
         This function updates the ThingSpeak adaptors endpoints and timestamp
         """
-        pass
+        db = json.load(open("src/db/catalog.json", "r"))
+        input = json.loads(cherrypy.request.body.read())
+
+        try:
+            ip = input["ip"]
+            port = input["port"]
+            functions = input["functions"]
+        except:
+            raise cherrypy.HTTPError(400, 'Wrong parameters')
+
+        thingspeak_adaptor_dict = {
+            "ip": ip,
+            "port": port,
+            "functions": functions,
+            "timestamp": time.time()
+        }
+        if len(db["thingspeak_adaptors"]) == 0:
+            db["thingspeak_adaptors"].append(thingspeak_adaptor_dict)
+        else:
+            update = False
+            for t_adaptor in db["thingspeak_adaptors"]:
+                if t_adaptor["ip"] == ip and t_adaptor["port"] == port:
+                    t_adaptor["functions"] = functions
+                    t_adaptor["timestamp"] = time.time()
+                    update = True
+            
+            if update == False:
+                db["thingspeak_adaptors"].append(thingspeak_adaptor_dict)
+
+        json.dump(db, open("src/db/catalog.json", "w"), indent=3)
 
 
 class ThingSpeak(object):
@@ -1039,7 +1068,7 @@ def remove_from_db(category = "", idx = -1):
     json.dump(db, open("src/db/catalog.json", "w"), indent=3)
 
 
-def post_to_strat_manager(strategyType = "", strat_info = {}):
+def post_to_manager_and_adaptor(strategyType = "", strat_info = {}):
     db = json.load(open("src/db/catalog.json", "r"))
 
     # We suppose that there is just one manager per type (and we take just the first of the list)
@@ -1058,6 +1087,12 @@ def post_to_strat_manager(strategyType = "", strat_info = {}):
             'water_quantity': strat_info["water_quantity"],
             'activeStrat': strat_info["activeStrat"]
         }
+        payload_adaptor = {
+            'userID': strat_info["userID"], 
+            'greenHouseID': strat_info["greenHouseID"],
+            'strategyType': strategyType,
+            'stratID': strat_info["stratID"]
+        }
     elif strategyType == "weather":
         for user in db["users"]:
             if user["id"] == strat_info["userID"]:
@@ -1070,6 +1105,11 @@ def post_to_strat_manager(strategyType = "", strat_info = {}):
                     "city": user["city"]
                 }
                 break
+        payload_adaptor = {
+            'userID': strat_info["userID"], 
+            'greenHouseID': strat_info["greenHouseID"],
+            'strategyType': strategyType
+        }
     else:
         payload = {
             'userID': strat_info["userID"], 
@@ -1078,13 +1118,23 @@ def post_to_strat_manager(strategyType = "", strat_info = {}):
             'temperature': strat_info["temperature"],
             "humidity": strat_info["humidity"]
         }
+        payload_adaptor = {
+            'userID': strat_info["userID"], 
+            'greenHouseID': strat_info["greenHouseID"],
+            'strategyType': strategyType
+        }
+
     # We suppose that the managers can have just one function (regStrategy)
-    url = manager_info["ip"]+":"+str(manager_info["port"])+"/"+manager_info["functions"][0]
-    
-    requests.post(url, payload)
+    url_manager = manager_info["ip"]+":"+str(manager_info["port"])+"/"+manager_info["functions"][0]
+    requests.post(url_manager, payload)
+
+    # There could be more then one adaptor but we consider just in this phase
+    url_adaptor = db["thingspeak_adaptors"][0]["ip"]+":"+str(db["thingspeak_adaptors"][0]["port"])+"/"+db["thingspeak_adaptors"][0]["functions"][0]
+    requests.post(url_adaptor, payload_adaptor)
+
 
 # We can only change the activity of the strategies, nothing else
-def put_to_strat_manager(strategyType = "", strat_info = {}):
+def put_to_manager(strategyType = "", strat_info = {}):
     db = json.load(open("src/db/catalog.json", "r"))
 
     # We suppose that there is just one manager per type (and we take just the first of the list)
@@ -1119,11 +1169,10 @@ def put_to_strat_manager(strategyType = "", strat_info = {}):
         }
     # We suppose that the managers can have just one function (regStrategy)
     url = manager_info["ip"]+":"+str(manager_info["port"])+"/"+manager_info["functions"][0]
-    
     requests.put(url, payload)
 
-def delete_to_strat_manager(strategyType = "", strat_info = {}):
 
+def delete_to_manager_and_adaptor(strategyType = "", strat_info = {}):
     db = json.load(open("src/db/catalog.json", "r"))
 
     # We suppose that there is just one manager per type (and we take just the first of the list)
@@ -1139,20 +1188,39 @@ def delete_to_strat_manager(strategyType = "", strat_info = {}):
                 'greenHouseID': strat_info["greenHouseID"],
                 'stratID': strat_info["stratID"]
             }
+            payload_adaptor = {
+                'userID': strat_info["userID"], 
+                'greenHouseID': strat_info["greenHouseID"],
+                'strategyType': strategyType,
+                'stratID': strat_info["stratID"]
+            }
         except:
             params = {
                 'userID': strat_info["userID"], 
                 'greenHouseID': strat_info["greenHouseID"]
+            }
+            payload_adaptor = {
+                'userID': strat_info["userID"], 
+                'greenHouseID': strat_info["greenHouseID"],
+                'strategyType': strategyType
             }
     else:
         params = {
             'userID': strat_info["userID"], 
             'greenHouseID': strat_info["greenHouseID"]
         }
+        payload_adaptor = {
+            'userID': strat_info["userID"], 
+            'greenHouseID': strat_info["greenHouseID"],
+            'strategyType': strategyType
+        }
+        
     # We suppose that the managers can have just one function (regStrategy)
     url = manager_info["ip"]+":"+str(manager_info["port"])+"/"+manager_info["functions"][0]
-    
     requests.delete(url, params=params)
+
+    url_adaptor = db["thingspeak_adaptors"][0]["ip"]+":"+str(db["thingspeak_adaptors"][0]["port"])+"/"+db["thingspeak_adaptors"][0]["functions"][0]
+    requests.post(url_adaptor, payload_adaptor)
 
 
 if __name__=="__main__":
@@ -1236,11 +1304,11 @@ if __name__=="__main__":
         if len(thingspeak_adaptors) > 0:
             for idx, adaptor in enumerate(thingspeak_adaptors):
                 if timestamp - float(adaptor["timestamp"]) >= timeout_adaptor:
-                    remove_from_db("thingspeak_adaptor", idx)
+                    remove_from_db("thingspeak_adaptor/", idx)
         if len(webpages) > 0:
             for idx, webpage in enumerate(webpages):
                 if timestamp - float(webpage["timestamp"]) >= timeout_webpage:
-                    remove_from_db("webpage", idx)
+                    remove_from_db("webpage/", idx)
         if len(irrigation_managers) > 0:
             for idx, manager in enumerate(irrigation_managers):
                 if timestamp - float(manager["timestamp"]) >= timeout_irr_manager:
