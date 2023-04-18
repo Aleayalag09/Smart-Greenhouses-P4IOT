@@ -1075,7 +1075,7 @@ def post_to_manager_and_adaptor(strategyType = "", strat_info = {}):
     try:
         manager_info = db["managers"][strategyType][0]
     except:
-        raise Exception("No manager present for that strategy")
+        raise Exception("No manager present for that strategy") 
     
     if strategyType == "irrigation":
         payload = {
