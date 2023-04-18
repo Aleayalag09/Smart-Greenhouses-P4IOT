@@ -190,7 +190,7 @@ def getBroker():
     json.dump(database_dict, open(database, "w"), indent=3)
 
 
-# BOOT FUNCTION USED TO GET ACTIVE STRATEGIES FROM THE RESOURCE CATALOG
+# BOOT FUNCTION USED TO GET ALL THE IRR STRATEGIES FROM THE RESOURCE CATALOG
 def getStrategies():
     global database
 

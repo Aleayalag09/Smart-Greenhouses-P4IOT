@@ -47,7 +47,6 @@ class User(object):
             "email_addresses": "email",
             "country": "country",
             "city": "city",
-            "MQTTBaseTopic": "baseTopic/",
             "greenHouses": [],
             "timestamp": time.time()
         }
@@ -61,7 +60,6 @@ class User(object):
             new_user["email_addresses"] = input['email_addresses']
             new_user["country"] = input['country']
             new_user["city"] = input['city']
-            new_user["MQTTBaseTopic"] = input['MQTTBaseTopic']+"/"
         except:
             raise cherrypy.HTTPError(400, 'Wrong parameter')
         else:
