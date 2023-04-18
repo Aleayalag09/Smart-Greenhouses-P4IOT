@@ -1,0 +1,32 @@
+{   
+    "broker": {
+
+        "ip": "test.mosquitto.org",
+        "port": 1883,
+        "timestamp": 1663497809.8657904 
+    },
+
+    "users": [
+
+        {
+            "userID": 0,
+            "ts_channel_EP": ""
+        }, 
+
+        {
+            "userID": 1,
+            "ts_channel_EP": ""
+        }
+    ],
+
+    "topics": [
+        
+        {
+            "topic": "0/0/temperature"
+        },
+
+        {
+            "topic": "0/0/humidity"
+        }
+    ]
+}
