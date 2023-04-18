@@ -41,13 +41,12 @@ class User(object):
             "userName": "userName",
             "password": "password",
             "super_User": False,
-            "id": users[len(users)-1]['id'] + 1,
+            "id": -1,
             "name": "name",
             "surname": "surname",
             "email_addresses": "email",
             "country": "country",
             "city": "city",
-            "MQTTBaseTopic": "baseTopic/",
             "greenHouses": [],
             "timestamp": time.time()
         }
@@ -55,12 +54,12 @@ class User(object):
         try:
             new_user["userName"] = input['userName']
             new_user["password"] = input['password']
+            new_user["id"] = input["id"]
             new_user["name"] = input['name']
             new_user["surname"] = input['surname']
             new_user["email_addresses"] = input['email_addresses']
             new_user["country"] = input['country']
             new_user["city"] = input['city']
-            new_user["MQTTBaseTopic"] = input['MQTTBaseTopic']+"/"
         except:
             raise cherrypy.HTTPError(400, 'Wrong parameter')
         else:
@@ -132,9 +131,9 @@ class User(object):
                         'userID': id, 
                         'greenHouseID': i
                     }
-                    delete_to_strat_manager("irrigation", delete_manager_dict)
-                    delete_to_strat_manager("environment", delete_manager_dict)
-                    delete_to_strat_manager("windows", delete_manager_dict)
+                    delete_to_manager_and_adaptor("irrigation", delete_manager_dict)
+                    delete_to_manager_and_adaptor("environment", delete_manager_dict)
+                    delete_to_manager_and_adaptor("weather", delete_manager_dict)
 
                 output = str(type(user))+"<br>"+str(user)
                 return output
@@ -185,51 +184,40 @@ class GreenHouse(object):
         
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
-        
-        try:
-            greenHouseID = -1
-            userNum = 0
-            for user in users:
-                if user['id'] == int(id):
-                    if len(user['greenHouses']) == 0:
-                        greenHouseID = 0
-                    else:
-                        greenHouseID = user['greenHouses'][len(user['greenHouses'])-1]['greenHouseID'] + 1
-                    break
-                userNum += 1
 
-            if greenHouseID == -1:
-                raise cherrypy.HTTPError(400, 'No user found')
-        
-            strat_dict = {
-                "strat": [],
-                "active": False,
-                "timestamp": -1
-            }
-            
-            new_greenhouse = {
-                "greenHouseName": "greenHouseName",
-                "greenHouseID": greenHouseID,
-                "city": "city",
-                "deviceConnectors": [],
-                "strategies": {"irrigation": strat_dict, "environment": strat_dict, "windows": strat_dict}
+        for user in users:
+            if user['id'] == int(id):
+
+                strat_dict = {
+                    "strat": [],
+                    "active": False,
+                    "timestamp": -1
                 }
-            
-            input = json.loads(cherrypy.request.body.read())
-            try:
-                new_greenhouse["greenHouseName"] = input['greenHouseName']
-                new_greenhouse["city"] = input['city']
-            except:
-                raise cherrypy.HTTPError(400, 'Wrong parameter')
-            else:
-                users[userNum]['greenHouses'].append(new_greenhouse)
-                users[userNum]["timestamp"] = time.time()
-                db["users"] = users
-                json.dump(db, open("src/db/catalog.json", "w"), indent=3)
-                output=str(type(input))+"<br>"+str(input)
-                return output
-        except:
-            raise cherrypy.HTTPError(400, 'No user found')
+                
+                new_greenhouse = {
+                    "greenHouseName": "greenHouseName",
+                    "greenHouseID": -1,
+                    "city": "city",
+                    "deviceConnectors": [],
+                    "strategies": {"irrigation": strat_dict, "environment": strat_dict, "weather": strat_dict}
+                }
+                
+                input = json.loads(cherrypy.request.body.read())
+                try:
+                    new_greenhouse["greenHouseName"] = input['greenHouseName']
+                    new_greenhouse["city"] = input['city']
+                    new_greenhouse["greenHouseID"] = input["greenHouseID"]
+                except:
+                    raise cherrypy.HTTPError(400, 'Wrong parameter')
+                else:
+                    user['greenHouses'].append(new_greenhouse)
+                    user["timestamp"] = time.time()
+                    db["users"] = users
+                    json.dump(db, open("src/db/catalog.json", "w"), indent=3)
+                    output=str(type(input))+"<br>"+str(input)
+                    return output
+        
+        raise cherrypy.HTTPError(400, 'No user found')
             
     def PUT(self, *path, **queries): 
         """
@@ -299,9 +287,9 @@ class GreenHouse(object):
                                 'userID': id, 
                                 'greenHouseID': greenHouseID
                             }
-                            delete_to_strat_manager("irrigation", delete_manager_dict)
-                            delete_to_strat_manager("environment", delete_manager_dict)
-                            delete_to_strat_manager("windows", delete_manager_dict)
+                            delete_to_manager_and_adaptor("irrigation", delete_manager_dict)
+                            delete_to_manager_and_adaptor("environment", delete_manager_dict)
+                            delete_to_manager_and_adaptor("weather", delete_manager_dict)
 
                             output = str(type(greenHouse))+"<br>"+str(greenHouse)
                             return output
@@ -311,12 +299,13 @@ class GreenHouse(object):
         raise cherrypy.HTTPError(400, 'No user or greenhouse found')
 
 
+# If path[0] is equal to manager it means that it is the boot request of a manager, therefore it needs all the strategies present
 class Strategy(object):
     exposed = True
 
     def GET(self, *path, **queries):
         """
-        Function that get a specific strategy (Irrigation, Environment, Windows) or all the strategies from a device.
+        Function that get a specific strategy (Irrigation, Environment, Weather) or all the strategies for a specific user and greenhouse.
         """
         db = json.load(open("src/db/catalog.json", "r"))
         users = db["users"]
@@ -330,7 +319,7 @@ class Strategy(object):
                 if path[0] != "manager":
                     raise Exception
                 strategyType = queries['strategyType']
-                if strategyType != "irrigation" and strategyType != "environment" and strategyType != "windows":
+                if strategyType != "irrigation" and strategyType != "environment" and strategyType != "weather":
                     raise Exception
             except:
                 pass
@@ -339,7 +328,8 @@ class Strategy(object):
                 strategy_dict = {
                     "userID": -1,
                     "greenHouseID": -1,
-                    "strat": {}
+                    "strat": {},
+                    "active": False
                 }
                 try:
                     for user in users:
@@ -347,17 +337,32 @@ class Strategy(object):
                             
                             if strategyType == "irrigation":
                                 for strat in greenhouse["strategies"]["irrigation"]["strat"]:
-                                    if strat["active"] == True:
-                                        strategy_dict["userID"] = user["id"]
-                                        strategy_dict["greenHouseID"] = greenhouse["greenHouseID"]
-                                        strategy_dict["strat"] = strat
-                                        strategy_list.append(strategy_dict)
-                            else:
-                                if greenhouse["strategies"][strategyType]["active"] == True:
                                     strategy_dict["userID"] = user["id"]
                                     strategy_dict["greenHouseID"] = greenhouse["greenHouseID"]
-                                    strategy_dict["strat"] = greenhouse["strategies"][strategyType]
+                                    strategy_dict["strat"] = strat
+                                    strategy_dict["active"] = greenhouse["strategies"]["irrigation"]["active"]
                                     strategy_list.append(strategy_dict)
+                            elif strategyType == "weather":
+                                strategy_dict = {
+                                    "userID": -1,
+                                    "greenHouseID": -1,
+                                    "strat": {},
+                                    "city": "",
+                                    "active": False
+                                }
+                                strategy_dict["userID"] = user["id"]
+                                strategy_dict["greenHouseID"] = greenhouse["greenHouseID"]
+                                strategy_dict["strat"] = greenhouse["strategies"]["weather"]["strat"]
+                                # Must be added the information of the city that is not present inside the strategy in the catalog db 
+                                strategy_dict["city"] = user["city"]
+                                strategy_dict["active"] = greenhouse["strategies"]["weather"]["active"]
+                                strategy_list.append(strategy_dict)
+                            else:
+                                strategy_dict["userID"] = user["id"]
+                                strategy_dict["greenHouseID"] = greenhouse["greenHouseID"]
+                                strategy_dict["strat"] = greenhouse["strategies"][strategyType]["strat"]
+                                strategy_dict["active"] = greenhouse["strategies"][strategyType]["active"]
+                                strategy_list.append(strategy_dict)
 
                     return json.dumps(strategy_list, indent=3)
                 except:
@@ -419,8 +424,7 @@ class Strategy(object):
                                 try: 
                                     stime = input["time"]
                                     water_quantity = input["water_quantity"]
-                                    activeStrat = input["activeStrat"]
-                                    activeIrr = input["activeIrr"]
+                                    activeStrat = input["active"]
                                 except:
                                     raise cherrypy.HTTPError(400, 'Wrong parameters')
                                 else:
@@ -432,7 +436,12 @@ class Strategy(object):
                                     }
 
                                     greenhouse['strategies']['irrigation']['strat'].append(new_strat)
-                                    greenhouse['strategies']['irrigation']['active'] = activeIrr
+
+                                    # If the new strategy is set to be active then the Irrigation strategy as a whole turn active to (if other single strategies are off remains off)
+
+                                    if activeStrat:
+                                        greenhouse['strategies']['irrigation']['active'] = activeStrat
+                                    activeIrr = greenhouse['strategies']['irrigation']['active']
                                     greenhouse['strategies']['irrigation']['timestamp'] = time.time()
 
                                     user['timestamp'] = time.time()
@@ -448,69 +457,53 @@ class Strategy(object):
                                         'water_quantity': water_quantity,
                                         'activeStrat': activeStrat
                                     }
-                                    post_to_strat_manager("irrigation", post_manager_dict)
+                                    post_to_manager_and_adaptor("irrigation", post_manager_dict)
 
                                     output=str(type(input))+"<br>"+str(input)
                                     return output
             except:
                 raise cherrypy.HTTPError(400, 'No user or greenhouse found')
 
-        elif strategyType == "environment" or strategyType == "windows": 
+        elif strategyType == "environment" or strategyType == "weather": 
             try:  
                 for user in users:
                     if user['id'] == int(id):
                         for greenhouse in user['greenHouses']:
                             if greenhouse['greenHouseID'] == int(greenHouseID):
 
-                                if strategyType == "environment":
-                                    try:
-                                        temperature = input["temperature"]
-                                        humidity = input["humidity"]
-                                        active = input["input"]
-                                    except:
-                                        raise cherrypy.HTTPError(400, 'Wrong parameters')
-                                    else:
-                                        new_strat = {
-                                            "temperature": temperature,
-                                            "humidity" : humidity
-                                        }
+                                try:
+                                    temperature = input["temperature"]
+                                    humidity = input["humidity"]
+                                    active = input["input"]
+                                except:
+                                    raise cherrypy.HTTPError(400, 'Wrong parameters')
+                                else:
+                                    new_strat = {
+                                        "temperature": temperature,
+                                        "humidity" : humidity
+                                    }
 
-                                        greenhouse['strategies']['environment']["strat"] = new_strat
-                                        greenhouse['strategies']['environment']['active'] = active
-                                        greenhouse['strategies']['environment']['timestamp'] = time.time()
-                                        post_manager_dict = {
-                                            'userID': id, 
-                                            'greenHouseID': greenHouseID,
-                                            'active': active,
-                                            "temperature": temperature,
-                                            "humidity": humidity
-                                        }
-
-                                elif strategyType == "windows":
-                                    try:
-                                        active = input["input"]
-                                    except:
-                                        raise cherrypy.HTTPError(400, 'Wrong parameters')
-                                    else:
-                                        greenhouse['strategies']['windows']['active'] = active
-                                        greenhouse['strategies']['windows']['timestamp'] = time.time()
-                                        post_manager_dict = {
-                                            'userID': id, 
-                                            'greenHouseID': greenHouseID,
-                                            'active': active,
-                                        }
+                                    greenhouse['strategies'][strategyType]["strat"] = new_strat
+                                    greenhouse['strategies'][strategyType]['active'] = active
+                                    greenhouse['strategies'][strategyType]['timestamp'] = time.time()
+                                    post_manager_dict = {
+                                        'userID': id, 
+                                        'greenHouseID': greenHouseID,
+                                        'active': active,
+                                        "temperature": temperature,
+                                        "humidity": humidity
+                                    }
                                 
                                 user['timestamp'] = time.time()
                                 db["users"] = users
                                 json.dump(db, open("src/db/catalog.json", "w"), indent=3)
 
-                                post_to_strat_manager(strategyType, post_manager_dict)
+                                post_to_manager_and_adaptor(strategyType, post_manager_dict)
 
                                 output=str(type(input))+"<br>"+str(input)
                                 return output
             except: 
-                raise cherrypy.HTTPError(400, 'No user or greenhouse found')
-                        
+                raise cherrypy.HTTPError(400, 'No user or greenhouse found')            
         else:
             raise cherrypy.HTTPError(400, 'Wrong strategy type')
         
@@ -573,7 +566,7 @@ class Strategy(object):
                                         'greenHouseID': greenHouseID,
                                         'active': active
                                     }
-                                put_to_strat_manager(strategyType, put_manager_dict)
+                                put_to_manager(strategyType, put_manager_dict)
 
                                 output = str(type(user))+"<br>"+str(user)
                                 return output
@@ -582,6 +575,7 @@ class Strategy(object):
                 
         raise cherrypy.HTTPError(400, 'No user or greenhouse found')
     
+    # For the irrigation strategies you can specify the strategy ID
     def DELETE(self, *path, **queries):
         """
         This function delete a strategy (if you want to modify one you must delete it before and then create a new one)
@@ -621,7 +615,7 @@ class Strategy(object):
                                         'userID': id, 
                                         'greenHouseID': greenHouseID
                                     }
-                                    delete_to_strat_manager("irrigation", delete_manager_dict)
+                                    delete_to_manager_and_adaptor("irrigation", delete_manager_dict)
 
                                     output = str(type(user))+"<br>"+str(user)
                                     return output
@@ -647,7 +641,7 @@ class Strategy(object):
                                             'greenHouseID': greenHouseID,
                                             'stratID': strategyID
                                         }
-                                        delete_to_strat_manager("irrigation", delete_manager_dict)
+                                        delete_to_manager_and_adaptor("irrigation", delete_manager_dict)
 
                                         output = str(type(user))+"<br>"+str(user)
                                         return output
@@ -665,7 +659,7 @@ class Strategy(object):
                                         'userID': id, 
                                         'greenHouseID': greenHouseID
                                     }
-                                    delete_to_strat_manager(strategyType, delete_manager_dict)
+                                    delete_to_manager_and_adaptor(strategyType, delete_manager_dict)
 
                                     output = str(type(user))+"<br>"+str(user)
                                     return output
@@ -806,7 +800,36 @@ class ThingSpeakAdaptor(object):
         """
         This function updates the ThingSpeak adaptors endpoints and timestamp
         """
-        pass
+        db = json.load(open("src/db/catalog.json", "r"))
+        input = json.loads(cherrypy.request.body.read())
+
+        try:
+            ip = input["ip"]
+            port = input["port"]
+            functions = input["functions"]
+        except:
+            raise cherrypy.HTTPError(400, 'Wrong parameters')
+
+        thingspeak_adaptor_dict = {
+            "ip": ip,
+            "port": port,
+            "functions": functions,
+            "timestamp": time.time()
+        }
+        if len(db["thingspeak_adaptors"]) == 0:
+            db["thingspeak_adaptors"].append(thingspeak_adaptor_dict)
+        else:
+            update = False
+            for t_adaptor in db["thingspeak_adaptors"]:
+                if t_adaptor["ip"] == ip and t_adaptor["port"] == port:
+                    t_adaptor["functions"] = functions
+                    t_adaptor["timestamp"] = time.time()
+                    update = True
+            
+            if update == False:
+                db["thingspeak_adaptors"].append(thingspeak_adaptor_dict)
+
+        json.dump(db, open("src/db/catalog.json", "w"), indent=3)
 
 
 class ThingSpeak(object):
@@ -959,10 +982,10 @@ class EnvironmentManager(object):
             db["managers"]["environment"].append(manager_dict)
         else:
             update = False
-            for irr_manager in db["managers"]["environment"]:
-                if irr_manager["ip"] == ip and irr_manager["port"] == port:
-                    irr_manager["functions"] = functions
-                    irr_manager["timestamp"] = time.time()
+            for env_manager in db["managers"]["environment"]:
+                if env_manager["ip"] == ip and env_manager["port"] == port:
+                    env_manager["functions"] = functions
+                    env_manager["timestamp"] = time.time()
                     update = True
             
             if update == False:
@@ -971,21 +994,21 @@ class EnvironmentManager(object):
         json.dump(db, open("src/db/catalog.json", "w"), indent=3)
 
 
-class WindowsManager(object):
+class WeatherManager(object):
     exposed = True
 
     def GET(self, *path, **queries):
         """
-        Function that get the windows managers endpoints and timestamp
+        Function that get the weather managers endpoints and timestamp
         """
         db = json.load(open("src/db/catalog.json", "r"))
-        win_manager = db["managers"]["windows"]
+        wea_manager = db["managers"]["weather"]
         
-        return json.dumps(win_manager, indent=3)
+        return json.dumps(wea_manager, indent=3)
     
     def POST(self, *path, **queries):
         """
-        This function updates and adds the windows managers (endpoints, functions and timestamp)
+        This function updates and adds the weather managers (endpoints, functions and timestamp)
         """
         db = json.load(open("src/db/catalog.json", "r"))
         input = json.loads(cherrypy.request.body.read())
@@ -1003,18 +1026,18 @@ class WindowsManager(object):
             "functions": functions,
             "timestamp": time.time()
         }
-        if len(db["managers"]["windows"]) == 0:
-            db["managers"]["windows"].append(manager_dict)
+        if len(db["managers"]["weather"]) == 0:
+            db["managers"]["weather"].append(manager_dict)
         else:
             update = False
-            for irr_manager in db["managers"]["windows"]:
-                if irr_manager["ip"] == ip and irr_manager["port"] == port:
-                    irr_manager["functions"] = functions
-                    irr_manager["timestamp"] = time.time()
+            for wea_manager in db["managers"]["weather"]:
+                if wea_manager["ip"] == ip and wea_manager["port"] == port:
+                    wea_manager["functions"] = functions
+                    wea_manager["timestamp"] = time.time()
                     update = True
             
             if update == False:
-                db["managers"]["windows"].append(manager_dict)
+                db["managers"]["weather"].append(manager_dict)
 
         json.dump(db, open("src/db/catalog.json", "w"), indent=3)
 
@@ -1043,14 +1066,14 @@ def remove_from_db(category = "", idx = -1):
     json.dump(db, open("src/db/catalog.json", "w"), indent=3)
 
 
-def post_to_strat_manager(strategyType = "", strat_info = {}):
+def post_to_manager_and_adaptor(strategyType = "", strat_info = {}):
     db = json.load(open("src/db/catalog.json", "r"))
 
     # We suppose that there is just one manager per type (and we take just the first of the list)
     try:
-        manager_info = db["managers"]["strategy"][0]
+        manager_info = db["managers"][strategyType][0]
     except:
-        raise Exception("No manager present for that strategy")
+        raise Exception("No manager present for that strategy") 
     
     if strategyType == "irrigation":
         payload = {
@@ -1062,7 +1085,30 @@ def post_to_strat_manager(strategyType = "", strat_info = {}):
             'water_quantity': strat_info["water_quantity"],
             'activeStrat': strat_info["activeStrat"]
         }
-    elif strategyType == "environment":
+        payload_adaptor = {
+            'userID': strat_info["userID"], 
+            'greenHouseID': strat_info["greenHouseID"],
+            'strategyType': strategyType,
+            'stratID': strat_info["stratID"]
+        }
+    elif strategyType == "weather":
+        for user in db["users"]:
+            if user["id"] == strat_info["userID"]:
+                payload = {
+                    'userID': strat_info["userID"], 
+                    'greenHouseID': strat_info["greenHouseID"],
+                    'active': strat_info["active"],
+                    'temperature': strat_info["temperature"],
+                    "humidity": strat_info["humidity"],
+                    "city": user["city"]
+                }
+                break
+        payload_adaptor = {
+            'userID': strat_info["userID"], 
+            'greenHouseID': strat_info["greenHouseID"],
+            'strategyType': strategyType
+        }
+    else:
         payload = {
             'userID': strat_info["userID"], 
             'greenHouseID': strat_info["greenHouseID"],
@@ -1070,23 +1116,28 @@ def post_to_strat_manager(strategyType = "", strat_info = {}):
             'temperature': strat_info["temperature"],
             "humidity": strat_info["humidity"]
         }
-    else:
-        payload = {
+        payload_adaptor = {
             'userID': strat_info["userID"], 
             'greenHouseID': strat_info["greenHouseID"],
-            'active': strat_info["active"]
+            'strategyType': strategyType
         }
-    # We suppose that the managers can have just one function (regStrategy)
-    url = manager_info["ip"]+":"+str(manager_info["port"])+"/"+manager_info["functions"][0]
-    
-    requests.post(url, payload)
 
-def put_to_strat_manager(strategyType = "", strat_info = {}):
+    # We suppose that the managers can have just one function (regStrategy)
+    url_manager = manager_info["ip"]+":"+str(manager_info["port"])+"/"+manager_info["functions"][0]
+    requests.post(url_manager, payload)
+
+    # There could be more then one adaptor but we consider just in this phase
+    url_adaptor = db["thingspeak_adaptors"][0]["ip"]+":"+str(db["thingspeak_adaptors"][0]["port"])+"/"+db["thingspeak_adaptors"][0]["functions"][0]
+    requests.post(url_adaptor, payload_adaptor)
+
+
+# We can only change the activity of the strategies, nothing else
+def put_to_manager(strategyType = "", strat_info = {}):
     db = json.load(open("src/db/catalog.json", "r"))
 
     # We suppose that there is just one manager per type (and we take just the first of the list)
     try:
-        manager_info = db["managers"]["strategy"][0]
+        manager_info = db["managers"][strategyType][0]
     except:
         raise Exception("No manager present for that strategy")
     
@@ -1108,12 +1159,6 @@ def put_to_strat_manager(strategyType = "", strat_info = {}):
                 'stratID': stratID,
                 'activeStrat': activeStrat
             }
-    elif strategyType == "environment":
-        payload = {
-            'userID': strat_info["userID"], 
-            'greenHouseID': strat_info["greenHouseID"],
-            'active': strat_info["active"]
-        }
     else:
         payload = {
             'userID': strat_info["userID"], 
@@ -1122,34 +1167,58 @@ def put_to_strat_manager(strategyType = "", strat_info = {}):
         }
     # We suppose that the managers can have just one function (regStrategy)
     url = manager_info["ip"]+":"+str(manager_info["port"])+"/"+manager_info["functions"][0]
-    
     requests.put(url, payload)
 
-def delete_to_strat_manager(strategyType = "", strat_info = {}):
 
+def delete_to_manager_and_adaptor(strategyType = "", strat_info = {}):
     db = json.load(open("src/db/catalog.json", "r"))
 
     # We suppose that there is just one manager per type (and we take just the first of the list)
     try:
-        manager_info = db["managers"]["strategy"][0]
+        manager_info = db["managers"][strategyType][0]
     except:
         raise Exception("No manager present for that strategy")
     
     if strategyType == "irrigation":
-        params = {
-            'userID': strat_info["userID"], 
-            'greenHouseID': strat_info["greenHouseID"],
-            'stratID': strat_info["stratID"]
-        }
+        try:
+            params = {
+                'userID': strat_info["userID"], 
+                'greenHouseID': strat_info["greenHouseID"],
+                'stratID': strat_info["stratID"]
+            }
+            payload_adaptor = {
+                'userID': strat_info["userID"], 
+                'greenHouseID': strat_info["greenHouseID"],
+                'strategyType': strategyType,
+                'stratID': strat_info["stratID"]
+            }
+        except:
+            params = {
+                'userID': strat_info["userID"], 
+                'greenHouseID': strat_info["greenHouseID"]
+            }
+            payload_adaptor = {
+                'userID': strat_info["userID"], 
+                'greenHouseID': strat_info["greenHouseID"],
+                'strategyType': strategyType
+            }
     else:
         params = {
             'userID': strat_info["userID"], 
             'greenHouseID': strat_info["greenHouseID"]
         }
+        payload_adaptor = {
+            'userID': strat_info["userID"], 
+            'greenHouseID': strat_info["greenHouseID"],
+            'strategyType': strategyType
+        }
+        
     # We suppose that the managers can have just one function (regStrategy)
     url = manager_info["ip"]+":"+str(manager_info["port"])+"/"+manager_info["functions"][0]
-    
     requests.delete(url, params=params)
+
+    url_adaptor = db["thingspeak_adaptors"][0]["ip"]+":"+str(db["thingspeak_adaptors"][0]["port"])+"/"+db["thingspeak_adaptors"][0]["functions"][0]
+    requests.post(url_adaptor, payload_adaptor)
 
 
 if __name__=="__main__":
@@ -1170,7 +1239,7 @@ if __name__=="__main__":
     cherrypy.tree.mount(WeatherAPI(), '/weatherAPI', conf)
     cherrypy.tree.mount(IrrigationManager(), '/irrigation_manager', conf)
     cherrypy.tree.mount(EnvironmentManager(), '/environment_manager', conf)
-    cherrypy.tree.mount(WindowsManager(), '/windows_manager', conf)
+    cherrypy.tree.mount(WeatherManager(), '/weather_manager', conf)
 
     cherrypy.config.update({'server.socket_host': '127.0.0.1'})
     cherrypy.config.update({'server.socket_port': 8080})
@@ -1205,9 +1274,9 @@ if __name__=="__main__":
     environment_managers = db["managers"]["environment"]
     timeout_env_manager = 120
 
-    # BOOT: retrieve the WINDOWS MANAGERS info from the database (catalog.json)
-    windows_managers = db["managers"]["windows"]
-    timeout_win_manager = 120
+    # BOOT: retrieve the WEATHER MANAGERS info from the database (catalog.json)
+    weather_managers = db["managers"]["weather"]
+    timeout_wea_manager = 120
 
     # BOOT: retrieve all the DEVICE CONNECTORS info from the database (catalog.json)
     device_connectors_list = []
@@ -1233,11 +1302,11 @@ if __name__=="__main__":
         if len(thingspeak_adaptors) > 0:
             for idx, adaptor in enumerate(thingspeak_adaptors):
                 if timestamp - float(adaptor["timestamp"]) >= timeout_adaptor:
-                    remove_from_db("thingspeak_adaptor", idx)
+                    remove_from_db("thingspeak_adaptor/", idx)
         if len(webpages) > 0:
             for idx, webpage in enumerate(webpages):
                 if timestamp - float(webpage["timestamp"]) >= timeout_webpage:
-                    remove_from_db("webpage", idx)
+                    remove_from_db("webpage/", idx)
         if len(irrigation_managers) > 0:
             for idx, manager in enumerate(irrigation_managers):
                 if timestamp - float(manager["timestamp"]) >= timeout_irr_manager:
@@ -1246,10 +1315,10 @@ if __name__=="__main__":
             for idx, manager in enumerate(environment_managers):
                 if timestamp - float(manager["timestamp"]) >= timeout_env_manager:
                     remove_from_db("managers/environment", idx)
-        if len(windows_managers) > 0:
-            for idx, manager in enumerate(windows_managers):
-                if timestamp - float(manager["timestamp"]) >= timeout_win_manager:
-                    remove_from_db("managers/windows", idx)
+        if len(weather_managers) > 0:
+            for idx, manager in enumerate(weather_managers):
+                if timestamp - float(manager["timestamp"]) >= timeout_wea_manager:
+                    remove_from_db("managers/weather", idx)
         if len(device_connectors_list) > 0:
             for dev_conn in device_connectors_list:
                 if timestamp - float(dev_conn["dev_conn"]["timestamp"]) >= timeout_dev_connector:
@@ -1262,7 +1331,7 @@ if __name__=="__main__":
         webpages = db["webpages"]
         irrigation_managers = db["managers"]["irrigation"]
         environment_managers = db["managers"]["environment"]
-        windows_managers = db["managers"]["windows"]
+        weather_managers = db["managers"]["weather"]
         
         device_connectors_list = []
         if len(db["users"]) > 0:
