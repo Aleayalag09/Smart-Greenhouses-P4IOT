@@ -9,12 +9,12 @@ database = "src/db/thingspeak_adaptor_db.json"
 resourceCatalogIP = ""
 clientID = "adaptor_v2"
 
-class addTopic(object):
+class regTopic(object):
     exposed = True
  
     def POST(self, *path, **queries):
         """
-        This function logs a new strategy and updates the state of activity of the greenhouse 
+        This function logs a new topic
         """
         global database
         input = json.loads(cherrypy.request.body.read())
@@ -42,9 +42,32 @@ class addTopic(object):
 
     def DELETE(self, *path, **queries):
         """
-        This function logs a new strategy and updates the state of activity of the greenhouse 
+        This function deletes a topic 
         """
         global database
+        input = json.loads(cherrypy.request.body.read())
+        database_dict = json.load(open(database, "r"))
+
+        try:
+            userID = input["userID"]
+            greenHouseID = input["greenHouseID"]
+            sensors = input["sensors"]
+        except:
+            raise cherrypy.HTTPError(400, 'Wrong input')
+        
+        idxs = []
+        for idx, topicdb in enumerate(database_dict["topics"]):
+            for sensorType in sensors:
+
+                topic = str(userID)+"/"+str(greenHouseID)+"/"+sensorType
+                if topic == topicdb["topic"]:
+                    idxs.append(idx)
+                    MeasuresReceiver.unsubscribe(topic)
+
+        for idx in idxs:
+            database_dict.pop(idx)
+
+        json.dump(database_dict, open(database, "w"), indent=3)
 
 
 class MQTTMeasuresReceiver:
@@ -57,6 +80,9 @@ class MQTTMeasuresReceiver:
 
     def subscribe(self, topic):
         self.client.mySubscribe(topic)
+
+    def unsubscribe(self, topic):
+        self.client.unsubscribe(topic)
 
     def stop (self):
         self.client.stop()
@@ -108,12 +134,52 @@ def getBroker():
 
 # BOOT FUNCTION USED TO GET ALL THE TOPICS FROM THE RESOURCE CATALOG
 def getTopics():
-    pass
+    global database
+
+    url = 'URL of the RESOURCE_CATALOG/device_connectors/adaptor'
+    dev_conn = requests.get(url).json()
+
+    topics_list = []
+    new_topic = {
+        "topic": "" 
+    }
+    for dev in dev_conn:
+        try:
+            userID = dev['userID']
+            greenHouseID = dev["greenHouseID"]
+            sensors = dev["sensors"]
+        except:
+            raise cherrypy.HTTPError(400, 'Wrong parameters')
+        else:
+            for sensorType in sensors:
+                topic = str(userID)+"/"+str(greenHouseID)+"/"+sensorType
+                new_topic = {
+                    "topic": topic
+                }
+                topics_list.append((new_topic))
+                MeasuresReceiver.subscribe(topic)
+
+    database_dict = json.load(open(database, "r"))
+    database_dict["topics"] = topics_list
+    json.dump(database_dict, open(database, "w"), indent=3)
 
 
 # FUNCTION NEEDED TO SEND THE INFO RECEIVED FROM MQTT TO THINGSPEAK
 def send_to_Thingspeak(topic, measure):
-    pass
+    global database
+
+    db = json.load(open(database, "r"))
+    userID = topic.split("/")[0]
+
+    for user in db["users"]:
+        if user["userID"] == userID:
+
+            thingspeak_channel = user["ts_channel_EP"]
+
+            RequestToThingspeak = ???????
+        
+            request = requests.post(RequestToThingspeak)  
+
         
         
 
@@ -125,7 +191,7 @@ if __name__ == "__main__":
             'tools.sessions.on': True,
         }
     }
-    cherrypy.tree.mount(addTopic(), '/addTopic', conf)
+    cherrypy.tree.mount(regTopic(), '/addTopic', conf)
 
     cherrypy.config.update({'server.socket_host': '127.0.0.1'})
     cherrypy.config.update({'server.socket_port': 8080})
