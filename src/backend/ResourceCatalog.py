@@ -457,7 +457,7 @@ class Strategy(object):
                                         'water_quantity': water_quantity,
                                         'activeStrat': activeStrat
                                     }
-                                    post_to_manager_and_adaptor("irrigation", post_manager_dict)
+                                    post_to_manager("irrigation", post_manager_dict)
 
                                     output=str(type(input))+"<br>"+str(input)
                                     return output
@@ -498,7 +498,7 @@ class Strategy(object):
                                 db["users"] = users
                                 json.dump(db, open("src/db/catalog.json", "w"), indent=3)
 
-                                post_to_manager_and_adaptor(strategyType, post_manager_dict)
+                                post_to_manager(strategyType, post_manager_dict)
 
                                 output=str(type(input))+"<br>"+str(input)
                                 return output
@@ -683,16 +683,39 @@ class DeviceConnectors(object):
             id = queries['id']
             greenHouseID = queries['greenHouseID']
         except:
+            try:
+                if path[0] != "adaptor":
+                    raise Exception
+            except:
+                pass
+            else:
+                dev_conn_list = []
+                dev_conn = {
+                    "userID": -1,
+                    "greenHouseID": -1,
+                    "sensors": []
+                }
+                for user in users:
+                    for greenhouse in user["greenHouses"]:
+                        for conn in greenhouse["deviceConnectors"]:
+                            dev_conn["userID"] = user["id"]
+                            dev_conn["greenHouseID"] = greenhouse["greenHouseID"]
+                            dev_conn["sensors"] = conn["devices"]["sensors"]
+
+                            dev_conn_list.append(dev_conn)
+
+                return json.dumps(dev_conn_list, indent=3)
+
             raise cherrypy.HTTPError(400, 'Bad request') 
-         
-        try:  
-            for user in users:
-                if user['id'] == int(id):
-                    for greenhouse in user['greenHouses']:
-                        if greenhouse['greenHouseID'] == int(greenHouseID):
-                            return json.dumps(greenhouse["deviceConnectors"], indent=3)
-        except:
-            raise cherrypy.HTTPError(400, 'No user or greenhouse found')
+        else:
+            try:  
+                for user in users:
+                    if user['id'] == int(id):
+                        for greenhouse in user['greenHouses']:
+                            if greenhouse['greenHouseID'] == int(greenHouseID):
+                                return json.dumps(greenhouse["deviceConnectors"], indent=3)
+            except:
+                raise cherrypy.HTTPError(400, 'No user or greenhouse found')
                                       
         raise cherrypy.HTTPError(400, 'No user or greenhouse found')
     
@@ -729,10 +752,10 @@ class DeviceConnectors(object):
                 if user["id"] == userID:
                     for greenhouse in user["greenHouses"]:
                         if greenhouse["greenHouseID"] == greenHouseID:
+                            update = False
                             if len(greenhouse["deviceConnectors"]) == 0:
                                 greenhouse["deviceConnectors"].append(dev_conn_dict)
                             else:
-                                update = False
                                 for dev_conn in greenhouse["deviceConnectors"]:
                                     if dev_conn["ip"] == ip and dev_conn["port"] == port:
                                         dev_conn["device"]["sensors"] = sensors
@@ -743,6 +766,16 @@ class DeviceConnectors(object):
                                 
                                 if update == False:
                                     greenhouse["deviceConnectors"].append(dev_conn_dict)
+
+                            if update == False:
+                                # I assume that there is just one Adaptor
+                                url_adaptor = db["thingspeak_adaptors"][0]["ip"]+":"+str(db["thingspeak_adaptors"][0]["port"])+"/"+db["thingspeak_adaptors"][0]["functions"][0]
+                                payload = {
+                                    "userID": userID,
+                                    "greenHouseID": greenHouseID,
+                                    "sensors": sensors
+                                }
+                                requests.post(url_adaptor, payload)
                             
                             json.dump(db, open("src/db/catalog.json", "w"), indent=3)
                             output=str(type(input))+"<br>"+str(input)
@@ -1055,6 +1088,15 @@ def remove_from_db(category = "", idx = -1):
                         for index, dev_conn in enumerate(greenhouse["deviceConnectors"]):
                             if dev_conn["ip"] == category[2] and dev_conn["port"] == category[3]:
                                 greenhouse["deviceConnectors"].pop(index)
+
+                                # I assume that there is just one Adaptor
+                                url_adaptor = db["thingspeak_adaptors"][0]["ip"]+":"+str(db["thingspeak_adaptors"][0]["port"])+"/"+db["thingspeak_adaptors"][0]["functions"][0]
+                                payload = {
+                                    "userID": category[0],
+                                    "greenHouseID": category[1],
+                                    "sensors": dev_conn["devices"]["sensors"]
+                                }
+                                requests.delete(url_adaptor, payload)
                                 break
     # DELETE a manager of the system
     elif len(category) == 2:
@@ -1066,7 +1108,7 @@ def remove_from_db(category = "", idx = -1):
     json.dump(db, open("src/db/catalog.json", "w"), indent=3)
 
 
-def post_to_manager_and_adaptor(strategyType = "", strat_info = {}):
+def post_to_manager(strategyType = "", strat_info = {}):
     db = json.load(open("src/db/catalog.json", "r"))
 
     # We suppose that there is just one manager per type (and we take just the first of the list)
@@ -1085,12 +1127,6 @@ def post_to_manager_and_adaptor(strategyType = "", strat_info = {}):
             'water_quantity': strat_info["water_quantity"],
             'activeStrat': strat_info["activeStrat"]
         }
-        payload_adaptor = {
-            'userID': strat_info["userID"], 
-            'greenHouseID': strat_info["greenHouseID"],
-            'strategyType': strategyType,
-            'stratID': strat_info["stratID"]
-        }
     elif strategyType == "weather":
         for user in db["users"]:
             if user["id"] == strat_info["userID"]:
@@ -1103,11 +1139,6 @@ def post_to_manager_and_adaptor(strategyType = "", strat_info = {}):
                     "city": user["city"]
                 }
                 break
-        payload_adaptor = {
-            'userID': strat_info["userID"], 
-            'greenHouseID': strat_info["greenHouseID"],
-            'strategyType': strategyType
-        }
     else:
         payload = {
             'userID': strat_info["userID"], 
@@ -1116,19 +1147,10 @@ def post_to_manager_and_adaptor(strategyType = "", strat_info = {}):
             'temperature': strat_info["temperature"],
             "humidity": strat_info["humidity"]
         }
-        payload_adaptor = {
-            'userID': strat_info["userID"], 
-            'greenHouseID': strat_info["greenHouseID"],
-            'strategyType': strategyType
-        }
 
     # We suppose that the managers can have just one function (regStrategy)
     url_manager = manager_info["ip"]+":"+str(manager_info["port"])+"/"+manager_info["functions"][0]
     requests.post(url_manager, payload)
-
-    # There could be more then one adaptor but we consider just in this phase
-    url_adaptor = db["thingspeak_adaptors"][0]["ip"]+":"+str(db["thingspeak_adaptors"][0]["port"])+"/"+db["thingspeak_adaptors"][0]["functions"][0]
-    requests.post(url_adaptor, payload_adaptor)
 
 
 # We can only change the activity of the strategies, nothing else
@@ -1233,6 +1255,7 @@ if __name__=="__main__":
     cherrypy.tree.mount(GreenHouse(), '/greenhouse', conf)
     cherrypy.tree.mount(Strategy(), '/strategy', conf)
     cherrypy.tree.mount(Broker(), '/broker', conf)
+    cherrypy.tree.mount(DeviceConnectors(), '/device_connectors', conf)
     cherrypy.tree.mount(ThingSpeakAdaptor(), '/thingspeak_adaptor', conf)
     cherrypy.tree.mount(ThingSpeak(), '/thingspeak', conf)
     cherrypy.tree.mount(WebPage(), '/webpage', conf)
