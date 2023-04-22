@@ -119,6 +119,7 @@ class MQTT_publisher(object):
         self.__message["e"]["v"] = value
 
         self.client.myPublish(topic, self.__message)
+    
         
 # REGISTER CONTINOUSLY THE MANAGER TO THE RESOURCE CATALOG
 def refresh():
@@ -128,6 +129,7 @@ def refresh():
     
     requests.post(url, payload)
     
+
 # CONTACT THE GET INTERFACE FOR THE BROKER ON THE CATALOG REST API (obtains ip, port and timestamp for future controls)
 def getBroker():
     global database
@@ -148,6 +150,7 @@ def getBroker():
     database_dict["broker"]["timestamp"] = time.time()
     json.dump(database_dict, open(database, "w"), indent=3)
     
+
 # BOOT FUNCTION USED TO GET ACTIVE STRATEGIES FROM THE RESOURCE CATALOG
 def getStrategies():
     global database
@@ -189,13 +192,14 @@ def getStrategies():
     database_dict["strategies"] = strategy_list
     json.dump(database_dict, open(database, "w"), indent=3)
     
+
 def getlocation(city):
     """
     This method takes the name of a place and extract the
     code key of that place.
-    """
-    
+    """   
     global api
+
     search_address = 'http://dataservice.accuweather.com/locations/v1/cities/search?apikey='+api+'&q='+city+'&details=true'
     with urllib.request.urlopen(search_address) as search_address:
         data = json.loads(search_address.read().decode())
@@ -208,8 +212,8 @@ def getWeather(city):
     conditions using the key code of the place 
     and get a json of all the measuraments.
     """
-    
     global api
+
     key = getlocation(city)
     weatherUrl= 'http://dataservice.accuweather.com/currentconditions/v1/'+key+'?apikey='+api+'&details=true'
     with urllib.request.urlopen(weatherUrl) as weatherUrl:
@@ -219,8 +223,9 @@ def getWeather(city):
 def getMeasurements(city):
     """
     This method extract from a json the measurements that our
-    user is interest.
+    user is interested to.
     """
+
     data = getWeather(city)
     temperature = data[0]['Temperature']['Metric']['Value']
     humidity = data[0]['RelativeHumidity'] / 100
