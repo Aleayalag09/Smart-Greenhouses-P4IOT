@@ -22,11 +22,11 @@
     "topics": [
         
         {
-            "topic": "0/0/temperature"
+            "topic": "0/0/sensors/temperature"
         },
 
         {
-            "topic": "0/0/humidity"
+            "topic": "0/0/sensors/humidity"
         }
     ]
 }

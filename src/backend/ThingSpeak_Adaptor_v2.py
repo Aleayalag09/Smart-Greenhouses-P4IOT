@@ -30,7 +30,7 @@ class regTopic(object):
         
         for sensorType in sensors:
 
-            topic = str(userID)+"/"+str(greenHouseID)+"/"+sensorType
+            topic = str(userID)+"/"+str(greenHouseID)+"/sensors/"+sensorType
             new_topic = {
                 "topic": topic
             }
@@ -59,7 +59,7 @@ class regTopic(object):
         for idx, topicdb in enumerate(database_dict["topics"]):
             for sensorType in sensors:
 
-                topic = str(userID)+"/"+str(greenHouseID)+"/"+sensorType
+                topic = str(userID)+"/"+str(greenHouseID)+"/sensors/"+sensorType
                 if topic == topicdb["topic"]:
                     idxs.append(idx)
                     MeasuresReceiver.unsubscribe(topic)
@@ -70,7 +70,7 @@ class regTopic(object):
         json.dump(database_dict, open(database, "w"), indent=3)
 
 
-class MQTTMeasuresReceiver:
+class MQTT_subscriber:
 
     def __init__(self, clientID, broker, port):
         self.client = MyMQTT(clientID, broker, port, self)
@@ -93,7 +93,7 @@ class MQTTMeasuresReceiver:
 
         try:
             # Unit of measure of the measure
-            unit = measure['unit']
+            # unit = measure['unit']
             value = measure['value']
             timestamp = measure['timestamp']
         except:
@@ -152,7 +152,7 @@ def getTopics():
             raise cherrypy.HTTPError(400, 'Wrong parameters')
         else:
             for sensorType in sensors:
-                topic = str(userID)+"/"+str(greenHouseID)+"/"+sensorType
+                topic = str(userID)+"/"+str(greenHouseID)+"/sensors/"+sensorType
                 new_topic = {
                     "topic": topic
                 }
@@ -213,7 +213,7 @@ if __name__ == "__main__":
     
     broker_dict = json.load(open(database, "r"))["broker"]
     
-    MeasuresReceiver = MQTTMeasuresReceiver(clientID, broker_dict["ip"], broker_dict["port"]) 
+    MeasuresReceiver = MQTT_subscriber(clientID, broker_dict["ip"], broker_dict["port"]) 
     MeasuresReceiver.start()
     
     while True:
