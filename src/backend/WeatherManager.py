@@ -8,7 +8,7 @@ import urllib
 from MQTT.MyMQTT import *
 
 new_strat = False
-database = "src/db/weather_controller_db.json"
+database = "src/db/weather_manager_db.json"
 resourceCatalogIP = ""
 api = 'YOUR_API_KEY'
 
