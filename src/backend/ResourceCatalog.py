@@ -54,7 +54,7 @@ class User(object):
         try:
             new_user["userName"] = input['userName']
             new_user["password"] = input['password']
-            new_user["id"] = input["id"]
+            new_user["id"] = int(input["id"])
             new_user["name"] = input['name']
             new_user["surname"] = input['surname']
             new_user["email_addresses"] = input['email_addresses']
@@ -122,18 +122,30 @@ class User(object):
         
         for idx, user in enumerate(users):
             if user['id'] == int(id):
-                users.pop(idx)
-                db["users"] = users
-                json.dump(db, open("src/db/catalog.json", "w"), indent=3)
 
                 for i in range(len(user["greenHouses"])):
                     delete_manager_dict = {
                         'userID': id, 
                         'greenHouseID': i
                     }
-                    delete_to_manager_and_adaptor("irrigation", delete_manager_dict)
-                    delete_to_manager_and_adaptor("environment", delete_manager_dict)
-                    delete_to_manager_and_adaptor("weather", delete_manager_dict)
+
+                    for dev_conn in user["greenHouses"][i]["deviceConnectors"]:
+                        # I assume that there is just one Adaptor
+                        url_adaptor = db["thingspeak_adaptors"][0]["ip"]+":"+str(db["thingspeak_adaptors"][0]["port"])+"/"+db["thingspeak_adaptors"][0]["functions"][0]
+                        payload = {
+                            "userID": id,
+                            "greenHouseID": i,
+                            "sensors": dev_conn["devices"]["sensors"]
+                        }
+                        requests.delete(url_adaptor, payload)
+
+                    delete_to_manager("irrigation", delete_manager_dict)
+                    delete_to_manager("environment", delete_manager_dict)
+                    delete_to_manager("weather", delete_manager_dict)
+
+                users.pop(idx)
+                db["users"] = users
+                json.dump(db, open("src/db/catalog.json", "w"), indent=3)
 
                 output = str(type(user))+"<br>"+str(user)
                 return output
@@ -278,18 +290,30 @@ class GreenHouse(object):
                 if user['id'] == int(id):
                     for idx, greenHouse in enumerate(user['greenHouses']):
                         if greenHouse['greenHouseID'] == int(greenHouseID):
-                            user['greenHouses'].pop(idx)
-                            user["timestamp"] = time.time()
-                            db["users"] = users
-                            json.dump(db, open("src/db/catalog.json", "w"), indent=3)
 
                             delete_manager_dict = {
                                 'userID': id, 
                                 'greenHouseID': greenHouseID
                             }
-                            delete_to_manager_and_adaptor("irrigation", delete_manager_dict)
-                            delete_to_manager_and_adaptor("environment", delete_manager_dict)
-                            delete_to_manager_and_adaptor("weather", delete_manager_dict)
+
+                            for dev_conn in greenHouse["deviceConnectors"]:
+                                # I assume that there is just one Adaptor
+                                url_adaptor = db["thingspeak_adaptors"][0]["ip"]+":"+str(db["thingspeak_adaptors"][0]["port"])+"/"+db["thingspeak_adaptors"][0]["functions"][0]
+                                payload = {
+                                    "userID": id,
+                                    "greenHouseID": greenHouseID,
+                                    "sensors": dev_conn["devices"]["sensors"]
+                                }
+                                requests.delete(url_adaptor, payload)
+
+                            delete_to_manager("irrigation", delete_manager_dict)
+                            delete_to_manager("environment", delete_manager_dict)
+                            delete_to_manager("weather", delete_manager_dict)
+
+                            user['greenHouses'].pop(idx)
+                            user["timestamp"] = time.time()
+                            db["users"] = users
+                            json.dump(db, open("src/db/catalog.json", "w"), indent=3)
 
                             output = str(type(greenHouse))+"<br>"+str(greenHouse)
                             return output
@@ -615,7 +639,7 @@ class Strategy(object):
                                         'userID': id, 
                                         'greenHouseID': greenHouseID
                                     }
-                                    delete_to_manager_and_adaptor("irrigation", delete_manager_dict)
+                                    delete_to_manager("irrigation", delete_manager_dict)
 
                                     output = str(type(user))+"<br>"+str(user)
                                     return output
@@ -641,7 +665,7 @@ class Strategy(object):
                                             'greenHouseID': greenHouseID,
                                             'stratID': strategyID
                                         }
-                                        delete_to_manager_and_adaptor("irrigation", delete_manager_dict)
+                                        delete_to_manager("irrigation", delete_manager_dict)
 
                                         output = str(type(user))+"<br>"+str(user)
                                         return output
@@ -659,7 +683,7 @@ class Strategy(object):
                                         'userID': id, 
                                         'greenHouseID': greenHouseID
                                     }
-                                    delete_to_manager_and_adaptor(strategyType, delete_manager_dict)
+                                    delete_to_manager(strategyType, delete_manager_dict)
 
                                     output = str(type(user))+"<br>"+str(user)
                                     return output
@@ -1192,7 +1216,7 @@ def put_to_manager(strategyType = "", strat_info = {}):
     requests.put(url, payload)
 
 
-def delete_to_manager_and_adaptor(strategyType = "", strat_info = {}):
+def delete_to_manager(strategyType = "", strat_info = {}):
     db = json.load(open("src/db/catalog.json", "r"))
 
     # We suppose that there is just one manager per type (and we take just the first of the list)
@@ -1208,39 +1232,20 @@ def delete_to_manager_and_adaptor(strategyType = "", strat_info = {}):
                 'greenHouseID': strat_info["greenHouseID"],
                 'stratID': strat_info["stratID"]
             }
-            payload_adaptor = {
-                'userID': strat_info["userID"], 
-                'greenHouseID': strat_info["greenHouseID"],
-                'strategyType': strategyType,
-                'stratID': strat_info["stratID"]
-            }
         except:
             params = {
                 'userID': strat_info["userID"], 
                 'greenHouseID': strat_info["greenHouseID"]
-            }
-            payload_adaptor = {
-                'userID': strat_info["userID"], 
-                'greenHouseID': strat_info["greenHouseID"],
-                'strategyType': strategyType
             }
     else:
         params = {
             'userID': strat_info["userID"], 
             'greenHouseID': strat_info["greenHouseID"]
         }
-        payload_adaptor = {
-            'userID': strat_info["userID"], 
-            'greenHouseID': strat_info["greenHouseID"],
-            'strategyType': strategyType
-        }
         
     # We suppose that the managers can have just one function (regStrategy)
     url = manager_info["ip"]+":"+str(manager_info["port"])+"/"+manager_info["functions"][0]
     requests.delete(url, params=params)
-
-    url_adaptor = db["thingspeak_adaptors"][0]["ip"]+":"+str(db["thingspeak_adaptors"][0]["port"])+"/"+db["thingspeak_adaptors"][0]["functions"][0]
-    requests.post(url_adaptor, payload_adaptor)
 
 
 if __name__=="__main__":
