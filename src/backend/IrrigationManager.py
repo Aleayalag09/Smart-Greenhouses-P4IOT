@@ -248,7 +248,7 @@ if __name__=="__main__":
     cherrypy.config.update({'server.socket_port': 8080})
 
     cherrypy.engine.start()
-    cherrypy.engine.block()
+    # cherrypy.engine.block()
 
 
     last_refresh = time.time() 
