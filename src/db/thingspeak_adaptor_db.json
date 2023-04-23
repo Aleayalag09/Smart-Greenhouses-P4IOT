@@ -10,12 +10,27 @@
 
         {
             "userID": 0,
-            "ts_channel_EP": ""
+            "greenHouses": [
+
+                {
+                    "greenHouseID": 0,
+                    "temperature": "&field1={}",
+                    "humidity": "&field2={}"
+                },
+
+                {
+                    "greenHouseID": 1,
+                    "temperature": "&field3={}",
+                    "humidity": "&field4={}"
+                }
+            ],
+            "KEY": "J50M27K8VSFLULLK"
         }, 
 
         {
             "userID": 1,
-            "ts_channel_EP": ""
+            "greenHouses": [],
+            "KEY": ""
         }
     ],
 
@@ -27,6 +42,14 @@
 
         {
             "topic": "0/0/sensors/humidity"
+        }, 
+        
+        {
+            "topic": "0/1/sensors/temperature"
+        },
+
+        {
+            "topic": "0/1/sensors/humidity"
         }
     ]
 }
