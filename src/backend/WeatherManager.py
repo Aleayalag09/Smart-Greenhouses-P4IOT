@@ -18,7 +18,7 @@ class RegStrategy(object):
     def POST(self, *path, **queries):
         """
         Logs a new strategy for a specific user and greenhouse
-        and updates the state of activity of the greenhouse 
+        and updates the state of activity of the greenhouse.
         """
 
         global database
@@ -54,7 +54,7 @@ class RegStrategy(object):
     def PUT(self, *path, **queries):
         """
         Modify the state of activity of the strategy 
-        owned by a specific user and greenhouse
+        owned by a specific user and greenhouse.
         """
 
         global database 
@@ -79,7 +79,7 @@ class RegStrategy(object):
 
     def DELETE(self, *path, **queries):
         """
-        Delete a strategy owned by a specific user and greenhouse
+        Delete a strategy owned by a specific user and greenhouse.
         """
 
         global database

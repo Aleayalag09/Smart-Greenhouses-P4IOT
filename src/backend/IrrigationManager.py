@@ -15,8 +15,10 @@ class RegStrategy(object):
  
     def POST(self, *path, **queries):
         """
-        This function logs a new strategy and updates the state of activity of the greenhouse 
+        Logs a new strategy for a specific user and greenhouse
+        and updates the state of activity of the greenhouse.
         """
+
         global database
         global new_strat
         input = json.loads(cherrypy.request.body.read())
@@ -55,8 +57,10 @@ class RegStrategy(object):
 
     def PUT(self, *path, **queries):
         """
-        This function modify the state of activity of a specific strategy or all strategies
+        Modify the state of activity of one or all the strategies 
+        owned by a specific user and greenhouse.
         """
+
         global database 
         global new_strat
         input = json.loads(cherrypy.request.body.read())
@@ -87,8 +91,10 @@ class RegStrategy(object):
 
     def DELETE(self, *path, **queries):
         """
-        This function delete a strategy
+        Delete one or all the strategies
+        owned by a specific user and greenhouse.
         """
+
         global database
         global new_strat
 
@@ -160,17 +166,25 @@ class MQTT_publisher(object):
         self.client.myPublish(topic, self.__message)
 
 
-# REGISTER CONTINOUSLY THE MANAGER TO THE RESOURCE CATALOG
 def refresh():
+    """
+    Registers the Irrigation Manager to the
+    Resource Catalog making a post.
+    """
+
     payload = {'ip': "IP of the IrrigationManager", 'port': "PORT of the IrrigationManager",
                'functions': ["regStrategy"]}
-    url = 'URL of the RESOURCE_CATALOG/POST managers'
+    url = 'URL of the RESOURCE_CATALOG/irrigation_manager'
     
     requests.post(url, payload)
 
 
-# CONTACT THE GET INTERFACE FOR THE BROKER ON THE CATALOG REST API (obtains ip, port and timestamp for future controls)
 def getBroker():
+    """
+    Retrieves from the Resource Catalog the endpoints
+    (ip, port, timestamp) of the broker used in the system. 
+    """
+
     global database
 
     url = 'URL of the RESOURCE_CATALOG/broker'
@@ -190,8 +204,13 @@ def getBroker():
     json.dump(database_dict, open(database, "w"), indent=3)
 
 
-# BOOT FUNCTION USED TO GET ALL THE IRR STRATEGIES FROM THE RESOURCE CATALOG
 def getStrategies():
+    """
+    Retrieves all the irrigation strategies 
+    present in the Resource Catalog.
+    Called at the BOOT.
+    """
+
     global database
 
     url = 'URL of the RESOURCE_CATALOG/strategy/manager'
