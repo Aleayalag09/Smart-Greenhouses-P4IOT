@@ -15,8 +15,9 @@ class regTopic(object):
  
     def POST(self, *path, **queries):
         """
-        This function logs a new topic
+        Logs a new topic
         """
+        
         global database
         input = json.loads(cherrypy.request.body.read())
         database_dict = json.load(open(database, "r"))
@@ -43,8 +44,9 @@ class regTopic(object):
 
     def DELETE(self, *path, **queries):
         """
-        This function deletes a topic 
+        Deletes a topic 
         """
+
         global database
         input = json.loads(cherrypy.request.body.read())
         database_dict = json.load(open(database, "r"))
@@ -103,17 +105,25 @@ class MQTT_subscriber:
         send_to_Thingspeak(topic, value)
 
 
-# REGISTER CONTINOUSLY THE ADAPTOR TO THE RESOURCE CATALOG
 def refresh():
+    """
+    Registers the ThingSpeak Adaptor to the
+    Resource Catalog making a post 
+    """
+
     payload = {'ip': "IP of the ThingSpeak_Adaptor", 'port': "PORT of the ThingSpeak_Adaptor",
                'functions': [""]}
-    url = 'URL of the RESOURCE_CATALOG/POST thingspeak_adaptor'
+    url = 'URL of the RESOURCE_CATALOG/thingspeak_adaptor'
     
     requests.post(url, payload)
 
 
-# CONTACT THE GET INTERFACE FOR THE BROKER ON THE CATALOG REST API (obtains ip, port and timestamp for future controls)
 def getBroker():
+    """
+    Retrieves from the Resource Catalog the endpoints
+    (ip, port, timestamp) of the broker used in the system 
+    """
+
     global database
 
     url = 'URL of the RESOURCE_CATALOG/broker'
@@ -133,8 +143,12 @@ def getBroker():
     json.dump(database_dict, open(database, "w"), indent=3)
 
 
-# BOOT FUNCTION USED TO GET ALL THE TOPICS FROM THE RESOURCE CATALOG
 def getTopics():
+    """
+    Retrieves all the topics present in the Resource Catalog
+    Called at the BOOT
+    """
+
     global database
 
     url = 'URL of the RESOURCE_CATALOG/device_connectors/adaptor'
@@ -165,8 +179,12 @@ def getTopics():
     json.dump(database_dict, open(database, "w"), indent=3)
 
 
-# FUNCTION NEEDED TO SEND THE INFO RECEIVED FROM MQTT TO THINGSPEAK
 def send_to_Thingspeak(topic, measure):
+    """
+    Sends the information received from 
+    a MQTT topic to Thingspeak using REST (post)
+    """
+
     global database
 
     db = json.load(open(database, "r"))
