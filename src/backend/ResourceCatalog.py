@@ -9,8 +9,9 @@ class User(object):
 
     def GET(self, *path, **queries):
         """
-        Function that get a specific user or all the users, each user will be called by his id
+        Returns a specific user or all the users.
         """
+
         db = json.load(open("src/db/catalog.json", "r"))
         users = db["users"]
         
@@ -33,8 +34,12 @@ class User(object):
     
     def POST(self, *path, **queries):
         """
-        This function create a new user
+        Creates a new user.
+
+        The ID must be "registered" and provided by the system owners
+        before this function is called. 
         """
+
         db = json.load(open("src/db/catalog.json", "r"))
         users = db["users"]
         new_user = {
@@ -46,7 +51,6 @@ class User(object):
             "surname": "surname",
             "email_addresses": "email",
             "country": "country",
-            "city": "city",
             "greenHouses": [],
             "timestamp": time.time()
         }
@@ -59,7 +63,6 @@ class User(object):
             new_user["surname"] = input['surname']
             new_user["email_addresses"] = input['email_addresses']
             new_user["country"] = input['country']
-            new_user["city"] = input['city']
         except:
             raise cherrypy.HTTPError(400, 'Wrong parameter')
         else:
@@ -71,8 +74,16 @@ class User(object):
             
     def PUT(self, *path, **queries): 
         """
-        This function modify the personal data of the user
+        Modify the personal data of a specific user.
+
+        Modifications allowed:
+        - userName
+        - password
+        - name
+        - surname
+        - email_address
         """
+
         try: 
             id = queries['id']
         except:
@@ -84,7 +95,7 @@ class User(object):
         users = db["users"]
         
         keys_to_change = input.keys()
-        key_not_allowed = ["id","super_User","greenHouses","timestamp"]
+        key_not_allowed = ["id","super_User","greenHouses","timestamp","country"]
         keys = list(set(keys_to_change)-set(key_not_allowed))
         
         if not keys:
@@ -109,7 +120,11 @@ class User(object):
     
     def DELETE(self, *path, **queries):
         """
-        This function delete an user by id
+        Deletes a specific user and all of 
+        its information in the DB.
+
+        Sends also DELETE messages to the managers
+        to delete the strategies related to the user.
         """
         
         try: 
@@ -158,8 +173,10 @@ class GreenHouse(object):
 
     def GET(self, *path, **queries):
         """
-        Function that get a specific greenhouse or all the greenhouses from an user.
+        Returns a specific greenhouse or all 
+        the greenhouses of an user.
         """
+
         db = json.load(open("src/db/catalog.json", "r"))
         users = db["users"]
         
@@ -187,8 +204,12 @@ class GreenHouse(object):
                         
     def POST(self, *path, **queries):
         """
-        This function create a new greenhouse
+        Creates a new greenhouse for a specific user.
+
+        The greenHouse ID must be "registered" and provided by the system owners
+        before this function is called. 
         """
+
         db = json.load(open("src/db/catalog.json", "r"))
         users = db["users"]
         try:
@@ -233,8 +254,12 @@ class GreenHouse(object):
             
     def PUT(self, *path, **queries): 
         """
-        This function modify the information of the greenhouse
+        Modify the information of a specific greenhouse of an user.
+        
+        Modifications allowed:
+        - greenHouseName
         """
+
         try: 
             id = queries['id']
             greenHouseID = queries['greenHouseID']
@@ -247,7 +272,7 @@ class GreenHouse(object):
         users = db["users"]
         
         keys_to_change = input.keys()
-        key_not_allowed = ["greenHouseID","deviceConnectors", "strategies"]  
+        key_not_allowed = ["greenHouseID","deviceConnectors", "strategies","city"]  
         keys = list(set(keys_to_change)-set(key_not_allowed))
         
         if not keys:
@@ -274,7 +299,11 @@ class GreenHouse(object):
     
     def DELETE(self, *path, **queries):
         """
-        This function delete a greenhouse
+        Deletes a specific greenhouse of an user
+        and all of its information in the DB.
+
+        Sends also DELETE messages to the managers
+        to delete the strategies related to the greenhouse.
         """
         
         try: 
@@ -329,8 +358,12 @@ class Strategy(object):
 
     def GET(self, *path, **queries):
         """
-        Function that get a specific strategy (Irrigation, Environment, Weather) or all the strategies for a specific user and greenhouse.
+        Returns a specific strategy (Irrigation, Environment, Weather)
+        or all the strategies of a specific user and greenhouse.
+
+        Manager mode: dedicated to the strategy managers for boot operations.
         """
+
         db = json.load(open("src/db/catalog.json", "r"))
         users = db["users"]
         
@@ -378,7 +411,7 @@ class Strategy(object):
                                 strategy_dict["greenHouseID"] = greenhouse["greenHouseID"]
                                 strategy_dict["strat"] = greenhouse["strategies"]["weather"]["strat"]
                                 # Must be added the information of the city that is not present inside the strategy in the catalog db 
-                                strategy_dict["city"] = user["city"]
+                                strategy_dict["city"] = greenhouse["city"]
                                 strategy_dict["active"] = greenhouse["strategies"]["weather"]["active"]
                                 strategy_list.append(strategy_dict)
                             else:
@@ -420,8 +453,12 @@ class Strategy(object):
                         
     def POST(self, *path, **queries):
         """
-        This function create a new strategy (if you want to update one strategy you must first delete it and then create a new one)
+        Creates a new strategy for a specific user and greenhouse.
+
+        If you want to update one strategy you must 
+        first delete it and then create a new one.
         """
+
         db = json.load(open("src/db/catalog.json", "r"))
         users = db["users"]
         try:
@@ -535,8 +572,14 @@ class Strategy(object):
 
     def PUT(self, *path, **queries): 
         """
-        This function modify the state of activity of a strategy
+        Modify the state of activity of a strategy
+        of a specific user and greenhouse.
+
+        If the strategy is "irrigation" it can be specified 
+        the state of activity of a single strategy
+        instead that for all of them.
         """
+
         try: 
             id = queries['id']
             greenHouseID = queries['greenHouseID']
@@ -602,7 +645,13 @@ class Strategy(object):
     # For the irrigation strategies you can specify the strategy ID
     def DELETE(self, *path, **queries):
         """
-        This function delete a strategy (if you want to modify one you must delete it before and then create a new one)
+        Deletes a strategy of a specific user and greenhouse.
+
+        If you want to modify one you must 
+        delete it before and then create a new one.
+
+        If the strategy is "irrigation" it can be deleted 
+        just one strategy specifying its ID.
         """
         
         try: 
@@ -698,8 +747,10 @@ class DeviceConnectors(object):
 
     def GET(self, *path, **queries):
         """
-        Function that get the endpoints of the device connectors of a greenhouse.
+        Returns the information of the device connectors
+        of a user greenhouse.
         """
+
         db = json.load(open("src/db/catalog.json", "r"))
         users = db["users"]
         
@@ -745,8 +796,10 @@ class DeviceConnectors(object):
     
     def POST(self, *path, **queries):
         """
-        This function updates and adds to the greenhouses the device connectors
+        Updates and adds to a specific user 
+        greenhouse the device connectors.
         """
+
         db = json.load(open("src/db/catalog.json", "r"))
         input = json.loads(cherrypy.request.body.read())
 
@@ -815,8 +868,9 @@ class Broker(object):
 
     def GET(self, *path, **queries):
         """
-        Function that get the broker endpoints and timestamp
+        Returns the broker endpoints and timestamp.
         """
+
         db = json.load(open("src/db/catalog.json", "r"))
         broker = db["broker"]
         
@@ -827,9 +881,14 @@ class Broker(object):
         This function updates the broker endpoints and timestamp
         (for future developments)
         """
+
         pass
 
 def brokerLoader():
+    """
+    Loads the static endpoints of the broker.
+    """
+
     db = json.load(open("src/db/catalog.json", "r"))
     broker = json.load(open("src/db/broker.json", "r"))
 
@@ -840,14 +899,15 @@ def brokerLoader():
     json.dump(db, open("src/db/catalog.json", "w"), indent=3)
 
 
-# In the POST process the function must create the dictionary structure that will be added to the list in the database (like the managers)
 class ThingSpeakAdaptor(object):
     exposed = True
 
     def GET(self, *path, **queries):
         """
-        Function that get the ThingSpeak adaptors endpoints, functions and timestamp
+        Returns the ThingSpeak adaptors information
+        (endpoints, functions and timestamp).
         """
+
         db = json.load(open("src/db/catalog.json", "r"))
         thingspeak_adaptors = db["thingspeak_adaptors"]
         
@@ -855,8 +915,10 @@ class ThingSpeakAdaptor(object):
     
     def POST(self, *path, **queries):
         """
-        This function updates the ThingSpeak adaptors endpoints and timestamp
+        Updates and adds the ThingSepak adaptor information
+        (endpoints, functions and timestamp).
         """
+
         db = json.load(open("src/db/catalog.json", "r"))
         input = json.loads(cherrypy.request.body.read())
 
@@ -894,14 +956,19 @@ class ThingSpeak(object):
 
     def GET(self, *path, **queries):
         """
-        Function that get the ThingSpeak endpoints and timestamp
+        Returns the ThingSpeak endpoints and timestamp.
         """
+
         db = json.load(open("src/db/catalog.json", "r"))
         thingspeak = db["thingspeak"]
         
         return json.dumps(thingspeak, indent=3)
     
 def thingSpeakLoader():
+    """
+    Loads the static endpoints of ThingSpeak.
+    """
+
     db = json.load(open("src/db/catalog.json", "r"))
     thingspeak = json.load(open("src/db/thingspeak.json", "r"))
 
@@ -918,8 +985,9 @@ class WebPage(object):
 
     def GET(self, *path, **queries):
         """
-        Function that get the webpages endpoints and timestamp
+        Returns the webpages endpoints and timestamp.
         """
+
         db = json.load(open("src/db/catalog.json", "r"))
         webpages = db["webpages"]
         
@@ -927,7 +995,8 @@ class WebPage(object):
     
     def POST(self, *path, **queries):
         """
-        This function updates the webpages endpoints and timestamp
+        Updates the webpages information
+        (endpoints and timestamp).
         """
         pass
 
@@ -937,14 +1006,19 @@ class WeatherAPI(object):
 
     def GET(self, *path, **queries):
         """
-        Function that get the weather API endpoints and timestamp
+        Returns the weather API endpoints and timestamp.
         """
+
         db = json.load(open("src/db/catalog.json", "r"))
         weather_API = db["weather_API"]
         
         return json.dumps(weather_API, indent=3)
     
 def weatherAPILoader():
+    """
+    Loads the static endpoints of the weather API.
+    """
+    
     db = json.load(open("src/db/catalog.json", "r"))
     weather_API = json.load(open("src/db/weatherAPI.json", "r"))
 
@@ -960,8 +1034,10 @@ class IrrigationManager(object):
 
     def GET(self, *path, **queries):
         """
-        Function that get the irrigation managers endpoints and timestamp
+        Returns the irrigation managers information
+        (endpoints, functions and timestamp).
         """
+
         db = json.load(open("src/db/catalog.json", "r"))
         irr_manager = db["managers"]["irrigation"]
         
@@ -969,8 +1045,10 @@ class IrrigationManager(object):
     
     def POST(self, *path, **queries):
         """
-        This function updates and adds the irrigation managers (endpoints, functions and timestamp)
+        Updates and adds the irrigation managers information
+        (endpoints, functions and timestamp).
         """
+
         db = json.load(open("src/db/catalog.json", "r"))
         input = json.loads(cherrypy.request.body.read())
 
@@ -1008,8 +1086,10 @@ class EnvironmentManager(object):
 
     def GET(self, *path, **queries):
         """
-        Function that get the environment managers endpoints and timestamp
+        Returns the environment managers information
+        (endpoints, functions and timestamp).
         """
+
         db = json.load(open("src/db/catalog.json", "r"))
         env_manager = db["managers"]["environment"]
         
@@ -1017,8 +1097,10 @@ class EnvironmentManager(object):
     
     def POST(self, *path, **queries):
         """
-        This function updates and adds the enviroment managers (endpoints, functions and timestamp)
+        Updates and adds the environment managers information
+        (endpoints, functions and timestamp).
         """
+
         db = json.load(open("src/db/catalog.json", "r"))
         input = json.loads(cherrypy.request.body.read())
 
@@ -1056,8 +1138,10 @@ class WeatherManager(object):
 
     def GET(self, *path, **queries):
         """
-        Function that get the weather managers endpoints and timestamp
+        Returns the weather managers information
+        (endpoints, functions and timestamp).
         """
+
         db = json.load(open("src/db/catalog.json", "r"))
         wea_manager = db["managers"]["weather"]
         
@@ -1065,8 +1149,10 @@ class WeatherManager(object):
     
     def POST(self, *path, **queries):
         """
-        This function updates and adds the weather managers (endpoints, functions and timestamp)
+        Updates and adds the weather managers information
+        (endpoints, functions and timestamp).
         """
+
         db = json.load(open("src/db/catalog.json", "r"))
         input = json.loads(cherrypy.request.body.read())
 
@@ -1100,6 +1186,14 @@ class WeatherManager(object):
 
 
 def remove_from_db(category = "", idx = -1):
+    """
+    Remove old information from the DB:
+    - device connector
+    - strategy manager
+    - ThingSpeak adaptor
+    - Webpage
+    """
+
     db = json.load(open("src/db/catalog.json", "r"))
     category = category.split("/")
     
@@ -1133,6 +1227,11 @@ def remove_from_db(category = "", idx = -1):
 
 
 def post_to_manager(strategyType = "", strat_info = {}):
+    """
+    Send a POST message to a specific strategy manager
+    in order to create a new strategy.
+    """
+
     db = json.load(open("src/db/catalog.json", "r"))
 
     # We suppose that there is just one manager per type (and we take just the first of the list)
@@ -1154,15 +1253,17 @@ def post_to_manager(strategyType = "", strat_info = {}):
     elif strategyType == "weather":
         for user in db["users"]:
             if user["id"] == strat_info["userID"]:
-                payload = {
-                    'userID': strat_info["userID"], 
-                    'greenHouseID': strat_info["greenHouseID"],
-                    'active': strat_info["active"],
-                    'temperature': strat_info["temperature"],
-                    "humidity": strat_info["humidity"],
-                    "city": user["city"]
-                }
-                break
+                for greenhouse in user["greenHouses"]:
+                    if greenhouse["greenHouseID"] == strat_info["greenHouseID"]:
+                        payload = {
+                            'userID': strat_info["userID"], 
+                            'greenHouseID': strat_info["greenHouseID"],
+                            'active': strat_info["active"],
+                            'temperature': strat_info["temperature"],
+                            "humidity": strat_info["humidity"],
+                            "city": greenhouse["city"]
+                        }
+                        break
     else:
         payload = {
             'userID': strat_info["userID"], 
@@ -1177,8 +1278,12 @@ def post_to_manager(strategyType = "", strat_info = {}):
     requests.post(url_manager, payload)
 
 
-# We can only change the activity of the strategies, nothing else
 def put_to_manager(strategyType = "", strat_info = {}):
+    """
+    Send a PUT message to a specific strategy manager
+    in order to update the activity state of a strategy.
+    """
+
     db = json.load(open("src/db/catalog.json", "r"))
 
     # We suppose that there is just one manager per type (and we take just the first of the list)
@@ -1217,6 +1322,11 @@ def put_to_manager(strategyType = "", strat_info = {}):
 
 
 def delete_to_manager(strategyType = "", strat_info = {}):
+    """
+    Send a DELETE message to a specific strategy manager
+    in order to delete a strategy.
+    """
+    
     db = json.load(open("src/db/catalog.json", "r"))
 
     # We suppose that there is just one manager per type (and we take just the first of the list)
