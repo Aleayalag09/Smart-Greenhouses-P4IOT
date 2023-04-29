@@ -17,8 +17,10 @@ class RegStrategy(object):
     
     def POST(self, *path, **queries):
         """
-        This function logs a new strategy and updates the state of activity of the greenhouse 
+        Logs a new strategy for a specific user and greenhouse
+        and updates the state of activity of the greenhouse 
         """
+
         global database
         global new_strat
         input = json.loads(cherrypy.request.body.read())
@@ -51,8 +53,10 @@ class RegStrategy(object):
 
     def PUT(self, *path, **queries):
         """
-        This function modify the state of activity of a strategy
+        Modify the state of activity of the strategy 
+        owned by a specific user and greenhouse
         """
+
         global database 
         global new_strat
         input = json.loads(cherrypy.request.body.read())
@@ -75,8 +79,9 @@ class RegStrategy(object):
 
     def DELETE(self, *path, **queries):
         """
-        This function delete a strategy
+        Delete a strategy owned by a specific user and greenhouse
         """
+
         global database
         global new_strat
 
@@ -121,17 +126,25 @@ class MQTT_publisher(object):
         self.client.myPublish(topic, self.__message)
     
         
-# REGISTER CONTINOUSLY THE MANAGER TO THE RESOURCE CATALOG
 def refresh():
+    """
+    Registers the Weather Manager to the
+    Resource Catalog making a post.
+    """
+
     payload = {'ip': "IP of the WeatherManager", 'port': "PORT of the WeatherManager",
                'functions': ["regStrategy"]}
-    url = 'URL of the RESOURCE_CATALOG/POST managers'
+    url = 'URL of the RESOURCE_CATALOG/weather_manager'
     
     requests.post(url, payload)
     
 
-# CONTACT THE GET INTERFACE FOR THE BROKER ON THE CATALOG REST API (obtains ip, port and timestamp for future controls)
 def getBroker():
+    """
+    Retrieves from the Resource Catalog the endpoints
+    (ip, port, timestamp) of the broker used in the system.
+    """
+
     global database
 
     url = 'URL of the RESOURCE_CATALOG/broker'
@@ -151,8 +164,13 @@ def getBroker():
     json.dump(database_dict, open(database, "w"), indent=3)
     
 
-# BOOT FUNCTION USED TO GET ACTIVE STRATEGIES FROM THE RESOURCE CATALOG
 def getStrategies():
+    """
+    Retrieves all the weather strategies plus the 
+    relative city present in the Resource Catalog.
+    Called at the BOOT.
+    """
+
     global database
 
     url = 'URL of the RESOURCE_CATALOG/strategy/manager'
@@ -195,9 +213,10 @@ def getStrategies():
 
 def getlocation(city):
     """
-    This method takes the name of a place and extract the
-    code key of that place.
+    This method takes the name of a place and 
+    extract the code key of that place.
     """   
+
     global api
 
     search_address = 'http://dataservice.accuweather.com/locations/v1/cities/search?apikey='+api+'&q='+city+'&details=true'
@@ -212,6 +231,7 @@ def getWeather(city):
     conditions using the key code of the place 
     and get a json of all the measuraments.
     """
+
     global api
 
     key = getlocation(city)
@@ -222,8 +242,8 @@ def getWeather(city):
 
 def getMeasurements(city):
     """
-    This method extract from a json the measurements that our
-    user is interested to.
+    This method extract from a json the measurements of
+    temperature and humidity of the specified city.
     """
 
     data = getWeather(city)
