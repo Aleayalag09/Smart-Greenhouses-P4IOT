@@ -154,9 +154,19 @@ class User(object):
                         }
                         requests.delete(url_adaptor, payload)
 
-                    delete_to_manager("irrigation", delete_manager_dict)
-                    delete_to_manager("environment", delete_manager_dict)
-                    delete_to_manager("weather", delete_manager_dict)
+                    # We can communicate that the strategy manager is not present if we want 
+                    try:
+                        delete_to_manager("irrigation", delete_manager_dict)
+                    except:
+                        pass
+                    try:
+                        delete_to_manager("environment", delete_manager_dict)
+                    except:
+                        pass
+                    try:
+                        delete_to_manager("weather", delete_manager_dict)
+                    except:
+                        pass
 
                 users.pop(idx)
                 db["users"] = users
@@ -213,13 +223,13 @@ class GreenHouse(object):
         db = json.load(open("src/db/catalog.json", "r"))
         users = db["users"]
         try:
-            id = int(queries['id'])
+            userID = int(queries['id'])
         
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
 
         for user in users:
-            if user['id'] == int(id):
+            if user['id'] == int(userID):
 
                 strat_dict = {
                     "strat": [],
@@ -335,9 +345,19 @@ class GreenHouse(object):
                                 }
                                 requests.delete(url_adaptor, payload)
 
-                            delete_to_manager("irrigation", delete_manager_dict)
-                            delete_to_manager("environment", delete_manager_dict)
-                            delete_to_manager("weather", delete_manager_dict)
+                            # We can communicate that the strategy manager is not present if we want 
+                            try:
+                                delete_to_manager("irrigation", delete_manager_dict)
+                            except:
+                                pass
+                            try:
+                                delete_to_manager("environment", delete_manager_dict)
+                            except:
+                                pass
+                            try:
+                                delete_to_manager("weather", delete_manager_dict)
+                            except:
+                                pass
 
                             user['greenHouses'].pop(idx)
                             user["timestamp"] = time.time()
@@ -518,7 +538,11 @@ class Strategy(object):
                                         'water_quantity': water_quantity,
                                         'activeStrat': activeStrat
                                     }
-                                    post_to_manager("irrigation", post_manager_dict)
+
+                                    try:
+                                        post_to_manager("irrigation", post_manager_dict)
+                                    except:
+                                        pass
 
                                     output=str(type(input))+"<br>"+str(input)
                                     return output
@@ -535,7 +559,7 @@ class Strategy(object):
                                 try:
                                     temperature = input["temperature"]
                                     humidity = input["humidity"]
-                                    active = input["input"]
+                                    active = input["active"]
                                 except:
                                     raise cherrypy.HTTPError(400, 'Wrong parameters')
                                 else:
@@ -559,7 +583,10 @@ class Strategy(object):
                                 db["users"] = users
                                 json.dump(db, open("src/db/catalog.json", "w"), indent=3)
 
-                                post_to_manager(strategyType, post_manager_dict)
+                                try:
+                                    post_to_manager(strategyType, post_manager_dict)
+                                except:
+                                    pass
 
                                 output=str(type(input))+"<br>"+str(input)
                                 return output
@@ -584,7 +611,10 @@ class Strategy(object):
             id = queries['id']
             greenHouseID = queries['greenHouseID']
             strategyType = queries['strategyType']
-            active = queries['active']
+            if queries['active'] == "false":
+                active = False
+            elif queries['active'] == "true":
+                active = True
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
         
@@ -596,9 +626,8 @@ class Strategy(object):
                 if user['id'] == int(id):
                     for greenhouse in user['greenHouses']:
                         if greenhouse['greenHouseID'] == int(greenHouseID):
-                            
+                            flagIrr = False
                             if strategyType == "irrigation":
-                                flagIrr = False
                                 try:
                                     input = json.loads(cherrypy.request.body.read())
                                     strategyID = int(input["strategyID"])
@@ -633,7 +662,11 @@ class Strategy(object):
                                         'greenHouseID': greenHouseID,
                                         'active': active
                                     }
-                                put_to_manager(strategyType, put_manager_dict)
+
+                                try:
+                                    put_to_manager(strategyType, put_manager_dict)
+                                except:
+                                    pass
 
                                 output = str(type(user))+"<br>"+str(user)
                                 return output
@@ -677,7 +710,7 @@ class Strategy(object):
                             
                             if strategyType == "irrigation":
                                 try:
-                                    strategyID = queries["strategyID"]
+                                    strategyID = int(queries["strategyID"])
                                 except:
                                     greenhouse['strategies']['irrigation'] = strat_dict
                                     user["timestamp"] = time.time()
@@ -688,7 +721,11 @@ class Strategy(object):
                                         'userID': id, 
                                         'greenHouseID': greenHouseID
                                     }
-                                    delete_to_manager("irrigation", delete_manager_dict)
+
+                                    try:
+                                        delete_to_manager("irrigation", delete_manager_dict)
+                                    except:
+                                        pass
 
                                     output = str(type(user))+"<br>"+str(user)
                                     return output
@@ -714,7 +751,11 @@ class Strategy(object):
                                             'greenHouseID': greenHouseID,
                                             'stratID': strategyID
                                         }
-                                        delete_to_manager("irrigation", delete_manager_dict)
+
+                                        try:
+                                            delete_to_manager("irrigation", delete_manager_dict)
+                                        except:
+                                            pass
 
                                         output = str(type(user))+"<br>"+str(user)
                                         return output
@@ -732,7 +773,11 @@ class Strategy(object):
                                         'userID': id, 
                                         'greenHouseID': greenHouseID
                                     }
-                                    delete_to_manager(strategyType, delete_manager_dict)
+
+                                    try:
+                                        delete_to_manager(strategyType, delete_manager_dict)
+                                    except:
+                                        pass
 
                                     output = str(type(user))+"<br>"+str(user)
                                     return output
