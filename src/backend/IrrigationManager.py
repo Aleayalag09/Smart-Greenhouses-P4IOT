@@ -49,7 +49,7 @@ class RegStrategy(object):
         if activeIrr == False:
             for strat in database_dict["strategies"]:
                 split_topic = strat["topic"].split("/")
-                if split_topic[0] == userID and split_topic[1] == greenHouseID:
+                if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID:
                     strat["active"] = activeIrr
 
         new_strat = True
@@ -78,12 +78,12 @@ class RegStrategy(object):
         except:
             for strat in database_dict["strategies"]:
                 split_topic = strat["topic"].split("/")
-                if split_topic[0] == userID and split_topic[1] == greenHouseID:
+                if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID:
                     strat["active"] = activeIrr
         else:
             for strat in database_dict["strategies"]:
                 split_topic = strat["topic"].split("/")
-                if split_topic[0] == userID and split_topic[1] == greenHouseID and split_topic[3] == stratID:
+                if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID and int(split_topic[3]) == stratID:
                     strat["active"] = activeStrat
         
         new_strat = True
@@ -115,7 +115,7 @@ class RegStrategy(object):
                 idxs = []
                 for idx, strat in enumerate(database_dict["strategies"]):
                     split_topic = strat["topic"].split("/")
-                    if split_topic[0] == userID and split_topic[1] == greenHouseID:
+                    if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID:
                         idxs.append(idx)
 
                 for idx in idxs:
@@ -139,7 +139,7 @@ class RegStrategy(object):
 
             for strat in database_dict["strategies"]:
                 split_topic = strat["topic"].split("/")
-                if split_topic[0] == userID and split_topic[1] == greenHouseID and int(split_topic[3]) > stratID:
+                if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID and int(split_topic[3]) > stratID:
                     strat["topic"] = userID+"/"+greenHouseID+"/irrigation/"+str(int(split_topic[3])-1)
             
             new_strat = True

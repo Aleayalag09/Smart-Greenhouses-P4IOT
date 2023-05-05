@@ -71,7 +71,7 @@ class RegStrategy(object):
         else:
             for strat in database_dict["strategies"]:
                 split_topic = strat["topic"].split("/")
-                if split_topic[0] == userID and split_topic[1] == greenHouseID:
+                if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID:
                     strat["active"] = active
         
         new_strat = True

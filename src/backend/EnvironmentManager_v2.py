@@ -87,7 +87,7 @@ class RegStrategy(object):
         else:
             for strat in database_dict["strategies"]:
                 split_topic = strat["topic_sens"]["topic_temp"].split("/")
-                if split_topic[0] == userID and split_topic[1] == greenHouseID:
+                if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID:
                     strat["active"] = active
         
         new_strat = True
@@ -346,7 +346,7 @@ if __name__=="__main__":
                         new_measures["new"] = False
 
                         for temp in actual_temp:
-                            if temp["userID"] == split_topic[0] and temp["greenHouseID"] == split_topic[1]:
+                            if temp["userID"] == int(split_topic[0]) and temp["greenHouseID"] == int(split_topic[1]):
 
                                 if temp["temperature"] > percentange*strat["temperature"] or temp["temperature"] < percentange*strat["temperature"]:
                                     mqtt_handler.publish(strat["topic_act"]["topic_temp"], strat["temperature"])
@@ -358,7 +358,7 @@ if __name__=="__main__":
                         new_measures["new"] = False
 
                         for hum in actual_hum:
-                            if hum["userID"] == split_topic[0] and hum["greenHouseID"] == split_topic[1]:
+                            if hum["userID"] == int(split_topic[0]) and hum["greenHouseID"] == int(split_topic[1]):
 
                                 if hum["humidity"] > percentange*strat["humidity"] or hum["humidity"] < percentange*strat["humidity"]:
                                     mqtt_handler.publish(strat["topic_act"]["topic_hum"], strat["humidity"])
