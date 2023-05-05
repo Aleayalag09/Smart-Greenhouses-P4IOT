@@ -103,12 +103,12 @@ class Environment(object):
         
         # To not overload the weather API            
         if self.flag:
-            self.city_temperature, self.city_humidiy = self.city_measurements()
+            self.city_temperature, self.city_humidity = self.city_measurements()
             self.flag = 0
             
         time_passed = actual_time - self.last_change  
         
-        window_humidity = window_intensity*((self.city_humidiy - self.humidity)/self.window_factor)*time_passed + self.humidity
+        window_humidity = window_intensity*((self.city_humidity - self.humidity)/self.window_factor)*time_passed + self.humidity
         humidifier_humidity = humidifier_intensity*self.humidifier_humidity_countribuition
         pump_humidity = pump_intensity*self.pump_humidity_countribuition
         
