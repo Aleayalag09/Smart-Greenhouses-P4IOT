@@ -157,14 +157,17 @@ class User(object):
                     # We can communicate that the strategy manager is not present if we want 
                     try:
                         delete_to_manager("irrigation", delete_manager_dict)
+                        delete_to_dev_conn("irrigation", delete_manager_dict)
                     except:
                         pass
                     try:
                         delete_to_manager("environment", delete_manager_dict)
+                        delete_to_dev_conn("environment", delete_manager_dict)
                     except:
                         pass
                     try:
                         delete_to_manager("weather", delete_manager_dict)
+                        delete_to_dev_conn("weather", delete_manager_dict)
                     except:
                         pass
 
@@ -348,14 +351,17 @@ class GreenHouse(object):
                             # We can communicate that the strategy manager is not present if we want 
                             try:
                                 delete_to_manager("irrigation", delete_manager_dict)
+                                delete_to_dev_conn("irrigation", delete_manager_dict)
                             except:
                                 pass
                             try:
                                 delete_to_manager("environment", delete_manager_dict)
+                                delete_to_dev_conn("environment", delete_manager_dict)
                             except:
                                 pass
                             try:
                                 delete_to_manager("weather", delete_manager_dict)
+                                delete_to_dev_conn("weather", delete_manager_dict)
                             except:
                                 pass
 
@@ -541,6 +547,7 @@ class Strategy(object):
 
                                     try:
                                         post_to_manager("irrigation", post_manager_dict)
+                                        post_to_dev_conn("irrigation", post_manager_dict)
                                     except:
                                         pass
 
@@ -585,6 +592,7 @@ class Strategy(object):
 
                                 try:
                                     post_to_manager(strategyType, post_manager_dict)
+                                    post_to_dev_conn(strategyType, post_manager_dict)
                                 except:
                                     pass
 
@@ -724,6 +732,7 @@ class Strategy(object):
 
                                     try:
                                         delete_to_manager("irrigation", delete_manager_dict)
+                                        delete_to_dev_conn("irrigation", delete_manager_dict)
                                     except:
                                         pass
 
@@ -735,27 +744,48 @@ class Strategy(object):
                                     except:
                                         raise cherrypy.HTTPError(400, 'Strategy not found')
                                     else:
+                                        delete_manager_dict = {
+                                            'userID': id, 
+                                            'greenHouseID': greenHouseID,
+                                            'stratID': strategyID
+                                        }
+                                        try:
+                                            delete_to_manager("irrigation", delete_manager_dict)
+                                            delete_to_dev_conn("irrigation", delete_manager_dict)
+                                        except:
+                                            pass
+
                                         for i in range(len(greenhouse['strategies']['irrigation']['strat'])):
                                             if i>strategyID:
                                                 index = int(greenhouse['strategies']['irrigation']['strat'][i]["id"]) - 1
                                                 greenhouse['strategies']['irrigation']['strat'][i]["id"] = index
+                                                
+                                                # Since we update the IDs in the catalog DB we have to update them also in the irrigation
+                                                # manager and the device connector (we delete the older and create a new one with the
+                                                # updated ID)  
+                                                delete_manager_dict["stratID"] = (index+1)
+                                                post_manager_dict = {
+                                                    'userID': id, 
+                                                    'greenHouseID': greenHouseID,
+                                                    'active': greenhouse['strategies']['irrigation']['active'], 
+                                                    'stratID': index,
+                                                    'time': greenhouse['strategies']['irrigation']['strat'][i]["time"], 
+                                                    'water_quantity': greenhouse['strategies']['irrigation']['strat'][i]["water_quantity"],
+                                                    'activeStrat': greenhouse['strategies']['irrigation']['strat'][i]["active"]
+                                                }
+                                                try:
+                                                    delete_to_manager("irrigation", delete_manager_dict)
+                                                    delete_to_dev_conn("irrigation", delete_manager_dict)
+                                                    post_to_manager("irrigation", post_manager_dict)
+                                                    post_to_dev_conn("irrigation", post_manager_dict)
+                                                except:
+                                                    pass
 
                                         greenhouse['strategies']['irrigation']['strat'].pop(strategyID)
                                         greenhouse['strategies']['irrigation']["timestamp"] = time.time()
                                         user["timestamp"] = time.time()
                                         db["users"] = users
                                         json.dump(db, open("src/db/catalog.json", "w"), indent=3)
-
-                                        delete_manager_dict = {
-                                            'userID': id, 
-                                            'greenHouseID': greenHouseID,
-                                            'stratID': strategyID
-                                        }
-
-                                        try:
-                                            delete_to_manager("irrigation", delete_manager_dict)
-                                        except:
-                                            pass
 
                                         output = str(type(user))+"<br>"+str(user)
                                         return output
@@ -776,6 +806,7 @@ class Strategy(object):
 
                                     try:
                                         delete_to_manager(strategyType, delete_manager_dict)
+                                        delete_to_dev_conn(strategyType, delete_manager_dict)
                                     except:
                                         pass
 
@@ -1400,6 +1431,79 @@ def delete_to_manager(strategyType = "", strat_info = {}):
         
     # We suppose that the managers can have just one function (regStrategy)
     url = manager_info["ip"]+":"+str(manager_info["port"])+"/"+manager_info["functions"][0]
+    requests.delete(url, params=params)
+
+
+def post_to_dev_conn(strategyType = "", strat_info = {}):
+    """
+    Send a POST message to a specific device connector
+    in order to create a strategy.
+    """
+    
+    db = json.load(open("src/db/catalog.json", "r"))
+
+    # We suppose that there is just one device connector per greenhouse (and we take just the first of the list)
+    try:
+        for user in db["users"]:
+            if user["id"] == strat_info["userID"]:
+                for greenhouse in user["greenHouses"]:
+                    if greenhouse["greenHouseID"] == strat_info["greenHouseID"]:
+
+                        dev_conn_info = greenhouse["deviceConnectors"][0]
+    except:
+        raise Exception("No device connector present for that user and greenhouse")
+    
+    if strategyType == "irrigation":
+        payload = {
+            'strategyType': "irrigation", 
+            'stratID': strat_info["stratID"]
+        }
+    else:
+        payload = {
+            'strategyType': strategyType, 
+        }
+        
+    # We suppose that the device connectors have as the first function the function to manage the strategies (regStrategy)
+    url = dev_conn_info["ip"]+":"+str(dev_conn_info["port"])+"/"+dev_conn_info["functions"][0]
+    requests.post(url, payload)
+
+
+def delete_to_dev_conn(strategyType = "", strat_info = {}):
+    """
+    Send a DELETE message to a specific device connector
+    in order to delete a strategy.
+    """
+    
+    db = json.load(open("src/db/catalog.json", "r"))
+
+    # We suppose that there is just one device connector per greenhouse (and we take just the first of the list)
+    try:
+        for user in db["users"]:
+            if user["id"] == strat_info["userID"]:
+                for greenhouse in user["greenHouses"]:
+                    if greenhouse["greenHouseID"] == strat_info["greenHouseID"]:
+
+                        dev_conn_info = greenhouse["deviceConnectors"][0]
+    except:
+        raise Exception("No device connector present for that user and greenhouse")
+    
+    if strategyType == "irrigation":
+        try:
+            params = {
+                'strategyType': "irrigation", 
+                'stratID': strat_info["stratID"]
+            }
+        except:
+            params = {
+                'strategyType': "irrigation"
+            }
+    else:
+        params = {
+            'strategyType': strategyType, 
+        }
+        
+    # We suppose that the device connectors have as the first function the function to manage the strategies (regStrategy)
+    url = dev_conn_info["ip"]+":"+str(dev_conn_info["port"])+"/"+dev_conn_info["functions"][0]
     requests.delete(url, params=params)
 
 
