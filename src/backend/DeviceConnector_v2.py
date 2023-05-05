@@ -2,79 +2,98 @@ import json
 import time
 import requests
 import cherrypy
+import Devices
 
 from MQTT.MyMQTT import *
 
 database = "src/db/device_connector_db.json"
 resourceCatalogIP = ""
+new_strat = False
 
-class Device():
-    def __init__(self, userID, greenHouseID, deviceID, city):
-        self.path = '/' + str(userID) + '/' + str(greenHouseID) + '/' + str(deviceID)
-        self.measurements = {}
-        self.actuators = {}
-        self.meteorological_measurements = {}
-        self.__api = 'YOUR_API_KEY'
-        self.city = city
+class RegStrategy(object):
+    exposed = True
+ 
+    def POST(self, *path, **queries):
+        """
+        Logs a new strategy and updates the state of activity of the greenhouse. 
+        """
 
+        global database
+        global new_strat
+        input = json.loads(cherrypy.request.body.read())
+        db = json.load(open(database, "r"))
+
+        try:
+            strategyType = input['strategyType']
+            # Check if the strategy type taken from the input exist in the dev conn database
+            db["strategies"][strategyType]
+        except:
+            raise cherrypy.HTTPError(400, 'Wrong input')
         
-    def initActuators(self,actuators):
-        """
-        This method initialize the possible actuators
-        that a device could have
-        """
-        for actuator in actuators:
-            self.actuators[actuator] = 0  
-            
-    def readMeasurement(self):
-        """
-        This method simulates the read of the measurements. 
-        """
-        actuators = self.actuators.keys()
-        measurements = self.measurements.keys()
-        if "Window" in actuators and self.actuators['Window'] == 1:
-            #Here should call the method environmentMeasurements, however the free trial doesn't allow too many requests.
-            for measure in measurements:
-                self.measurements[measure] = (self.measurements[measure] + self.meteorological_measurements[measure]) / 2
+        if strategyType == "irrigation":
+            try:
+                strategyID = input["stratID"]
+            except:
+                raise cherrypy.HTTPError(400, 'Missing input')
+            else:
+                newStrategy_topic = str(db["userID"])+"/"+str(db["greenHouseID"])+"/irrigation/"+str(strategyID)
+                mqtt_handler.subscribe(newStrategy_topic)
+
+        elif strategyType == "environment":
+            newStrategy_topic_temp = str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/temperature"
+            newStrategy_topic_hum = str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/humidity"
+            mqtt_handler.subscribe(newStrategy_topic_temp)
+            mqtt_handler.subscribe(newStrategy_topic_hum)
         else:
-            if "Humidifier" in actuators and self.actuators['Humidifier'] == 1:
-                if "Humidity" in measurements:
-                    self.measurements['Humidity'] = self.measurements["Humidity"] + "x" #insert value
-                if "Temperature" in measurements:
-                    self.measurements['Temperature'] = self.measurements["Temperature"] + "x" #insert value
-            #Keep with each actuator, each variable that affects            
-            pass
-            
-    def updateActuators(self):
+            newStrategy_topic = str(db["userID"])+"/"+str(db["greenHouseID"])+"/"+strategyType
+            mqtt_handler.subscribe(newStrategy_topic)
+
+        # Subscribe to the MQTT topics
+
+        db["strategies"][strategyType].append(newStrategy_topic)
+
+        new_strat = True
+        json.dump(db, open(database, "w"), indent=3)
+
+    def DELETE(self, *path, **queries):
         """
-        This method change the values of each actuator.
+        Delete a strategy.
         """
-        pass
-    
-    def environmentMeasurements(self):
-        """
-        This method get the weather variables of the city.
-        """
-        self.meteorological_measurements = self.getMeasurements()
-    
-    def sentMeasurements(self):
-        """
-        This method will change depending on the communication of the device.
-        """
-    
-    # WHY FROM A JSON?
-    def getMeasurements(self):
-        """
-        This method extract from a json the measurements that our
-        user is interest.
-        """
-        data = self.getWeather()
-        temperature = data[0]['Temperature']['Metric']['Value']
-        humidity = data[0]['RelativeHumidity'] / 100
-        new_data = {}
-        new_data["Temperature"] = temperature
-        new_data["Humidity"] = humidity
-        return new_data
+
+        global database
+        global new_strat
+        db = json.load(open(database, "r"))
+
+        try:
+            strategyType = queries['strategyType']
+            db["strategies"][strategyType]
+        except:
+            raise cherrypy.HTTPError(400, 'Bad request')
+
+        if strategyType == "irrigation":
+            try:
+                strategyID = queries["stratID"]
+            except:
+                db["strategies"]["irrigation"] = []
+            else:
+                for step, topic in enumerate(db["strategies"]["irrigation"]):
+                    split_topic = topic.split("/")
+                    if int(split_topic[3]) == strategyID:
+                        db["strategies"]["irrigation"].pop(step)
+                        mqtt_handler.unsubscribe(topic)
+                        break
+                    
+        elif strategyType == "environment":
+            mqtt_handler.unsubscribe(db["strategies"]["environment"][0])
+            mqtt_handler.unsubscribe(db["strategies"]["environment"][1])
+            db["strategies"]["environment"] = []
+        else:
+            mqtt_handler.unsubscribe(db["strategies"][strategyType][0])
+            db["strategies"][strategyType] = []
+
+        new_strat = True
+        json.dump(db, open(database, "w"), indent=3)
+
 
 class MQTT_subscriber_publisher(object):
     def __init__(self, broker, port):
@@ -166,19 +185,36 @@ def BOOT_FUNCTION():
                         
 if __name__ == '__main__':
 
-    last_refresh = time.time() 
-    # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
-    refresh()
+    conf = {
+        '/': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
+            'tools.sessions.on': True,
+        }
+    }
+    cherrypy.tree.mount(RegStrategy(), '/regStrategy', conf)
+
+    cherrypy.config.update({'server.socket_host': '127.0.0.1'})
+    cherrypy.config.update({'server.socket_port': 8080})
+
+    cherrypy.engine.start()
+    # cherrypy.engine.block()
 
     # CAN THE MQTT BROKER CHANGE THROUGH TIME? I SUPPOSE NOT IN THIS CASE
     getBroker()
 
-    # BOOT FUNCTION TO RETRIEVE STARTING TOPICS
-    BOOT_FUNCTION()
-
-    refresh_freq = 60
-    
     broker_dict = json.load(open(database, "r"))["broker"]
     
+    mqtt_handler = MQTT_subscriber_publisher()
+    mqtt_handler.__init__(broker_dict["broker"], broker_dict["port"])
+    mqtt_handler.start()
+
+    last_refresh = time.time() 
+    # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
+    refresh()
+
+    # BOOT FUNCTION TO RETRIEVE STARTING STRATEGIES
+    BOOT_FUNCTION()
+
+    strategies = json.load(open(database, "r"))["strategies"]
         
         
