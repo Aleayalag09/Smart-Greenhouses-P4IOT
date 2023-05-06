@@ -154,8 +154,8 @@ class MQTT_subscriber_publisher(object):
         try:
             # Unit of measure of the measure
             # unit = measure['unit']
-            value = measure['value']
-            timestamp = measure['timestamp']
+            value = measure['e']['v']
+            timestamp = measure['e']['t']
         except:
             raise cherrypy.HTTPError(400, 'Wrong parameters')
 
@@ -181,9 +181,14 @@ def refresh():
     Registers the Environment Manager to the
     Resource Catalog making a post.
     """
+    global database
+    db = json.load(open(database, "r"))
 
-    payload = {'ip': "IP of the EnvironmentManager", 'port': "PORT of the EnvironmentManager",
-               'functions': ["regStrategy"]}
+    payload = {
+        'ip': db["ip"], 
+        'port': db["port"],
+        'functions': ["regStrategy"]}
+    
     url = 'URL of the RESOURCE_CATALOG/environment_manager'
     
     requests.post(url, payload)

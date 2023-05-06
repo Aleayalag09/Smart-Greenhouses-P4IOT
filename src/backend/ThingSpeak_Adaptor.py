@@ -111,8 +111,14 @@ def refresh():
     Resource Catalog making a post 
     """
 
-    payload = {'ip': "IP of the ThingSpeak_Adaptor", 'port': "PORT of the ThingSpeak_Adaptor",
-               'functions': [""]}
+    global database
+    db = json.load(open(database, "r"))
+
+    payload = {
+        'ip': db["ip"], 
+        'port': db["port"],
+        'functions': [""]}
+    
     url = 'URL of the RESOURCE_CATALOG/thingspeak_adaptor'
     
     requests.post(url, payload)
