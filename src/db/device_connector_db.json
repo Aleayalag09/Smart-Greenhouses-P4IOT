@@ -1,4 +1,7 @@
 {
+    "ip": "",
+    "port": -1, 
+    
     "broker": {
 
         "ip": "test.mosquitto.org",

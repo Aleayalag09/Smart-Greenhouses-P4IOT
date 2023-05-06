@@ -14,7 +14,8 @@
             "humidity": 0.2,
             "city": "Loano",          
             "active": false,
-            "timestamp": 1663497809.8657904 
+            "timestamp": 1663497809.8657904,
+            "open": false
         },
 
         {
@@ -23,7 +24,8 @@
             "humidity": 0.2,
             "city": "Loano",            
             "active": false,
-            "timestamp": 1663497809.8657904 
+            "timestamp": 1663497809.8657904,
+            "open": false
         },
 
         {
@@ -32,7 +34,8 @@
             "humidity": -1,
             "city": "",
             "active": false,
-            "timestamp": 1663497809.8657904 
+            "timestamp": 1663497809.8657904,
+            "open": false 
         }
     ]
 }
