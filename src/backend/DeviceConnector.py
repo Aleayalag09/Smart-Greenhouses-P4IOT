@@ -82,7 +82,7 @@ class RegStrategy(object):
                         db["strategies"]["irrigation"].pop(step)
                         mqtt_handler.unsubscribe(topic)
                         break
-                    
+
         elif strategyType == "environment":
             mqtt_handler.unsubscribe(db["strategies"]["environment"][0])
             mqtt_handler.unsubscribe(db["strategies"]["environment"][1])
@@ -93,6 +93,7 @@ class RegStrategy(object):
 
         new_strat = True
         json.dump(db, open(database, "w"), indent=3)
+
 
 
 class MQTT_subscriber_publisher(object):
@@ -117,27 +118,23 @@ class MQTT_subscriber_publisher(object):
     def notify(self, topic, payload):
         global database
 
-        # measure = json.loads(payload)
-        # # [0]: userID, [1]: greenHouseID, [2]: "sensors", [3]: sensor type (temperature/humidity)
-        # topic = topic.split("/")
+        measure = json.loads(payload)
+        # [0]: userID, [1]: greenHouseID, [2]: actuator type (temperature/humidity/weather/irrigation)
+        topic = topic.split("/")
 
-        # try:
-        #     # Unit of measure of the measure
-        #     # unit = measure['unit']
-        #     value = measure['value']
-        #     timestamp = measure['timestamp']
-        # except:
-        #     raise cherrypy.HTTPError(400, 'Wrong parameters')
+        try:
+            value = measure['e']['v']
+            timestamp = measure['e']['t']
+        except:
+            raise cherrypy.HTTPError(400, 'Wrong parameters')
+        
+        # THE FUNCTION setActuator OF DEVICES TAKES THE ACTUATOR TYPE, THE VALUE TO BE SET
+        # AND OUTPUTS THE RESULT OF THE OPERATION (the value that was set, C° for temp, ON/OFF for weather, ...)
+        result = Devices.setActuator(topic[2], value)
 
-        # db = json.load(open(database, "r"))
-        # for actualValues in db["actual_"+topic[3]]:
-        #     if actualValues["userID"] == topic[0] and actualValues["greenHouseID"] == topic[1]:
-        #         actualValues[topic[3]] = value
-        #         actualValues["timestamp"] = timestamp
-        #         new_measures["new"] = True
-        #         new_measures[topic[3]] = True
-        #         break
-        # json.dump(db, open(database, "w"), indent=3)
+        # If the command was successfull it should be seen from the UTILITY TOPIC of the actuator
+        # THE UTILITY TOPIC SHOULD BE ACCESSED TO SEE IF THE STRATEGIES' COMMAND WERE SUCCESSFULL
+        mqtt_handler.publish(topic[0]+"/"+topic[1]+"/"+topic[2]+"/utility", result, "utility")
 
     def publish(self, topic, value, measureType):
         self.__message["bn"] = measureType
@@ -147,17 +144,36 @@ class MQTT_subscriber_publisher(object):
         self.client.myPublish(topic, self.__message)
 
 
-# REGISTER CONTINOUSLY THE MANAGER TO THE RESOURCE CATALOG
+
 def refresh():
-    payload = {'ip': "IP of the DeviceConnector", 'port': "PORT of the DeviceConnector",
-               'functions': [""]}
+    """
+    Registers the Weather Manager to the
+    Resource Catalog making a post.
+    """
+
+    global database
+    db = json.load(open(database, "r"))
+
+    payload = {
+        "userID": db["userID"],
+        "greenHouseID": db["greenHouseID"], 
+        'ip': db["ip"], 
+        'port': db["port"],
+        "sensors": db["devices"]["sensors"],
+        "actuators": db["devices"]["actuators"], 
+        'functions': ["regStrategy"]}
+    
     url = 'URL of the RESOURCE_CATALOG/device_connectors'
     
     requests.post(url, payload)
 
 
-# CONTACT THE GET INTERFACE FOR THE BROKER ON THE CATALOG REST API (obtains ip, port and timestamp for future controls)
 def getBroker():
+    """
+    Retrieves from the Resource Catalog the endpoints
+    (ip, port, timestamp) of the broker used in the system.
+    """
+
     global database
 
     url = 'URL of the RESOURCE_CATALOG/broker'
@@ -165,8 +181,7 @@ def getBroker():
 
     try:
         ip = broker['ip']
-        port = broker["port"]
-    
+        port = broker["port"]   
     except:
         raise cherrypy.HTTPError(400, 'Wrong parameters')
 
@@ -177,9 +192,65 @@ def getBroker():
     json.dump(database_dict, open(database, "w"), indent=3)
 
 
-# FUNCTION NEEDED AT THE BOOT TO REGISTER ALL THE DEVICES THIS SCRIPT CAN CONTROL
-def BOOT_FUNCTION():
-    pass
+def getStrategies():
+    """
+    Retrieves all the strategies for the specific
+    user ID and greenhouse ID in the Resource Catalog.
+    Called at the BOOT.
+    """
+
+    global database
+    db = json.load(open(database, "r"))
+
+    url = 'URL of the RESOURCE_CATALOG/strategies'
+    params = {"id": db["userID"], "greenHouseID": db["greenHouseID"], "strategyType": "all"}
+    strategies = requests.get(url, params=params).json()
+
+    try:
+        irr_strat = strategies["irrigation"]
+        env_strat = strategies["environment"]
+        wea_strat = strategies["weather"]
+    except:
+        raise cherrypy.HTTPError(400, 'Wrong parameters')
+    
+    if irr_strat["strat"] != []:
+        for strat in irr_strat["strat"]:
+            topic = str(db["userID"])+"/"+str(db["greenHouseID"])+"/irrigation/"+str(strat["id"])
+            db["strategies"]["irrigation"].append(topic)
+
+    if env_strat["strat"] != []:
+        for strat in env_strat["strat"]:
+            topic_temp = str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/temperature"
+            topic_hum = str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/humidity"
+            db["strategies"]["environment"].append(topic_temp)
+            db["strategies"]["environment"].append(topic_hum)
+
+    if wea_strat["strat"] != []:
+        for strat in wea_strat["strat"]:
+            topic = str(db["userID"])+"/"+str(db["greenHouseID"])+"/weather"
+            db["strategies"]["weather"].append(topic)
+
+    json.dump(db, open(database, "w"), indent=3)
+
+
+
+def publishSensorMeasure(sensor):
+    """
+    Publish the measure of the sensor passed in the input
+    """
+    
+    global database
+    db = json.load(open(database, "r"))
+    
+    timestamp = time.time()
+
+    topic = str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"+sensor
+    # THE FUNCTION getMeasure OF DEVICES TAKES THE MEASURE TYPE (temperature or humidity) AND THE TIMESTAMP (the function should
+    # be based on some time values in order to produce realistic measures) AND OUTPUTS THE FLOAT VALUE OF THE MEASURE REQUIRED
+    value = Devices.getMeasure(sensor, timestamp)
+
+    mqtt_handler.publish(topic, value, sensor)
+
 
     
                         
@@ -209,12 +280,35 @@ if __name__ == '__main__':
     mqtt_handler.start()
 
     last_refresh = time.time() 
+    last_measure = time.time() 
     # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
     refresh()
 
     # BOOT FUNCTION TO RETRIEVE STARTING STRATEGIES
-    BOOT_FUNCTION()
+    getStrategies()
 
-    strategies = json.load(open(database, "r"))["strategies"]
+    refresh_freq = 60
+    measure_freq = 90
+
+    sensors = json.load(open(database, "r"))["devices"]["sensors"]
+
+    while True:
+        timestamp = time.time()
+
+        if timestamp-last_refresh >= refresh_freq:
+
+            last_refresh = time.time()
+            refresh()
+
+        if timestamp-last_measure >= measure_freq:
+
+            last_measure = time.time()
+            for sensor in sensors:
+
+                publishSensorMeasure(sensor)
+            
+
+
+
         
         
