@@ -171,9 +171,15 @@ def refresh():
     Registers the Irrigation Manager to the
     Resource Catalog making a post.
     """
+    
+    global database
+    db = json.load(open(database, "r"))
 
-    payload = {'ip': "IP of the IrrigationManager", 'port': "PORT of the IrrigationManager",
-               'functions': ["regStrategy"]}
+    payload = {
+        'ip': db["ip"], 
+        'port': db["port"],
+        'functions': ["regStrategy"]}
+    
     url = 'URL of the RESOURCE_CATALOG/irrigation_manager'
     
     requests.post(url, payload)

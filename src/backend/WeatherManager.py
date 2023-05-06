@@ -44,7 +44,8 @@ class RegStrategy(object):
             "humidity": humidity,
             "city" : city,
             "active": active,
-            "timestamp": time.time()
+            "timestamp": time.time(),
+            "open": False
         }
         database_dict["strategies"].append(new_strategy)
 
@@ -132,8 +133,14 @@ def refresh():
     Resource Catalog making a post.
     """
 
-    payload = {'ip': "IP of the WeatherManager", 'port': "PORT of the WeatherManager",
-               'functions': ["regStrategy"]}
+    global database
+    db = json.load(open(database, "r"))
+
+    payload = {
+        'ip': db["ip"], 
+        'port': db["port"],
+        'functions': ["regStrategy"]}
+    
     url = 'URL of the RESOURCE_CATALOG/weather_manager'
     
     requests.post(url, payload)
@@ -184,7 +191,8 @@ def getStrategies():
         "humidity": -1,
         "city": "",
         "active": False,
-        "timestamp": -1 
+        "timestamp": -1,
+        "open": False
     }
     for strat in strategies:
         try:
@@ -301,16 +309,33 @@ if __name__ == '__main__':
 
         if new_strat:
 
-            strategies = json.load(open(database, "r"))["strategies"]
+            db = json.load(open(database, "r"))
             new_strat = False
 
-        for strat in strategies:
+        for strat in db["strategies"]:
             
             if strat["active"] == True:
                 temperature, humidity = getMeasurements(strat['city'])
-                if temperature*(percentange) <= strat['temperature'] <= temperature*(2 - percentange) and humidity*(percentange) <= strat['humidity'] <= humidity*(2 - percentange):
-                    # Still we have to see how the device connector is going to receive this message
-                    publisher.publish(strat["topic"], 'open_window')
+
+                # If the window is open we control if it should be closed
+                if strat["open"] == True:
+                    if strat["temperature"] < temperature*(percentange) or strat["temperature"] > temperature*(2 - percentange) or \
+                    strat['humidity'] < humidity*(percentange) or strat['humidity'] > humidity*(2 - percentange):
+                        publisher.publish(strat["topic"], 'close')
+                        strat["open"] = False
+                        new_strat = True
+                # If the window is closed we control if it should be opened
+                else: 
+                    if temperature*(percentange) <= strat['temperature'] <= temperature*(2 - percentange) and humidity*(percentange) <= strat['humidity'] <= humidity*(2 - percentange):
+                        # Still we have to see how the device connector is going to receive this message
+                        publisher.publish(strat["topic"], 'open')
+                        strat["open"] = True
+                        new_strat = True
+
+        if new_strat == True:
+            json.dump(db, open(database, "w"), indent=3)
+
+                
     
     
     
