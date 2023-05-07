@@ -6,6 +6,7 @@ import json
 
 from MQTT.MyMQTT import *
 
+# Global variables
 new_strat = False
 new_measures = {
     "new": False,
@@ -15,6 +16,7 @@ new_measures = {
 database = "src/db/environment_manager_db.json"
 resourceCatalogIP = ""
 
+# Define a CherryPy class for handling strategy registration
 class RegStrategy(object):
     exposed = True
  
@@ -37,13 +39,18 @@ class RegStrategy(object):
         except:
             raise cherrypy.HTTPError(400, 'Wrong input')
         
+        
+        # Generate topic strings based on user and greenhouse IDs
         topic_act_temp = str(userID)+"/"+str(greenHouseID)+"/environment/temperature"
         topic_act_hum = str(userID)+"/"+str(greenHouseID)+"/environment/humidity"
 
         topic_sens_temp = str(userID)+"/"+str(greenHouseID)+"/sensors/temperature"
         topic_sens_hum = str(userID)+"/"+str(greenHouseID)+"/sensors/humidity"
+        
+        # Load the database JSON
         database_dict = json.load(open(database, "r"))
-    
+
+        # Create a new strategy object
         new_strategy = {
             "topic_sens": {
                 "topic_temp": topic_sens_temp, 
@@ -58,10 +65,12 @@ class RegStrategy(object):
             "active": active, 
             "timestamp": time.time()
         }
+
         # Subscribe to the MQTT topics of humidity and temperature
         mqtt_handler.subscribe(topic_sens_temp)
         mqtt_handler.subscribe(topic_sens_hum)
 
+        # Add the new strategy to the database
         database_dict["strategies"].append(new_strategy)
 
         new_strat = True
@@ -78,6 +87,7 @@ class RegStrategy(object):
         input = json.loads(cherrypy.request.body.read())
         database_dict = json.load(open(database, "r"))
 
+        # Extract input parameters from the request
         try:
             userID = input['userID']
             greenHouseID = input['greenHouseID']
@@ -85,6 +95,7 @@ class RegStrategy(object):
         except:
             raise cherrypy.HTTPError(400, 'Wrong input')
         else:
+            # Update the state of activity for the matching strategy
             for strat in database_dict["strategies"]:
                 split_topic = strat["topic_sens"]["topic_temp"].split("/")
                 if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID:
@@ -100,7 +111,8 @@ class RegStrategy(object):
 
         global database
         global new_strat
-
+        
+        # Extract input parameters from the request
         try:
             userID = queries['userID']
             greenHouseID = queries['greenHouseID']
@@ -111,6 +123,7 @@ class RegStrategy(object):
 
         idx = 0
         for strat in database_dict:
+            # Check if the strategy matches the provided userID and greenHouseID
             if strat["topic_sens"]["topic_temp"].split("/")[0] == userID and strat["topic_sens"]["topic_temp"].split("/")[1] == greenHouseID:
                 # Unsubscribe from the sensors topics before removing completely the strategy from the db
                 mqtt_handler.unsubscribe(strat["topic_sens"]["topic_temp"])
@@ -118,9 +131,13 @@ class RegStrategy(object):
                 break
             else:
                 idx += 1
+        
+        # Remove the strategy from the strategies list in the database
         database_dict["strategies"].pop(idx)
 
         new_strat = True
+
+        # Write the updated database back to the file
         json.dump(database_dict, open(database, "w"), indent=3)
 
 
@@ -159,7 +176,10 @@ class MQTT_subscriber_publisher(object):
         except:
             raise cherrypy.HTTPError(400, 'Wrong parameters')
 
+        # Load the database
         db = json.load(open(database, "r"))
+
+        # Update the corresponding actual value in the database
         for actualValues in db["actual_"+topic[3]]:
             if actualValues["userID"] == topic[0] and actualValues["greenHouseID"] == topic[1]:
                 actualValues[topic[3]] = value
@@ -167,12 +187,15 @@ class MQTT_subscriber_publisher(object):
                 new_measures["new"] = True
                 new_measures[topic[3]] = True
                 break
+        # Write the updated database back to the file
         json.dump(db, open(database, "w"), indent=3)
 
     def publish(self, topic, value):
+        # Update the message with the current timestamp and value
         self.__message["e"]["t"] = time.time()
         self.__message["e"]["v"] = value
 
+        # Publish the message to the specified topic
         self.client.myPublish(topic, self.__message)
 
 
@@ -212,7 +235,10 @@ def getBroker():
     except:
         raise cherrypy.HTTPError(400, 'Wrong parameters')
 
+    # Load the database
     database_dict = json.load(open(database, "r"))
+
+    # Update the broker information in the database
     database_dict["broker"]["ip"] = ip
     database_dict["broker"]["port"] = port
     database_dict["broker"]["timestamp"] = time.time()
@@ -284,6 +310,7 @@ def getStrategies():
 
 if __name__=="__main__":
 
+    # Configure CherryPy
     conf = {
         '/': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
@@ -298,16 +325,18 @@ if __name__=="__main__":
     cherrypy.engine.start()
     # cherrypy.engine.block()
 
-    # CAN THE MQTT BROKER CHANGE THROUGH TIME? I SUPPOSE NOT IN THIS CASE
+    # CAN THE MQTT BROKER CHANGE THROUGH TIME? I SUPPOSE NOT IN THIS CASE - YOU'RE RIGHT. NO CHANGES TRHOUGH TIME, IT CAN BE DELETED.
+    # Get the broker information from the Resource Catalog
     getBroker()
 
+    # Initialize the MQTT handler with the broker information
     broker_dict = json.load(open(database, "r"))["broker"]
-    
     mqtt_handler = MQTT_subscriber_publisher()
     mqtt_handler.__init__(broker_dict["broker"], broker_dict["port"])
     mqtt_handler.start()
 
     last_refresh = time.time() 
+
     # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
     refresh()
 
@@ -330,7 +359,7 @@ if __name__=="__main__":
             refresh()
 
         if new_strat:
-
+            # Update the strategies if there are any changes
             strategies = json.load(open(database, "r"))["strategies"]
             new_strat = False
 
