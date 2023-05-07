@@ -1,6 +1,5 @@
 import time
 import random
-import urllib
 import urllib.request
 import json
 
@@ -131,31 +130,31 @@ class Controller(object):
         for actuator in self.actuators:
             if actuator.id == id:
                 actuator.turn_on()
-                break
+                return f"actuator {id} : is on"
     
     def turn_off_actuator(self,id):
         for actuator in self.actuators:
             if actuator.id == id:
                 actuator.turn_off()
-                break
+                return f"actuator {id} : is off"
     
     def humidify(self,id):
         for actuator in self.actuators:
             if actuator.id == id:
                 actuator.set_value(1)
-                break
+                return f"humidifier {id} : is himidifying"
             
     def dehumidify(self,id):
         for actuator in self.actuators:
             if actuator.id == id:
                 actuator.set_value(-1)
-                break
+                return f"humidifier {id} : is dehimidifying"
             
     def water_quantity(self, id, water_quantity):
         for actuator in self.actuators:
             if actuator.id == id:
-                actuator.set_water_quantity(water_quantity)
-                break
+                actuator.set_value(water_quantity)
+                return f"pump {id} : was set with {water_quantity}"
     
     def read_sensor(self, id, environment):
         for sensor in self.sensors:
@@ -164,19 +163,19 @@ class Controller(object):
                 return sensor.humidity, sensor.temperature
     
 if __name__ == "__main__":
-    num_windows = 3
-    num_pumps = 3
-    num_hum = 3
+    num_windows = 1
+    num_pumps = 1
+    num_hum = 1
     id = 0
     actuators = []
     for windows in range(num_windows):
         actuators.append(Window(id, True))
         id += 1
     for pump in range(num_pumps):
-        actuators.append(Pump(id, True))
+        actuators.append(Pump(id, False))
         id += 1
     for humidifier in range(num_hum):
-        actuators.append(Humidifier(id, True))
+        actuators.append(Humidifier(id, False))
         id += 1
         
     sensor_1 = DHT11(1)
