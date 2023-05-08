@@ -101,7 +101,7 @@ class MQTT_subscriber_publisher(object):
 
         self.client=MyMQTT("DeviceConnector", broker, port, None)
         sensors = [DHT11(0)]
-        actuators = [Window(0), Pump(0), Humidifier(0)]
+        actuators = [Window(0), Humidifier(1), AC(2), Pump(3)]
         self.controller = Controller(sensors, actuators)
         self.enviroment = Environment(actuators, "Torino")
 
@@ -121,7 +121,7 @@ class MQTT_subscriber_publisher(object):
         global database
 
         measure = json.loads(payload)
-        # [0]: userID, [1]: greenHouseID, [2]: actuator type (humidifier/window/pump) [3]: actuatorID
+        # [0]: userID, [1]: greenHouseID, [2]: actuator type (humidifier/window/pump/ac)
         topic = topic.split("/")
 
         try:
@@ -132,20 +132,47 @@ class MQTT_subscriber_publisher(object):
         
         # THE FUNCTION setActuator OF DEVICES TAKES THE ACTUATOR TYPE, THE VALUE TO BE SET
         # AND OUTPUTS THE RESULT OF THE OPERATION (the value that was set, C° for temp, ON/OFF for weather, ...)
-        topic[3] = 0
-        if value == "turn on":
-            result = self.controller.turn_on_actuator(topic[3])
-        elif value == "turn off":
-            result = self.controller.turn_off_actuator(topic[3])
-        else:
-            if topic[2] == "humidifier" and value == "humidify":
-                result = self.controller.humidify(topic[3])
-            elif topic[2] == "humidifier" and value == "dehumidify":
-                result = self.controller.dehumidify(topic[3])
-            elif topic[2] == "pump":
-                result = self.controller.water_quantity(topic[3], value)
+        # CAMBIAR ESTO!!!!!!!!!!!
+        if topic[2] == "window":
+            if value == "turn on":
+                result = self.controller.turn_on_actuator(0)
+            elif value == "turn off":
+                result = self.controller.turn_off_actuator(0)       
             else:
-                print("Invalid actuator")
+                print("Invalid Value")
+            
+        elif topic[2] == "humidifier":
+            if value == "turn on":
+                result = self.controller.turn_on_actuator(1)
+            elif value == "turn off":
+                result = self.controller.turn_off_actuator(1)
+            elif value == "humidify":
+                result = self.controller.humidify(1)     
+            elif value == "dehumidify":
+                result = self.controller.dehumidify(1)
+            else:
+                print("Invalid Value")
+        elif topic[2] == "ac":
+            if value == "turn on":
+                result = self.controller.turn_on_actuator(2)
+            elif value == "turn off":
+                result = self.controller.turn_off_actuator(2)
+            elif value == "heat":
+                result = self.controller.heat(2)     
+            elif value == "cool":
+                result = self.controller.cool(2)
+            else:
+                print("Invalid Value")
+                
+        elif topic[2] == "pump":
+            if value == "turn on":
+                result = self.controller.turn_on_actuator(3)
+            elif value == "turn off":
+                result = self.controller.turn_off_actuator(3)
+            elif isinstance(value, float) or isinstance(value, float):
+                result = self.controller.water_quantity(3, value)
+        else:
+            print("Invalid actuator")
 
         # If the command was successfull it should be seen from the UTILITY TOPIC of the actuator
         # THE UTILITY TOPIC SHOULD BE ACCESSED TO SEE IF THE STRATEGIES' COMMAND WERE SUCCESSFULL
