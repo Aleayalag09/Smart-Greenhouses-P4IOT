@@ -2,7 +2,12 @@
     "ip": "",
     "port": -1, 
     
-    "broker": {},
+    "broker": {
+
+        "ip": "test.mosquitto.org",
+        "port": 1883,
+        "timestamp": 1663497809.8657904 
+    },
 
     "users": [
 
@@ -23,8 +28,31 @@
                 }
             ],
             "KEY": "J50M27K8VSFLULLK"
+        }, 
+
+        {
+            "userID": 1,
+            "greenHouses": [],
+            "KEY": ""
         }
     ],
 
-    "topics": []
+    "topics": [
+        
+        {
+            "topic": "0/0/sensors/temperature"
+        },
+
+        {
+            "topic": "0/0/sensors/humidity"
+        }, 
+        
+        {
+            "topic": "0/1/sensors/temperature"
+        },
+
+        {
+            "topic": "0/1/sensors/humidity"
+        }
+    ]
 }
