@@ -291,8 +291,7 @@ if __name__ == '__main__':
     broker_dict = json.load(open(database, "r"))["broker"]
     strategies = json.load(open(database, "r"))["strategies"]
     
-    publisher = MQTT_publisher()
-    publisher.__init__(broker_dict["broker"], broker_dict["port"])
+    publisher = MQTT_publisher(broker_dict["broker"], broker_dict["port"])
     publisher.start()
     
     percentange = 0.98
