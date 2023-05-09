@@ -1,0 +1,12 @@
+{   
+    "ip": "",
+    "port": -1, 
+    
+    "broker": {},
+
+    "actual_temperature": [],
+
+    "actual_humidity": [],
+
+    "strategies": []
+}

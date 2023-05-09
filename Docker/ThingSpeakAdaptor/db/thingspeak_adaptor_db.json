@@ -1,0 +1,30 @@
+{   
+    "ip": "",
+    "port": -1, 
+    
+    "broker": {},
+
+    "users": [
+
+        {
+            "userID": 0,
+            "greenHouses": [
+
+                {
+                    "greenHouseID": 0,
+                    "temperature": "&field1={}",
+                    "humidity": "&field2={}"
+                },
+
+                {
+                    "greenHouseID": 1,
+                    "temperature": "&field3={}",
+                    "humidity": "&field4={}"
+                }
+            ],
+            "KEY": "J50M27K8VSFLULLK"
+        }
+    ],
+
+    "topics": []
+}

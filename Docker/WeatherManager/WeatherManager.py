@@ -3,16 +3,18 @@ import requests
 import time
 from datetime import datetime
 import json
+import urllib
 
 from MyMQTT import *
 
 new_strat = False
-database = "db/irrigation_manager_db.json"
+database = "db/weather_manager_db.json"
 resourceCatalogIP = ""
+api = 'YOUR_API_KEY'
 
 class RegStrategy(object):
     exposed = True
- 
+    
     def POST(self, *path, **queries):
         """
         Logs a new strategy for a specific user and greenhouse
@@ -26,38 +28,33 @@ class RegStrategy(object):
         try:
             userID = input['userID']
             greenHouseID = input['greenHouseID']
-            activeIrr = input['active']
-            stratID = input['stratID']
-            time_start = input['time']
-            water_quantity = input['water_quantity']
-            activeStrat = input['activeStrat']
+            active = input['active']
+            temperature = input['temperature']
+            humidity = input['humidity']
+            city = input['city']
         except:
             raise cherrypy.HTTPError(400, 'Wrong input')
         
-        topic = str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
+        topic = str(userID)+"/"+str(greenHouseID)+"/weather"
         database_dict = json.load(open(database, "r"))
     
         new_strategy = {
-            "topic": topic, 
-            "time": time_start, 
-            "water_quantity": water_quantity, 
-            "active": activeStrat, 
-            "timestamp": time.time()
+            "topic": topic,
+            "temperature": temperature,
+            "humidity": humidity,
+            "city" : city,
+            "active": active,
+            "timestamp": time.time(),
+            "open": False
         }
         database_dict["strategies"].append(new_strategy)
-
-        if activeIrr == False:
-            for strat in database_dict["strategies"]:
-                split_topic = strat["topic"].split("/")
-                if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID:
-                    strat["active"] = activeIrr
 
         new_strat = True
         json.dump(database_dict, open(database, "w"), indent=3)
 
     def PUT(self, *path, **queries):
         """
-        Modify the state of activity of one or all the strategies 
+        Modify the state of activity of the strategy 
         owned by a specific user and greenhouse.
         """
 
@@ -69,30 +66,21 @@ class RegStrategy(object):
         try:
             userID = input['userID']
             greenHouseID = input['greenHouseID']
-            activeIrr = input['active']
+            active = input['active']
         except:
             raise cherrypy.HTTPError(400, 'Wrong input')
-        try:
-            stratID = input['stratID']
-            activeStrat = input['activeStrat']
-        except:
-            for strat in database_dict["strategies"]:
-                split_topic = strat["topic"].split("/")
-                if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID:
-                    strat["active"] = activeIrr
         else:
             for strat in database_dict["strategies"]:
                 split_topic = strat["topic"].split("/")
-                if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID and int(split_topic[3]) == stratID:
-                    strat["active"] = activeStrat
+                if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID:
+                    strat["active"] = active
         
         new_strat = True
         json.dump(database_dict, open(database, "w"), indent=3)
 
     def DELETE(self, *path, **queries):
         """
-        Delete one or all the strategies
-        owned by a specific user and greenhouse.
+        Delete a strategy owned by a specific user and greenhouse.
         """
 
         global database
@@ -101,57 +89,30 @@ class RegStrategy(object):
         try:
             userID = queries['userID']
             greenHouseID = queries['greenHouseID']
-            stratID = queries['stratID']
         except:
-            try:
-                # If no stratID is passed it means that all the strategies must be eliminated
-                userID = queries['userID']
-                greenHouseID = queries['greenHouseID']
-            except: 
-                pass
-            else:
-                database_dict = json.load(open(database, "r"))
-
-                idxs = []
-                for idx, strat in enumerate(database_dict["strategies"]):
-                    split_topic = strat["topic"].split("/")
-                    if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID:
-                        idxs.append(idx)
-
-                for idx in idxs:
-                    database_dict["strategies"].pop(idx)
-                
-                new_strat = True
-                json.dump(database_dict, open(database, "w"), indent=3)
-
             raise cherrypy.HTTPError(400, 'Bad request')
-        else:
-            topic = str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
-            database_dict = json.load(open(database, "r"))
+        
+        topic = str(userID)+"/"+str(greenHouseID)+"/weather"
+        database_dict = json.load(open(database, "r"))
 
-            idx = 0
-            for strat in database_dict["strategies"]:
-                if strat["topic"] == topic:
-                    break
-                else:
-                    idx += 1
-            database_dict["strategies"].pop(idx)
+        idx = 0
+        for strat in database_dict:
+            if strat["topic"] == topic:
+                break
+            else:
+                idx += 1
+        database_dict["strategies"].pop(idx)
 
-            for strat in database_dict["strategies"]:
-                split_topic = strat["topic"].split("/")
-                if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID and int(split_topic[3]) > stratID:
-                    strat["topic"] = userID+"/"+greenHouseID+"/irrigation/"+str(int(split_topic[3])-1)
-            
-            new_strat = True
-            json.dump(database_dict, open(database, "w"), indent=3)
-
-
+        new_strat = True
+        json.dump(database_dict, open(database, "w"), indent=3)
+    
+    
 class MQTT_publisher(object):
     def __init__(self, broker, port):
-        # bn: macro strategy name (irrigation), e: events (objects), v: value(s) (depends on what we want to set with the strategy),  t: timestamp
-        self.__message={'bn': "IrrigationStrat", 'e': {'t': None, 'v': None}}
+        # bn: macro strategy name (weather), e: events (objects), v: value(s) (depends on what we want to set with the strategy),  t: timestamp
+        self.__message={'bn': "WeatherStrat", 'e': {'t': None, 'v': None}}
 
-        self.client=MyMQTT("IrrigationStrat", broker, port, None)
+        self.client=MyMQTT("WeatherStrat", broker, port, None)
 
     def start (self):
         self.client.start()
@@ -164,14 +125,14 @@ class MQTT_publisher(object):
         self.__message["e"]["v"] = value
 
         self.client.myPublish(topic, self.__message)
-
-
+    
+        
 def refresh():
     """
-    Registers the Irrigation Manager to the
+    Registers the Weather Manager to the
     Resource Catalog making a post.
     """
-    
+
     global database
     db = json.load(open(database, "r"))
 
@@ -180,15 +141,15 @@ def refresh():
         'port': db["port"],
         'functions': ["regStrategy"]}
     
-    url = 'URL of the RESOURCE_CATALOG/irrigation_manager'
+    url = 'URL of the RESOURCE_CATALOG/weather_manager'
     
     requests.post(url, payload)
-
+    
 
 def getBroker():
     """
     Retrieves from the Resource Catalog the endpoints
-    (ip, port, timestamp) of the broker used in the system. 
+    (ip, port, timestamp) of the broker used in the system.
     """
 
     global database
@@ -208,59 +169,99 @@ def getBroker():
     database_dict["broker"]["port"] = port
     database_dict["broker"]["timestamp"] = time.time()
     json.dump(database_dict, open(database, "w"), indent=3)
-
+    
 
 def getStrategies():
     """
-    Retrieves all the irrigation strategies 
-    present in the Resource Catalog.
+    Retrieves all the weather strategies plus the 
+    relative city present in the Resource Catalog.
     Called at the BOOT.
     """
 
     global database
 
     url = 'URL of the RESOURCE_CATALOG/strategy/manager'
-    params = {"strategyType": "irrigation"}
+    params = {"strategyType": "weather"}
     strategies = requests.get(url, params=params).json()
 
     strategy_list = []
     strategy_dict = {
         "topic": "",
-        "time": "00:00:00",
-        "water_quantity": -1,
+        "temperature": -1,
+        "humidity": -1,
+        "city": "",
         "active": False,
-        "timestamp": -1 
+        "timestamp": -1,
+        "open": False
     }
     for strat in strategies:
         try:
             userID = strat['userID']
             greenHouseID = strat["greenHouseID"]
-            stratID = strat["strat"]["id"]
-            time_start = strat["strat"]["time"]
-            water_quantity = strat["strat"]["water_quantity"]
-            active_strat = strat["strat"]["active"]
+            temperature = strat["strat"]["temperature"]
+            humidity = strat["strat"]["humidity"]
+            city = strat["city"]
             active = strat["active"]
         except:
             raise cherrypy.HTTPError(400, 'Wrong parameters')
         else:
-            topic = str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
+            topic = str(userID)+"/"+str(greenHouseID)+"/weather"
             strategy_dict["topic"] = topic
-            strategy_dict["time"] = time_start
-            strategy_dict["water_quantity"] = water_quantity
-            if active == False:
-                strategy_dict["active"] = False
-            else:
-                strategy_dict["active"] = active_strat
+            strategy_dict["temperature"] = temperature
+            strategy_dict["humidity"] = humidity
+            strategy_dict["city"] = city
+            strategy_dict["active"] = active
             strategy_dict["timestamp"] = time.time()
             strategy_list.append(strategy_dict)
 
     database_dict = json.load(open(database, "r"))
     database_dict["strategies"] = strategy_list
     json.dump(database_dict, open(database, "w"), indent=3)
+    
 
+def getlocation(city):
+    """
+    This method takes the name of a place and 
+    extract the code key of that place.
+    """   
 
-if __name__=="__main__":
+    global api
 
+    search_address = 'http://dataservice.accuweather.com/locations/v1/cities/search?apikey='+api+'&q='+city+'&details=true'
+    with urllib.request.urlopen(search_address) as search_address:
+        data = json.loads(search_address.read().decode())
+    location_key = data[0]['Key']
+    return location_key    
+    
+def getWeather(city):
+    """
+    This method ask to the API Accuweather the weather 
+    conditions using the key code of the place 
+    and get a json of all the measuraments.
+    """
+
+    global api
+
+    key = getlocation(city)
+    weatherUrl= 'http://dataservice.accuweather.com/currentconditions/v1/'+key+'?apikey='+api+'&details=true'
+    with urllib.request.urlopen(weatherUrl) as weatherUrl:
+        data = json.loads(weatherUrl.read().decode())
+    return data
+
+def getMeasurements(city):
+    """
+    This method extract from a json the measurements of
+    temperature and humidity of the specified city.
+    """
+
+    data = getWeather(city)
+    temperature = data[0]['Temperature']['Metric']['Value']
+    humidity = data[0]['RelativeHumidity'] / 100
+    return temperature, humidity
+                                        
+     
+if __name__ == '__main__':
+    	
     conf = {
         '/': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
@@ -274,8 +275,7 @@ if __name__=="__main__":
 
     cherrypy.engine.start()
     # cherrypy.engine.block()
-
-
+    
     last_refresh = time.time() 
     # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
     refresh()
@@ -294,7 +294,9 @@ if __name__=="__main__":
     publisher = MQTT_publisher()
     publisher.__init__(broker_dict["broker"], broker_dict["port"])
     publisher.start()
-
+    
+    percentange = 0.98
+    
     while True:
         timestamp = time.time()
         time_start = datetime.fromtimestamp(timestamp)
@@ -307,11 +309,35 @@ if __name__=="__main__":
 
         if new_strat:
 
-            strategies = json.load(open(database, "r"))["strategies"]
+            db = json.load(open(database, "r"))
             new_strat = False
 
-        for strat in strategies:
+        for strat in db["strategies"]:
             
-            # AGGIUNGERE UN RANGE DI CONTROLLO IN MODO DA NON RISCHIARE DI PERDERE IL COMANDO PER QUESTIONE DI SECONDI
-            if strat["time"] == time_start and strat["active"] == True:
-                publisher.publish(strat["topic"], strat["water_quantity"])
+            if strat["active"] == True:
+                temperature, humidity = getMeasurements(strat['city'])
+
+                # If the window is open we control if it should be closed
+                if strat["open"] == True:
+                    if strat["temperature"] < temperature*(percentange) or strat["temperature"] > temperature*(2 - percentange) or \
+                    strat['humidity'] < humidity*(percentange) or strat['humidity'] > humidity*(2 - percentange):
+                        publisher.publish(strat["topic"], 'close')
+                        strat["open"] = False
+                        new_strat = True
+                # If the window is closed we control if it should be opened
+                else: 
+                    if temperature*(percentange) <= strat['temperature'] <= temperature*(2 - percentange) and humidity*(percentange) <= strat['humidity'] <= humidity*(2 - percentange):
+                        # Still we have to see how the device connector is going to receive this message
+                        publisher.publish(strat["topic"], 'open')
+                        strat["open"] = True
+                        new_strat = True
+
+        if new_strat == True:
+            json.dump(db, open(database, "w"), indent=3)
+
+                
+    
+    
+    
+    
+    
