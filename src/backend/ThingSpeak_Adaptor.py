@@ -6,7 +6,7 @@ import json
 from MQTT.MyMQTT import *
 
 database = "src/db/thingspeak_adaptor_db.json"
-resourceCatalogIP = ""
+resCatEndpoints = "http://127.0.0.1:4000"
 clientID = "adaptor"
 url_thingspeak = "https://api.thingspeak.com/update?api_key=YOUR_API_KEY
 
@@ -119,7 +119,7 @@ def refresh():
         'port': db["port"],
         'functions': [""]}
     
-    url = 'URL of the RESOURCE_CATALOG/thingspeak_adaptor'
+    url = resCatEndpoints+'/thingspeak_adaptor'
     
     requests.post(url, payload)
 
@@ -132,7 +132,7 @@ def getBroker():
 
     global database
 
-    url = 'URL of the RESOURCE_CATALOG/broker'
+    url = resCatEndpoints+'/broker'
     broker = requests.get(url).json()
 
     try:
@@ -157,7 +157,7 @@ def getTopics():
 
     global database
 
-    url = 'URL of the RESOURCE_CATALOG/device_connectors/adaptor'
+    url = resCatEndpoints+'/device_connectors/adaptor'
     dev_conn = requests.get(url).json()
 
     topics_list = []

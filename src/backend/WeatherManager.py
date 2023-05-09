@@ -8,8 +8,8 @@ import urllib
 from MQTT.MyMQTT import *
 
 new_strat = False
-database = "src/db/weather_manager_db.json"
-resourceCatalogIP = ""
+database = "db/weather_manager_db.json"
+resCatEndpoints = "http://127.0.0.1:4000"
 api = 'YOUR_API_KEY'
 
 class RegStrategy(object):
@@ -141,7 +141,7 @@ def refresh():
         'port': db["port"],
         'functions': ["regStrategy"]}
     
-    url = 'URL of the RESOURCE_CATALOG/weather_manager'
+    url = resCatEndpoints+'/weather_manager'
     
     requests.post(url, payload)
     
@@ -154,7 +154,7 @@ def getBroker():
 
     global database
 
-    url = 'URL of the RESOURCE_CATALOG/broker'
+    url = resCatEndpoints+'/broker'
     broker = requests.get(url).json()
 
     try:
@@ -180,7 +180,7 @@ def getStrategies():
 
     global database
 
-    url = 'URL of the RESOURCE_CATALOG/strategy/manager'
+    url = resCatEndpoints+'/strategy/manager'
     params = {"strategyType": "weather"}
     strategies = requests.get(url, params=params).json()
 

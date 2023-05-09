@@ -8,7 +8,7 @@ from MQTT.MyMQTT import *
 
 new_strat = False
 database = "src/db/irrigation_manager_db.json"
-resourceCatalogIP = ""
+resCatEndpoints = "http://127.0.0.1:4000"
 
 class RegStrategy(object):
     exposed = True
@@ -180,7 +180,7 @@ def refresh():
         'port': db["port"],
         'functions': ["regStrategy"]}
     
-    url = 'URL of the RESOURCE_CATALOG/irrigation_manager'
+    url = resCatEndpoints+'/irrigation_manager'
     
     requests.post(url, payload)
 
@@ -193,7 +193,7 @@ def getBroker():
 
     global database
 
-    url = 'URL of the RESOURCE_CATALOG/broker'
+    url = resCatEndpoints+'/broker'
     broker = requests.get(url).json()
 
     try:
@@ -219,7 +219,7 @@ def getStrategies():
 
     global database
 
-    url = 'URL of the RESOURCE_CATALOG/strategy/manager'
+    url = resCatEndpoints+'/strategy/manager'
     params = {"strategyType": "irrigation"}
     strategies = requests.get(url, params=params).json()
 
