@@ -1528,8 +1528,7 @@ if __name__=="__main__":
     cherrypy.tree.mount(EnvironmentManager(), '/environment_manager', conf)
     cherrypy.tree.mount(WeatherManager(), '/weather_manager', conf)
 
-    cherrypy.config.update({'server.socket_host': '127.0.0.1'})
-    cherrypy.config.update({'server.socket_port': 8080})
+    cherrypy.config.update({'server.socket_host': '0.0.0.0'})
 
     cherrypy.engine.start()
     # cherrypy.engine.block()

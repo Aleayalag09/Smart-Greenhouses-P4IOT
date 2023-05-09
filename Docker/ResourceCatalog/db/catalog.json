@@ -9,20 +9,8 @@
    },
    "thingspeak_adaptors": [],
    "webpages": [],
-   "thingspeak": {
-      "ip": "127.0.0.1",
-      "port": 1883,
-      "timestamp": 1682973392.142146
-   },
-   "weather_API": {
-      "ip": "",
-      "port": 0,
-      "timestamp": 1682973392.1461356
-   },
-   "broker": {
-      "ip": "test.mosquitto.org",
-      "port": 1883,
-      "timestamp": 1682973392.1343489
-   },
+   "thingspeak": {},
+   "weather_API": {},
+   "broker": {},
    "users": []
 }

@@ -275,8 +275,7 @@ if __name__ == '__main__':
 
     broker_dict = json.load(open(database, "r"))["broker"]
     
-    mqtt_handler = MQTT_subscriber_publisher()
-    mqtt_handler.__init__(broker_dict["broker"], broker_dict["port"])
+    mqtt_handler = MQTT_subscriber_publisher(broker_dict["broker"], broker_dict["port"])
     mqtt_handler.start()
 
     last_refresh = time.time() 

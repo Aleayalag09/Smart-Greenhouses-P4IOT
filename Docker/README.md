@@ -1,19 +1,21 @@
 TO BUILD AN IMAGE:
 - docker build -t <image_name> /path/to/Dockerfile
 
-ONCE THE IMAGE IS BUILT RUN THE CONTAINER AND BIND THE PORT TO WHICH THE SCRIPT INSIDE THE CONTAINER IS LISTENING WITH A PORT OF THE HOST:
-- docker run -p <host-port>:<container-port> --name <container_name> <image_name> 
+BEFORE RUNNING THE CONTAINERS MUST BE CREATED A SUBNET TO SPECIFY IPs:
+- docker network create --subnet=<ip_portion_for_the_subnet> <subnet_name>
 
-THE REST SERVICES WILL BE AVAILABLE ON LOCALHOST, BUT AT THE <host-port> SPECIFIED BEFORE
+TO RUN A CONTAINER IN A SPECIFIC SUBNET AND WITH A SPECIFIC IP:
+- docker run --net <network_name> --ip <ip_number> -p <host-port>:<container-port> --name <container_name> <image_name> 
 
-IN THE SCRIPTS THE ENDPOINTS EXPOSED FOR THE REST API REAMINS: IP "127.0.0.1", PORT "8080"
+IP PORTION FOR THE SUBNET:
+- 172.18.0.0/16
 
-BINDING PORT-SCRIPT
+BINDING HOST_PORT - CONTAINER_PORT (8080)
 
-- ResourceCatalog : 4000
-- IrrigationManager : 4001
-- EnvironmentManager : 4002
-- WeatherManager : 4003
-- DeviceConnector : 4004
-- ThingSpeakAdaptor : 4005
+- ResourceCatalog : 4000 (IP: 172.18.0.1)
+- IrrigationManager : 4001 (IP: 172.18.0.2)
+- EnvironmentManager : 4002 (IP: 172.18.0.3)
+- WeatherManager : 4003 (IP: 172.18.0.4)
+- DeviceConnector : 4004 (IP: 172.18.0.5)
+- ThingSpeakAdaptor : 4005 (IP: 172.18.0.6)
 

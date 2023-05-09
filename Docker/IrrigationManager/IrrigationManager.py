@@ -8,7 +8,7 @@ from MyMQTT import *
 
 new_strat = False
 database = "db/irrigation_manager_db.json"
-resCatEndpoints = "http://127.0.0.1:4000"
+resCatEndpoints = "http://172.18.0.2:8080"
 
 class RegStrategy(object):
     exposed = True
@@ -199,7 +199,6 @@ def getBroker():
     try:
         ip = broker['ip']
         port = broker["port"]
-    
     except:
         raise cherrypy.HTTPError(400, 'Wrong parameters')
 
@@ -269,8 +268,7 @@ if __name__=="__main__":
     }
     cherrypy.tree.mount(RegStrategy(), '/regStrategy', conf)
 
-    cherrypy.config.update({'server.socket_host': '127.0.0.1'})
-    cherrypy.config.update({'server.socket_port': 8080})
+    cherrypy.config.update({'server.socket_host': '0.0.0.0'})
 
     cherrypy.engine.start()
     # cherrypy.engine.block()
@@ -291,8 +289,7 @@ if __name__=="__main__":
     broker_dict = json.load(open(database, "r"))["broker"]
     strategies = json.load(open(database, "r"))["strategies"]
     
-    publisher = MQTT_publisher()
-    publisher.__init__(broker_dict["broker"], broker_dict["port"])
+    publisher = MQTT_publisher(broker_dict["broker"], broker_dict["port"])
     publisher.start()
 
     while True:
