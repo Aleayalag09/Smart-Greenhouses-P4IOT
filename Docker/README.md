@@ -1,12 +1,12 @@
-- To build an image:
-    - docker build -t <image_name> /path/to/Dockerfile
+TO BUILD AN IMAGE:
+- docker build -t <image_name> /path/to/Dockerfile
 
+ONCE THE IMAGE IS BUILT RUN THE CONTAINER AND BIND THE PORT TO WHICH THE SCRIPT INSIDE THE CONTAINER IS LISTENING WITH A PORT OF THE HOST:
+- docker run -p <host-port>:<container-port> --name <container_name> <image_name> 
 
-- Once the image is built run the container and bind the port to which the script inside the container is listening with a port of the host:
-    - docker run -p <host-port>:<container-port> --name <container_name> <image_name> 
+THE REST SERVICES WILL BE AVAILABLE ON LOCALHOST, BUT AT THE <host-port> SPECIFIED BEFORE
 
-- The rest services will be available on localhost, but at the <host-port> specified before
-- In the scripts the endpoints exposed for the rest API remain: IP _localhost_ and PORT _8080_
+IN THE SCRIPTS THE ENDPOINTS EXPOSED FOR THE REST API REAMINS: IP "127.0.0.1", PORT "8080"
 
 BINDING PORT-SCRIPT
 
