@@ -1,0 +1,32 @@
+{
+    "ip": "",
+    "port": -1, 
+    
+    "broker": {},
+
+    "userID": 0,
+    "greenHouseID": 0,
+
+    "devices": 
+    {
+        "sensors": 
+        [
+            "temperature",
+            "humidity"
+        ],
+        "actuators": 
+        [
+            "temperature",
+            "humidity",
+            "irrigation",
+            "windows"
+        ]
+    },
+
+    "strategies":
+    {
+        "irrigation": [],
+        "environment": [],
+        "weather": []
+    }
+}
