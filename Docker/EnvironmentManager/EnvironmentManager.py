@@ -14,7 +14,7 @@ new_measures = {
     "humidity": False
 }
 database = "db/environment_manager_db.json"
-resourceCatalogIP = ""
+resCatEndpoints = "http://127.0.0.1:4000"
 
 # Define a CherryPy class for handling strategy registration
 class RegStrategy(object):
@@ -212,7 +212,7 @@ def refresh():
         'port': db["port"],
         'functions': ["regStrategy"]}
     
-    url = 'URL of the RESOURCE_CATALOG/environment_manager'
+    url = resCatEndpoints+'/environment_manager'
     
     requests.post(url, payload)
 
@@ -225,7 +225,7 @@ def getBroker():
 
     global database
 
-    url = 'URL of the RESOURCE_CATALOG/broker'
+    url = resCatEndpoints+'/broker'
     broker = requests.get(url).json()
 
     try:
@@ -254,7 +254,7 @@ def getStrategies():
 
     global database
 
-    url = 'URL of the RESOURCE_CATALOG/strategy/manager'
+    url = resCatEndpoints+'/strategy/manager'
     params = {"strategyType": "environment"}
     strategies = requests.get(url, params=params).json()
 
@@ -325,7 +325,6 @@ if __name__=="__main__":
     cherrypy.engine.start()
     # cherrypy.engine.block()
 
-    # CAN THE MQTT BROKER CHANGE THROUGH TIME? I SUPPOSE NOT IN THIS CASE - YOU'RE RIGHT. NO CHANGES TRHOUGH TIME, IT CAN BE DELETED.
     # Get the broker information from the Resource Catalog
     getBroker()
 

@@ -7,7 +7,7 @@ import Devices
 from MyMQTT import *
 
 database = "db/device_connector_db.json"
-resourceCatalogIP = ""
+resCatEndpoints = "http://127.0.0.1:4000"
 new_strat = False
 
 class RegStrategy(object):
@@ -163,7 +163,7 @@ def refresh():
         "actuators": db["devices"]["actuators"], 
         'functions': ["regStrategy"]}
     
-    url = 'URL of the RESOURCE_CATALOG/device_connectors'
+    url = resCatEndpoints+'/device_connectors'
     
     requests.post(url, payload)
 
@@ -176,7 +176,7 @@ def getBroker():
 
     global database
 
-    url = 'URL of the RESOURCE_CATALOG/broker'
+    url = resCatEndpoints+'/broker'
     broker = requests.get(url).json()
 
     try:
@@ -202,7 +202,7 @@ def getStrategies():
     global database
     db = json.load(open(database, "r"))
 
-    url = 'URL of the RESOURCE_CATALOG/strategies'
+    url = resCatEndpoints+'/strategies'
     params = {"id": db["userID"], "greenHouseID": db["greenHouseID"], "strategyType": "all"}
     strategies = requests.get(url, params=params).json()
 
