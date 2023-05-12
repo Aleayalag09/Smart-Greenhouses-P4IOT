@@ -41,6 +41,14 @@ class regTopic(object):
             MeasuresReceiver.subscribe(topic)
 
         json.dump(database_dict, open(database, "w"), indent=3)
+        
+        result = {
+            "userID": userID,
+            "greenHouseID": greenHouseID,
+            "sensors": sensors,
+            "timestamp": time.time()
+        }
+        return result
 
     def DELETE(self, *path, **queries):
         """
@@ -71,6 +79,14 @@ class regTopic(object):
             database_dict.pop(idx)
 
         json.dump(database_dict, open(database, "w"), indent=3)
+        
+        result = {
+            "userID": userID,
+            "greenHouseID": greenHouseID,
+            "sensors": sensors,
+            "timestamp": time.time()
+        }
+        return result
 
 
 class MQTT_subscriber:
@@ -119,7 +135,7 @@ def refresh():
     payload = {
         'ip': db["ip"], 
         'port': db["port"],
-        'functions': [""]}
+        'functions': [db["function"]]}
     
     url = resCatEndpoints+'/thingspeak_adaptor'
     

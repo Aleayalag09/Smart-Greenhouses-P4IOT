@@ -55,6 +55,16 @@ class RegStrategy(object):
         new_strat = True
         json.dump(database_dict, open(database, "w"), indent=3)
 
+        result = {
+            "userID": userID,
+            "greenHouseID": greenHouseID,
+            "time": time_start, 
+            "water_quantity": water_quantity, 
+            "active": activeStrat, 
+            "timestamp": time.time()
+        }
+        return result
+
     def PUT(self, *path, **queries):
         """
         Modify the state of activity of one or all the strategies 
@@ -88,6 +98,14 @@ class RegStrategy(object):
         
         new_strat = True
         json.dump(database_dict, open(database, "w"), indent=3)
+        
+        result = {
+            "userID": userID,
+            "greenHouseID": greenHouseID,
+            "active": activeIrr, 
+            "timestamp": time.time()
+        }
+        return result
 
     def DELETE(self, *path, **queries):
         """
@@ -144,6 +162,13 @@ class RegStrategy(object):
             
             new_strat = True
             json.dump(database_dict, open(database, "w"), indent=3)
+        
+        result = {
+            "userID": userID,
+            "greenHouseID": greenHouseID,
+            "timestamp": time.time()
+        }
+        return result
 
 
 class MQTT_publisher(object):
@@ -180,7 +205,7 @@ def refresh():
     payload = {
         'ip': db["ip"], 
         'port': db["port"],
-        'functions': ["regStrategy"]}
+        'functions': [db["function"]]}
     
     url = resCatEndpoints+'/irrigation_manager'
     

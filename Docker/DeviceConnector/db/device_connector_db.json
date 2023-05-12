@@ -1,6 +1,7 @@
 {
     "ip": "device_connector",
     "port": 8080, 
+    "function": "regStrategy",
     
     "broker": {},
 
