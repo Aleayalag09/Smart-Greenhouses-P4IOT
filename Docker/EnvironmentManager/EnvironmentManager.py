@@ -14,7 +14,7 @@ new_measures = {
     "humidity": False
 }
 database = "db/environment_manager_db.json"
-resCatEndpoints = "http://127.0.0.1:4000"
+resCatEndpoints = "http://resource_catalog:8080"
 
 # Define a CherryPy class for handling strategy registration
 class RegStrategy(object):
@@ -177,7 +177,9 @@ class MQTT_subscriber_publisher(object):
             raise cherrypy.HTTPError(400, 'Wrong parameters')
 
         # Load the database
-        db = json.load(open(database, "r"))
+        db_file = open(database, "r")
+        db = json.load(db_file)
+        db_file.close()
 
         # Update the corresponding actual value in the database
         for actualValues in db["actual_"+topic[3]]:
@@ -205,7 +207,9 @@ def refresh():
     Resource Catalog making a post.
     """
     global database
-    db = json.load(open(database, "r"))
+    db_file = open(database, "r")
+    db = json.load(db_file)
+    db_file.close()
 
     payload = {
         'ip': db["ip"], 
@@ -214,7 +218,7 @@ def refresh():
     
     url = resCatEndpoints+'/environment_manager'
     
-    requests.post(url, payload)
+    requests.post(url, json.dumps(payload))
 
 
 def getBroker():
@@ -309,6 +313,8 @@ def getStrategies():
 
 
 if __name__=="__main__":
+    
+    time.sleep(7)
 
     # Configure CherryPy
     conf = {
@@ -319,8 +325,7 @@ if __name__=="__main__":
     }
     cherrypy.tree.mount(RegStrategy(), '/regStrategy', conf)
 
-    cherrypy.config.update({'server.socket_host': '127.0.0.1'})
-    cherrypy.config.update({'server.socket_port': 8080})
+    cherrypy.config.update({'server.socket_host': '0.0.0.0'})
 
     cherrypy.engine.start()
     # cherrypy.engine.block()
@@ -330,7 +335,7 @@ if __name__=="__main__":
 
     # Initialize the MQTT handler with the broker information
     broker_dict = json.load(open(database, "r"))["broker"]
-    mqtt_handler = MQTT_subscriber_publisher(broker_dict["broker"], broker_dict["port"])
+    mqtt_handler = MQTT_subscriber_publisher(broker_dict["ip"], broker_dict["port"])
     mqtt_handler.start()
 
     last_refresh = time.time() 

@@ -6,7 +6,7 @@ import json
 from MyMQTT import *
 
 database = "db/thingspeak_adaptor_db.json"
-resCatEndpoints = "http://127.0.0.1:4000"
+resCatEndpoints = "http://resource_catalog:8080"
 clientID = "adaptor"
 url_thingspeak = "https://api.thingspeak.com/update?api_key=YOUR_API_KEY
 
@@ -112,7 +112,9 @@ def refresh():
     """
 
     global database
-    db = json.load(open(database, "r"))
+    db_file = open(database, "r")
+    db = json.load(db_file)
+    db_file.close()
 
     payload = {
         'ip': db["ip"], 
@@ -121,7 +123,7 @@ def refresh():
     
     url = resCatEndpoints+'/thingspeak_adaptor'
     
-    requests.post(url, payload)
+    requests.post(url, json.dumps(payload))
 
 
 def getBroker():
@@ -193,7 +195,9 @@ def send_to_Thingspeak(topic, measure):
 
     global database
 
-    db = json.load(open(database, "r"))
+    db_file = open(database, "r")
+    db = json.load(db_file)
+    db_file.close()
     userID = topic.split("/")[0]
     greenHouseID = topic.split("/")[1]
     measureType = topic.split("/")[3]
@@ -214,6 +218,8 @@ def send_to_Thingspeak(topic, measure):
 
 if __name__ == "__main__":
     
+    time.sleep(15)
+    
     conf = {
         '/': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
@@ -222,8 +228,7 @@ if __name__ == "__main__":
     }
     cherrypy.tree.mount(regTopic(), '/addTopic', conf)
 
-    cherrypy.config.update({'server.socket_host': '127.0.0.1'})
-    cherrypy.config.update({'server.socket_port': 8080})
+    cherrypy.config.update({'server.socket_host': '0.0.0.0'})
 
     cherrypy.engine.start()
     # cherrypy.engine.block()

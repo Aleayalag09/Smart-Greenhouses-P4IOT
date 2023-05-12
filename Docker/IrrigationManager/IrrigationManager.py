@@ -8,7 +8,7 @@ from MyMQTT import *
 
 new_strat = False
 database = "db/irrigation_manager_db.json"
-resCatEndpoints = "http://172.18.0.2:8080"
+resCatEndpoints = "http://resource_catalog:8080"
 
 class RegStrategy(object):
     exposed = True
@@ -173,7 +173,9 @@ def refresh():
     """
     
     global database
-    db = json.load(open(database, "r"))
+    db_file = open(database, "r")
+    db = json.load(db_file)
+    db_file.close()
 
     payload = {
         'ip': db["ip"], 
@@ -182,7 +184,7 @@ def refresh():
     
     url = resCatEndpoints+'/irrigation_manager'
     
-    requests.post(url, payload)
+    requests.post(url, json.dumps(payload))
 
 
 def getBroker():
@@ -260,6 +262,8 @@ def getStrategies():
 
 if __name__=="__main__":
 
+    time.sleep(5)
+
     conf = {
         '/': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
@@ -289,7 +293,7 @@ if __name__=="__main__":
     broker_dict = json.load(open(database, "r"))["broker"]
     strategies = json.load(open(database, "r"))["strategies"]
     
-    publisher = MQTT_publisher(broker_dict["broker"], broker_dict["port"])
+    publisher = MQTT_publisher(broker_dict["ip"], broker_dict["port"])
     publisher.start()
 
     while True:

@@ -9,7 +9,7 @@ from MyMQTT import *
 
 new_strat = False
 database = "db/weather_manager_db.json"
-resCatEndpoints = "http://127.0.0.1:4000"
+resCatEndpoints = "http://resource_catalog:8080"
 api = 'YOUR_API_KEY'
 
 class RegStrategy(object):
@@ -134,7 +134,9 @@ def refresh():
     """
 
     global database
-    db = json.load(open(database, "r"))
+    db_file = open(database, "r")
+    db = json.load(db_file)
+    db_file.close()
 
     payload = {
         'ip': db["ip"], 
@@ -143,7 +145,7 @@ def refresh():
     
     url = resCatEndpoints+'/weather_manager'
     
-    requests.post(url, payload)
+    requests.post(url, json.dumps(payload))
     
 
 def getBroker():
@@ -261,6 +263,8 @@ def getMeasurements(city):
                                         
      
 if __name__ == '__main__':
+    
+    time.sleep(9)
     	
     conf = {
         '/': {
@@ -270,8 +274,7 @@ if __name__ == '__main__':
     }
     cherrypy.tree.mount(RegStrategy(), '/regStrategy', conf)
 
-    cherrypy.config.update({'server.socket_host': '127.0.0.1'})
-    cherrypy.config.update({'server.socket_port': 8080})
+    cherrypy.config.update({'server.socket_host': '0.0.0.0'})
 
     cherrypy.engine.start()
     # cherrypy.engine.block()
@@ -289,9 +292,11 @@ if __name__ == '__main__':
     refresh_freq = 60
     
     broker_dict = json.load(open(database, "r"))["broker"]
-    strategies = json.load(open(database, "r"))["strategies"]
+    db_file = open(database, "r")
+    db = json.load(db_file)
+    db_file.close()
     
-    publisher = MQTT_publisher(broker_dict["broker"], broker_dict["port"])
+    publisher = MQTT_publisher(broker_dict["ip"], broker_dict["port"])
     publisher.start()
     
     percentange = 0.98
@@ -308,7 +313,9 @@ if __name__ == '__main__':
 
         if new_strat:
 
-            db = json.load(open(database, "r"))
+            db_file = open(database, "r")
+            db = json.load(db_file)
+            db_file.close()
             new_strat = False
 
         for strat in db["strategies"]:

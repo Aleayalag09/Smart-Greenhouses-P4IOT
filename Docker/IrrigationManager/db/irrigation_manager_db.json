@@ -1,6 +1,6 @@
 {   
-    "ip": "",
-    "port": -1, 
+    "ip": "irrigation_manager",
+    "port": 8080, 
     
     "broker": {},
 

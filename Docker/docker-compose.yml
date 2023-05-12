@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  resource_catalog:
+    build:
+      context: ./ResourceCatalog
+    ports:
+      - "8081:8080"
+    networks:
+      - smart_greenhouses
+
+  irrigation_manager:
+    build:
+      context: ./IrrigationManager
+    ports:
+      - "8082:8080"
+    networks:
+      - smart_greenhouses
+
+  environment_manager:
+    build:
+      context: ./EnvironmentManager
+    ports:
+      - "8083:8080"
+    networks:
+      - smart_greenhouses
+
+  weather_manager:
+    build:
+      context: ./WeatherManager
+    ports:
+      - "8084:8080"
+    networks:
+      - smart_greenhouses
+
+  thingspeak_adaptor:
+    build:
+      context: ./ThingSpeakAdaptor
+    ports:
+      - "8085:8080"
+    networks:
+      - smart_greenhouses
+
+  device_connector:
+    build:
+      context: ./DeviceConnector
+    ports:
+      - "8086:8080"
+    networks:
+      - smart_greenhouses
+
+networks:
+  smart_greenhouses:

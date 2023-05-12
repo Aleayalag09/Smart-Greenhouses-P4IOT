@@ -1,6 +1,6 @@
 {
-    "ip": "",
-    "port": -1, 
+    "ip": "device_connector",
+    "port": 8080, 
     
     "broker": {},
 

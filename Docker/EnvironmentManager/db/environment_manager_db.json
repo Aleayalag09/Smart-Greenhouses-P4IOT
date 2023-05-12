@@ -1,6 +1,6 @@
 {   
-    "ip": "",
-    "port": -1, 
+    "ip": "environment_manager",
+    "port": 8080, 
     
     "broker": {},
 
