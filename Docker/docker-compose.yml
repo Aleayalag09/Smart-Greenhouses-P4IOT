@@ -25,13 +25,13 @@ services:
     networks:
       - smart_greenhouses
 
-  weather_manager:
-    build:
-      context: ./WeatherManager
-    ports:
-      - "8084:8080"
-    networks:
-      - smart_greenhouses
+  # weather_manager:
+  #   build:
+  #     context: ./WeatherManager
+  #   ports:
+  #     - "8084:8080"
+  #   networks:
+  #     - smart_greenhouses
 
   thingspeak_adaptor:
     build:
