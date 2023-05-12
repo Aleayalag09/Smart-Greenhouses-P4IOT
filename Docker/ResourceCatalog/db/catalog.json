@@ -1,8 +1,9 @@
-{
+{ 
    "ip": "resource_catalog",
    "port": 8080, 
    
-   "managers": {
+   "managers": 
+   {
       "irrigation": [],
       "environment": [],
       "weather": []
@@ -12,5 +13,94 @@
    "thingspeak": {},
    "weather_API": {},
    "broker": {},
-   "users": []
+   "users": [
+      {
+         "userName": "Matteo_Impieri",
+         "password": "12345678",
+         "super_User": false,
+         "id": 0,
+         "name": "Matteo",
+         "surname": "Impieri",
+         "email_addresses": "Matteo_Impieri@P4IOT.com",
+         "country": "Italy",
+         "greenHouses": [
+            {
+               "greenHouseName": "My_farm1",
+               "greenHouseID": 0,
+               "city": "Torino",
+               "deviceConnectors": [
+                  {
+                     "ip":  "127.0.0.1",
+                     "port": 8080,
+                     "devices": 
+                     {
+                        "sensors": 
+                        [
+                           "temperature",
+                           "humidity"
+                        ],
+                        "actuators": 
+                        [
+                           "temperature",
+                           "humidity",
+                           "irrigation",
+                           "windows"
+                        ]
+                     },
+                     "functions":
+                     [
+                        "regStrategy",
+                        "regTemp",
+                        "regHum",
+                        "regIrr",
+                        "regWin"
+                     ],
+                     "timestamp": 9999999999.0798957
+                  }
+               ],
+               "strategies":
+               {
+                  "irrigation": 
+                  {
+                     "strat":[
+                        {
+                           "id": 0,
+                           "time": "07:00:00",
+                           "water_quantity": 2,
+                           "active": false
+                        },
+                        {
+                           "id": 1,
+                           "time": "14:00:00",
+                           "water_quantity": 2,
+                           "active": true
+                        }
+                     ],
+                     "active": true,
+                     "timestamp": 9999999999.0798957
+                  },
+                  "environment": 
+                  {
+                     "strat": {
+                        "temperature": 25,
+                        "humidity": 0.3
+                     },
+                     "active": true,
+                     "timestamp": 9999999999.0798957
+                  },
+                  "weather":
+                  {
+                     "strat": {
+                        "temperature": 25,
+                        "humidity": 0.3
+                     },
+                     "active": true,
+                     "timestamp": 9999999999.0798957
+                  }
+               }
+            }
+         ],
+         "timestamp": 9999999999.0798957
+      }
+   ]
 }

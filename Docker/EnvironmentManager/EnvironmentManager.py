@@ -288,20 +288,6 @@ def getStrategies():
     strategies = requests.get(url, params=params).json()
 
     strategy_list = []
-    strategy_dict = {
-        "topic_sens": {
-            "topic_temp": "", 
-            "topic_hum": "", 
-        },
-        "topic_act": {
-            "topic_temp": "", 
-            "topic_hum": "", 
-        }, 
-        "temperature": -1,
-        "humidity": -1,
-        "active": False,
-        "timestamp": -1 
-    }
     for strat in strategies:
         try:
             userID = strat['userID']
@@ -317,15 +303,20 @@ def getStrategies():
             topic_sens_temp = str(userID)+"/"+str(greenHouseID)+"/sensors/temperature"
             topic_sens_hum = str(userID)+"/"+str(greenHouseID)+"/sensors/temperature"
 
-            strategy_dict["topic_sens"]["topic_temp"] = topic_sens_temp
-            strategy_dict["topic_sens"]["topic_hum"] = topic_sens_hum
-            strategy_dict["topic_act"]["topic_temp"] = topic_act_temp
-            strategy_dict["topic_act"]["topic_hum"] = topic_act_hum
-            strategy_dict["temperature"] = temperature
-            strategy_dict["humidity"] = humidity
-            strategy_dict["active"] = active
-            strategy_dict["timestamp"] = time.time()
-            strategy_list.append(strategy_dict)
+            strategy_list.append({
+                                    "topic_sens": {
+                                        "topic_temp": topic_sens_temp, 
+                                        "topic_hum": topic_sens_hum, 
+                                    },
+                                    "topic_act": {
+                                        "topic_temp": topic_act_temp, 
+                                        "topic_hum": topic_act_hum, 
+                                    }, 
+                                    "temperature": temperature,
+                                    "humidity": humidity,
+                                    "active": active,
+                                    "timestamp": time.time() 
+                                })
 
             # Subscribe to the MQTT topics of humidity and temperature
             mqtt_handler.subscribe(topic_sens_temp)
