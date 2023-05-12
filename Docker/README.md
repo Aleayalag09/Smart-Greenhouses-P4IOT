@@ -10,3 +10,5 @@ For each of the scripts the exposed port will be 8080 but it is binded with a po
 To contact the web interface of another script inside a container the IP and PORT will be:
 - IP: <container_name> (e.g. resource_catalog)
 - PORT: 8080
+
+If you make changes to the scripts after you already launched <docker-compose up> you mus first delete containers and images and then launch again the same comand in order to "apply" the changes
