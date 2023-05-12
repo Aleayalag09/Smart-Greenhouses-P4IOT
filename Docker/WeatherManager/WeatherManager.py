@@ -213,15 +213,6 @@ def getStrategies():
     strategies = requests.get(url, params=params).json()
 
     strategy_list = []
-    strategy_dict = {
-        "topic": "",
-        "temperature": -1,
-        "humidity": -1,
-        "city": "",
-        "active": False,
-        "timestamp": -1,
-        "open": False
-    }
     for strat in strategies:
         try:
             userID = strat['userID']
@@ -234,13 +225,15 @@ def getStrategies():
             raise cherrypy.HTTPError(400, 'Wrong parameters')
         else:
             topic = str(userID)+"/"+str(greenHouseID)+"/weather"
-            strategy_dict["topic"] = topic
-            strategy_dict["temperature"] = temperature
-            strategy_dict["humidity"] = humidity
-            strategy_dict["city"] = city
-            strategy_dict["active"] = active
-            strategy_dict["timestamp"] = time.time()
-            strategy_list.append(strategy_dict)
+            strategy_list.append({
+                                    "topic": topic,
+                                    "temperature": temperature,
+                                    "humidity": humidity,
+                                    "city": city,
+                                    "active": active,
+                                    "timestamp": time.time(),
+                                    "open": False
+                                })
 
     database_dict = json.load(open(database, "r"))
     database_dict["strategies"] = strategy_list

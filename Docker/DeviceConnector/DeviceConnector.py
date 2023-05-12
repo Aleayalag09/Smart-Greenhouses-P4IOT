@@ -224,7 +224,7 @@ def getStrategies():
 
     url = resCatEndpoints+'/strategies'
     params = {"id": db["userID"], "greenHouseID": db["greenHouseID"], "strategyType": "all"}
-    strategies = requests.get(url, params=params).json()
+    strategies = requests.get(url, params=params)
 
     try:
         irr_strat = strategies["irrigation"]

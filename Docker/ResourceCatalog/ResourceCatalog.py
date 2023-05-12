@@ -436,11 +436,12 @@ class Strategy(object):
                             
                             if strategyType == "irrigation":
                                 for strat in greenhouse["strategies"]["irrigation"]["strat"]:
-                                    strategy_dict["userID"] = user["id"]
-                                    strategy_dict["greenHouseID"] = greenhouse["greenHouseID"]
-                                    strategy_dict["strat"] = strat
-                                    strategy_dict["active"] = greenhouse["strategies"]["irrigation"]["active"]
-                                    strategy_list.append(strategy_dict)
+                                    strategy_list.append({
+                                                            "userID": user["id"],
+                                                            "greenHouseID": greenhouse["greenHouseID"],
+                                                            "strat": strat,
+                                                            "active": greenhouse["strategies"]["irrigation"]["active"]
+                                                        })
                             elif strategyType == "weather":
                                 strategy_dict = {
                                     "userID": -1,
@@ -1630,19 +1631,15 @@ if __name__=="__main__":
 
     # BOOT: retrieve all the DEVICE CONNECTORS info from the database (catalog.json)
     device_connectors_list = []
-    device_connectors_dict = {
-        "userID": -1,
-        "greenHouseID": -1,
-        "dev_conn": {}
-    }
     if len(db["users"]) > 0:
         for user in db["users"]:
             for greenhouse in user["greenHouses"]:
                 for dev_conn in greenhouse["deviceConnectors"]:
-                    device_connectors_dict["userID"] = user["id"]
-                    device_connectors_dict["greenHouseID"] = greenhouse["greenHouseID"]
-                    device_connectors_dict["dev_conn"] = dev_conn
-                    device_connectors_list.append(device_connectors_dict)
+                    device_connectors_list.append({
+                                                    "userID": user["id"],
+                                                    "greenHouseID": greenhouse["greenHouseID"],
+                                                    "dev_conn": dev_conn
+                                                })
     timeout_dev_connector = 120
 
     
@@ -1672,7 +1669,7 @@ if __name__=="__main__":
         if len(device_connectors_list) > 0:
             for dev_conn in device_connectors_list:
                 if timestamp - float(dev_conn["dev_conn"]["timestamp"]) >= timeout_dev_connector:
-                    remove_from_db(str(dev_conn["userID"])+"/"+dev_conn["greenHouseID"]+"/"+dev_conn["dev_conn"]["ip"]+"/"+str(dev_conn["dev_conn"]["port"]))
+                    remove_from_db(str(dev_conn["userID"])+"/"+str(dev_conn["greenHouseID"])+"/"+dev_conn["dev_conn"]["ip"]+"/"+str(dev_conn["dev_conn"]["port"]))
             
 
         # time.sleep(60)
@@ -1690,7 +1687,8 @@ if __name__=="__main__":
             for user in db["users"]:
                 for greenhouse in user["greenHouses"]:
                     for dev_conn in greenhouse["deviceConnectors"]:
-                        device_connectors_dict["userID"] = user["id"]
-                        device_connectors_dict["greenHouseID"] = greenhouse["greenHouseID"]
-                        device_connectors_dict["dev_conn"] = dev_conn
-                        device_connectors_list.append(device_connectors_dict)
+                        device_connectors_list.append({
+                                                        "userID": user["id"],
+                                                        "greenHouseID": greenhouse["greenHouseID"],
+                                                        "dev_conn": dev_conn
+                                                    })

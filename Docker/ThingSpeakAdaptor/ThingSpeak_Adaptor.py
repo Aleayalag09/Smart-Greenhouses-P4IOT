@@ -179,9 +179,6 @@ def getTopics():
     dev_conn = requests.get(url).json()
 
     topics_list = []
-    new_topic = {
-        "topic": "" 
-    }
     for dev in dev_conn:
         try:
             userID = dev['userID']
@@ -192,10 +189,9 @@ def getTopics():
         else:
             for sensorType in sensors:
                 topic = str(userID)+"/"+str(greenHouseID)+"/sensors/"+sensorType
-                new_topic = {
-                    "topic": topic
-                }
-                topics_list.append((new_topic))
+                topics_list.append({
+                                    "topic": topic
+                                })
                 MeasuresReceiver.subscribe(topic)
 
     database_dict = json.load(open(database, "r"))
@@ -248,6 +244,11 @@ if __name__ == "__main__":
 
     cherrypy.engine.start()
     # cherrypy.engine.block()
+    
+    broker_dict = json.load(open(database, "r"))["broker"]
+    
+    MeasuresReceiver = MQTT_subscriber(clientID, broker_dict["ip"], broker_dict["port"]) 
+    MeasuresReceiver.start()
 
     last_refresh = time.time() 
     # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
@@ -260,11 +261,6 @@ if __name__ == "__main__":
     getTopics()
 
     refresh_freq = 60
-    
-    broker_dict = json.load(open(database, "r"))["broker"]
-    
-    MeasuresReceiver = MQTT_subscriber(clientID, broker_dict["ip"], broker_dict["port"]) 
-    MeasuresReceiver.start()
     
     while True:
         

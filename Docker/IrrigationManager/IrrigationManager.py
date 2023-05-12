@@ -270,15 +270,16 @@ def getStrategies():
             raise cherrypy.HTTPError(400, 'Wrong parameters')
         else:
             topic = str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
-            strategy_dict["topic"] = topic
-            strategy_dict["time"] = time_start
-            strategy_dict["water_quantity"] = water_quantity
-            if active == False:
-                strategy_dict["active"] = False
-            else:
-                strategy_dict["active"] = active_strat
-            strategy_dict["timestamp"] = time.time()
-            strategy_list.append(strategy_dict)
+            if active == True:
+                active = active_strat
+
+            strategy_list.append({
+                                    "topic": topic,
+                                    "time": time_start,
+                                    "water_quantity": water_quantity,
+                                    "active": active,
+                                    "timestamp": time.time()
+                                })
 
     database_dict = json.load(open(database, "r"))
     database_dict["strategies"] = strategy_list
