@@ -1,21 +1,12 @@
-TO BUILD AN IMAGE:
-- docker build -t <image_name> /path/to/Dockerfile
+# HOW TO RUN THE NETWORK WITH DOCKER CONTAINERS
 
-BEFORE RUNNING THE CONTAINERS MUST BE CREATED A SUBNET TO SPECIFY IPs:
-- docker network create --subnet=<ip_portion_for_the_subnet> <subnet_name>
+Firstly you need to install Docker, then you must create a Docker network: <docker network create smart_greenhouse>
+"smart_greenhouse" is the name of the custom network used in "docker-compose.yml".
 
-TO RUN A CONTAINER IN A SPECIFIC SUBNET AND WITH A SPECIFIC IP:
-- docker run --net <network_name> --ip <ip_number> -p <host-port>:<container-port> --name <container_name> <image_name> 
+To run all the elements of the network you can use the file "docker-compose.yml": from the command line in the directory "Docker" write <docker-compose up> and it automatically creates images and runs containers.
+To run different elements you must write a new docker compose file with less "services".
 
-IP PORTION FOR THE SUBNET:
-- 172.18.0.0/16
-
-BINDING HOST_PORT - CONTAINER_PORT (8080)
-
-- ResourceCatalog : 4000 (IP: 172.18.0.1)
-- IrrigationManager : 4001 (IP: 172.18.0.2)
-- EnvironmentManager : 4002 (IP: 172.18.0.3)
-- WeatherManager : 4003 (IP: 172.18.0.4)
-- DeviceConnector : 4004 (IP: 172.18.0.5)
-- ThingSpeakAdaptor : 4005 (IP: 172.18.0.6)
-
+For each of the scripts the exposed port will be 8080 but it is binded with a port of the local system (see "docker-compose.yml").
+To contact the web interface of another script inside a container the IP and PORT will be:
+- IP: <container_name> (e.g. resource_catalog)
+- PORT: 8080

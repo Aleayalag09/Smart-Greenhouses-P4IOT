@@ -1,6 +1,6 @@
 {
-   "ip": "",
-   "port": -1, 
+   "ip": "resource_catalog",
+   "port": 8080, 
    
    "managers": {
       "irrigation": [],
