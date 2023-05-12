@@ -244,11 +244,6 @@ if __name__ == "__main__":
 
     cherrypy.engine.start()
     # cherrypy.engine.block()
-    
-    broker_dict = json.load(open(database, "r"))["broker"]
-    
-    MeasuresReceiver = MQTT_subscriber(clientID, broker_dict["ip"], broker_dict["port"]) 
-    MeasuresReceiver.start()
 
     last_refresh = time.time() 
     # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
@@ -256,6 +251,11 @@ if __name__ == "__main__":
 
     # CAN THE MQTT BROKER CHANGE THROUGH TIME? I SUPPOSE NOT IN THIS CASE
     getBroker()
+    
+    broker_dict = json.load(open(database, "r"))["broker"]
+    
+    MeasuresReceiver = MQTT_subscriber(clientID, broker_dict["ip"], broker_dict["port"]) 
+    MeasuresReceiver.start()
 
     # BOOT FUNCTION TO RETRIEVE STARTING TOPICS
     getTopics()
