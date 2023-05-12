@@ -1,6 +1,7 @@
 {   
     "ip": "weather_manager",
     "port": 8080, 
+    "function": "regStrategy",
     
     "broker": {},
 

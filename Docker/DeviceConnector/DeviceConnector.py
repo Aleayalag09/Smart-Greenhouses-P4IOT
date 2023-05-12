@@ -56,6 +56,12 @@ class RegStrategy(object):
 
         new_strat = True
         json.dump(db, open(database, "w"), indent=3)
+        
+        result = {
+            "strategyType": strategyType,
+            "timestamp": time.time()
+        }
+        return result
 
     def DELETE(self, *path, **queries):
         """
@@ -97,6 +103,12 @@ class RegStrategy(object):
 
         new_strat = True
         json.dump(db, open(database, "w"), indent=3)
+        
+        result = {
+            "strategyType": strategyType,
+            "timestamp": time.time()
+        }
+        return result
 
 
 
@@ -166,8 +178,8 @@ def refresh():
         'ip': db["ip"], 
         'port': db["port"],
         "sensors": db["devices"]["sensors"],
-        "actuators": db["devices"]["actuators"], 
-        'functions': ["regStrategy"]}
+        "actuators": db["devices"]["actuators"],
+        'functions': [db["function"]]}
     
     url = resCatEndpoints+'/device_connectors'
     

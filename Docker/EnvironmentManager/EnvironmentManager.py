@@ -76,6 +76,16 @@ class RegStrategy(object):
         new_strat = True
         json.dump(database_dict, open(database, "w"), indent=3)
 
+        result = {
+            "userID": userID,
+            "greenHouseID": greenHouseID,
+            "temperature": temperature, 
+            "humidity": humidity,
+            "active": active, 
+            "timestamp": time.time()
+        }
+        return result
+
     def PUT(self, *path, **queries):
         """
         Modify the state of activity of the strategy 
@@ -103,6 +113,14 @@ class RegStrategy(object):
         
         new_strat = True
         json.dump(database_dict, open(database, "w"), indent=3)
+
+        result = {
+            "userID": userID,
+            "greenHouseID": greenHouseID,
+            "active": active, 
+            "timestamp": time.time()
+        }
+        return result
 
     def DELETE(self, *path, **queries):
         """
@@ -139,6 +157,13 @@ class RegStrategy(object):
 
         # Write the updated database back to the file
         json.dump(database_dict, open(database, "w"), indent=3)
+
+        result = {
+            "userID": userID,
+            "greenHouseID": greenHouseID,
+            "timestamp": time.time()
+        }
+        return result
 
 
 class MQTT_subscriber_publisher(object):
@@ -214,7 +239,7 @@ def refresh():
     payload = {
         'ip': db["ip"], 
         'port': db["port"],
-        'functions': ["regStrategy"]}
+        'functions': [db["function"]]}
     
     url = resCatEndpoints+'/environment_manager'
     
