@@ -73,8 +73,8 @@ class User(object):
             users.append(new_user)
             db["users"] = users
             json.dump(db, open("db/catalog.json", "w"), indent=3)
-            output=str(type(input))+"<br>"+str(input)
-            return output
+            
+            return new_user
             
     def PUT(self, *path, **queries): 
         """
@@ -117,8 +117,8 @@ class User(object):
                     user["timestamp"] = time.time()
                     db["users"] = users
                     json.dump(db, open("db/catalog.json", "w"), indent=3)
-                    output = str(type(user))+"<br>"+str(user)
-                    return output
+                    
+                    return "Updated keys: "+str(keys)
         except:
             raise cherrypy.HTTPError(400, 'No user found')
         
@@ -183,8 +183,7 @@ class User(object):
                 db["users"] = users
                 json.dump(db, open("db/catalog.json", "w"), indent=3)
 
-                output = str(type(user))+"<br>"+str(user)
-                return output
+                return "Deleted user "+str(id)
             
         raise cherrypy.HTTPError(400, 'No user found')
     
@@ -272,8 +271,8 @@ class GreenHouse(object):
                     user["timestamp"] = time.time()
                     db["users"] = users
                     json.dump(db, open("db/catalog.json", "w"), indent=3)
-                    output=str(type(input))+"<br>"+str(input)
-                    return output
+                    
+                    return "New greenhouse for user "+str(userID)+": "+str(new_greenhouse)
         
         raise cherrypy.HTTPError(400, 'No user found')
             
@@ -317,8 +316,8 @@ class GreenHouse(object):
                             user["timestamp"] = time.time()
                             db["users"] = users
                             json.dump(db, open("db/catalog.json", "w"), indent=3)
-                            output = str(type(user))+"<br>"+str(user)
-                            return output
+
+                            return "Updated keys: "+str(keys)
         except:  
             raise cherrypy.HTTPError(400, 'No user or greenhouse found')
         
@@ -386,8 +385,7 @@ class GreenHouse(object):
                             db["users"] = users
                             json.dump(db, open("db/catalog.json", "w"), indent=3)
 
-                            output = str(type(greenHouse))+"<br>"+str(greenHouse)
-                            return output
+                            return "Deleted greenhouse "+str(greenHouseID)+" of user "+str(id)
         except:     
             raise cherrypy.HTTPError(400, 'No user or greenhouse found')
         
@@ -571,8 +569,7 @@ class Strategy(object):
                                     except:
                                         pass
 
-                                    output=str(type(input))+"<br>"+str(input)
-                                    return output
+                                    return post_manager_dict
             except:
                 raise cherrypy.HTTPError(400, 'No user or greenhouse found')
 
@@ -616,8 +613,7 @@ class Strategy(object):
                                 except:
                                     pass
 
-                                output=str(type(input))+"<br>"+str(input)
-                                return output
+                                return post_manager_dict
             except: 
                 raise cherrypy.HTTPError(400, 'No user or greenhouse found')            
         else:
@@ -698,8 +694,7 @@ class Strategy(object):
                                 except:
                                     pass
 
-                                output = str(type(user))+"<br>"+str(user)
-                                return output
+                                return put_manager_dict
         except:
             raise cherrypy.HTTPError(400, 'No user or greenhouse found')
                 
@@ -760,8 +755,7 @@ class Strategy(object):
                                     except:
                                         pass
 
-                                    output = str(type(user))+"<br>"+str(user)
-                                    return output
+                                    return "Deleted all irrigation strategies for greenhouse "+str(greenHouseID)+" of user "+str(id)
                                 else:
                                     try:
                                         greenhouse['strategies']['irrigation']['strat'][strategyID]
@@ -811,8 +805,7 @@ class Strategy(object):
                                         db["users"] = users
                                         json.dump(db, open("db/catalog.json", "w"), indent=3)
 
-                                        output = str(type(user))+"<br>"+str(user)
-                                        return output
+                                        return "Deleted irrigation strategy "+str(strategyID)+" for greenhouse "+str(greenHouseID)+" of user "+str(id)
                             else:
                                 try:
                                     greenhouse['strategies'][strategyType] = strat_dict
@@ -834,8 +827,8 @@ class Strategy(object):
                                     except:
                                         pass
 
-                                    output = str(type(user))+"<br>"+str(user)
-                                    return output
+                                    
+                                    return "Deleted all "+strategyType+" strategies for greenhouse "+str(greenHouseID)+" of user "+str(id)
         except:
             raise cherrypy.HTTPError(400, 'No user or greenhouse found')
                     
@@ -959,8 +952,6 @@ class DeviceConnectors(object):
                                 requests.post(url_adaptor, json.dumps(payload))
                             
                             json.dump(db, open("db/catalog.json", "w"), indent=3)
-                            output=str(type(input))+"<br>"+str(input)
-                            return output
         except:
             raise cherrypy.HTTPError(400, 'No user or greenhouse found')
         
