@@ -132,16 +132,16 @@ class MQTT_subscriber_publisher(object):
         
         # THE FUNCTION setActuator OF DEVICES TAKES THE ACTUATOR TYPE, THE VALUE TO BE SET
         # AND OUTPUTS THE RESULT OF THE OPERATION (the value that was set, C° for temp, ON/OFF for weather, ...)
-        # CAMBIAR ESTO!!!!!!!!!!!
-        if topic[2] == "window":
+
+        if topic[2] == "weather":
             if value == "on":
                 result = self.controller.turn_on_actuator(0)
             elif value == "off":
                 result = self.controller.turn_off_actuator(0)       
             else:
                 print("Invalid Value")
-            
-        elif topic[2] == "humidifier":
+                
+        elif topic[2] == "humidity":
             if value == "on":
                 result = self.controller.turn_on_actuator(1)
             elif value == "off":
@@ -151,7 +151,7 @@ class MQTT_subscriber_publisher(object):
             else:
                 print("Invalid Value")
                 
-        elif topic[2] == "ac":
+        elif topic[2] == "temperature":
             if value == "on":
                 result = self.controller.turn_on_actuator(2)
             elif value == "off":
@@ -161,7 +161,7 @@ class MQTT_subscriber_publisher(object):
             else:
                 print("Invalid Value")
                 
-        elif topic[2] == "pump":
+        elif topic[2] == "irrigation":
             if value == "on":
                 result = self.controller.turn_on_actuator(3)
             elif value == "off":
