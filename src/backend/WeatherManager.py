@@ -10,7 +10,7 @@ from MQTT.MyMQTT import *
 new_strat = False
 database = "db/weather_manager_db.json"
 resCatEndpoints = "http://127.0.0.1:4000"
-api = 'XCwVvAuSqXxYqR4WCvqLFk09phMRxtwA'
+api = '8JGvSqyjYhlcUQlhcUmpLgjtPeXNgcJ4'
 
 class RegStrategy(object):
     exposed = True
