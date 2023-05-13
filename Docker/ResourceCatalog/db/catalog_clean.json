@@ -1,0 +1,16 @@
+{
+   "ip": "resource_catalog",
+   "port": 8080, 
+   
+   "managers": {
+      "irrigation": [],
+      "environment": [],
+      "weather": []
+   },
+   "thingspeak_adaptors": [],
+   "webpages": [],
+   "thingspeak": {},
+   "weather_API": {},
+   "broker": {},
+   "users": []
+}

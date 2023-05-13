@@ -1,6 +1,7 @@
 {   
-    "ip": "",
-    "port": -1, 
+    "ip": "thingspeak_adaptor",
+    "port": 8080, 
+    "function": "addTopic",
     
     "broker": {},
 

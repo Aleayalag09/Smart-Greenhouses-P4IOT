@@ -1,0 +1,47 @@
+{   
+    "ip": "",
+    "port": -1, 
+    
+    "broker": {
+
+        "ip": "test.mosquitto.org",
+        "port": 1883,
+        "timestamp": 1663497809.8657904 
+    },
+
+    "strategies": [
+        
+        {
+            "topic": "0/0/irrigation/0",
+            "time": "07:00:00",
+            "water_quantity": 2,
+            "active": false,
+            "timestamp": 1663497809.8657904 
+        },
+
+        {
+            "topic": "0/0/irrigation/1",
+            "time": "14:00:00",
+            "water_quantity": 2,
+            "active": false,
+            "timestamp": 1663497809.8657904 
+        },
+
+        {
+            "topic": "id/greenHouseID/irrigation/strategyID",
+            "time": "00:00:00",
+            "water_quantity": -1,
+            "active": false,
+            "timestamp": 1663497809.8657904 
+        },
+
+        {
+            "topic": "id/greenHouseID/irrigation/strategyID",
+            "time": "00:00:00",
+            "water_quantity": -1,
+            "active": false,
+            "timestamp": 1663497809.8657904 
+        }
+        
+    ]
+}

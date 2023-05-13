@@ -4,10 +4,10 @@ import requests
 import cherrypy
 import Devices
 
-from MQTT.MyMQTT import *
+from MyMQTT import *
 
-database = "src/db/device_connector_db.json"
-resCatEndpoints = "http://127.0.0.1:4000"
+database = "db/device_connector_db.json"
+resCatEndpoints = "http://resource_catalog:8080"
 new_strat = False
 
 class RegStrategy(object):
@@ -21,7 +21,9 @@ class RegStrategy(object):
         global database
         global new_strat
         input = json.loads(cherrypy.request.body.read())
-        db = json.load(open(database, "r"))
+        db_file = open(database, "r")
+        db = json.load(db_file)
+        db_file.close()
 
         try:
             strategyType = input['strategyType']
@@ -54,6 +56,12 @@ class RegStrategy(object):
 
         new_strat = True
         json.dump(db, open(database, "w"), indent=3)
+        
+        result = {
+            "strategyType": strategyType,
+            "timestamp": time.time()
+        }
+        return result
 
     def DELETE(self, *path, **queries):
         """
@@ -62,7 +70,9 @@ class RegStrategy(object):
 
         global database
         global new_strat
-        db = json.load(open(database, "r"))
+        db_file = open(database, "r")
+        db = json.load(db_file)
+        db_file.close()
 
         try:
             strategyType = queries['strategyType']
@@ -93,6 +103,12 @@ class RegStrategy(object):
 
         new_strat = True
         json.dump(db, open(database, "w"), indent=3)
+        
+        result = {
+            "strategyType": strategyType,
+            "timestamp": time.time()
+        }
+        return result
 
 
 
@@ -152,7 +168,9 @@ def refresh():
     """
 
     global database
-    db = json.load(open(database, "r"))
+    db_file = open(database, "r")
+    db = json.load(db_file)
+    db_file.close()
 
     payload = {
         "userID": db["userID"],
@@ -160,12 +178,12 @@ def refresh():
         'ip': db["ip"], 
         'port': db["port"],
         "sensors": db["devices"]["sensors"],
-        "actuators": db["devices"]["actuators"], 
-        'functions': ["regStrategy"]}
+        "actuators": db["devices"]["actuators"],
+        'functions': [db["function"]]}
     
     url = resCatEndpoints+'/device_connectors'
     
-    requests.post(url, payload)
+    requests.post(url, json.dumps(payload))
 
 
 def getBroker():
@@ -200,9 +218,11 @@ def getStrategies():
     """
 
     global database
-    db = json.load(open(database, "r"))
+    db_file = open(database, "r")
+    db = json.load(db_file)
+    db_file.close()
 
-    url = resCatEndpoints+'/strategies'
+    url = resCatEndpoints+'/strategy'
     params = {"id": db["userID"], "greenHouseID": db["greenHouseID"], "strategyType": "all"}
     strategies = requests.get(url, params=params).json()
 
@@ -240,7 +260,9 @@ def publishSensorMeasure(sensor):
     """
     
     global database
-    db = json.load(open(database, "r"))
+    db_file = open(database, "r")
+    db = json.load(db_file)
+    db_file.close()
     
     timestamp = time.time()
 
@@ -255,6 +277,8 @@ def publishSensorMeasure(sensor):
     
                         
 if __name__ == '__main__':
+    
+    time.sleep(30)
 
     conf = {
         '/': {
@@ -264,8 +288,7 @@ if __name__ == '__main__':
     }
     cherrypy.tree.mount(RegStrategy(), '/regStrategy', conf)
 
-    cherrypy.config.update({'server.socket_host': '127.0.0.1'})
-    cherrypy.config.update({'server.socket_port': 8080})
+    cherrypy.config.update({'server.socket_host': '0.0.0.0'})
 
     cherrypy.engine.start()
     # cherrypy.engine.block()
@@ -275,7 +298,7 @@ if __name__ == '__main__':
 
     broker_dict = json.load(open(database, "r"))["broker"]
     
-    mqtt_handler = MQTT_subscriber_publisher(broker_dict["broker"], broker_dict["port"])
+    mqtt_handler = MQTT_subscriber_publisher(broker_dict["ip"], broker_dict["port"])
     mqtt_handler.start()
 
     last_refresh = time.time() 
