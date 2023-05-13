@@ -3,10 +3,10 @@ import requests
 import time
 import json
 
-from MQTT.MyMQTT import *
+from MyMQTT import *
 
-database = "src/db/thingspeak_adaptor_db.json"
-resCatEndpoints = "http://127.0.0.1:4000"
+database = "db/thingspeak_adaptor_db.json"
+resCatEndpoints = "http://resource_catalog:8080"
 clientID = "adaptor"
 url_thingspeak = "https://api.thingspeak.com/update?api_key=YOUR_API_KEY
 
@@ -41,6 +41,14 @@ class regTopic(object):
             MeasuresReceiver.subscribe(topic)
 
         json.dump(database_dict, open(database, "w"), indent=3)
+        
+        result = {
+            "userID": userID,
+            "greenHouseID": greenHouseID,
+            "sensors": sensors,
+            "timestamp": time.time()
+        }
+        return result
 
     def DELETE(self, *path, **queries):
         """
@@ -71,6 +79,14 @@ class regTopic(object):
             database_dict.pop(idx)
 
         json.dump(database_dict, open(database, "w"), indent=3)
+        
+        result = {
+            "userID": userID,
+            "greenHouseID": greenHouseID,
+            "sensors": sensors,
+            "timestamp": time.time()
+        }
+        return result
 
 
 class MQTT_subscriber:
@@ -112,16 +128,18 @@ def refresh():
     """
 
     global database
-    db = json.load(open(database, "r"))
+    db_file = open(database, "r")
+    db = json.load(db_file)
+    db_file.close()
 
     payload = {
         'ip': db["ip"], 
         'port': db["port"],
-        'functions': [""]}
+        'functions': [db["function"]]}
     
     url = resCatEndpoints+'/thingspeak_adaptor'
     
-    requests.post(url, payload)
+    requests.post(url, json.dumps(payload))
 
 
 def getBroker():
@@ -161,9 +179,6 @@ def getTopics():
     dev_conn = requests.get(url).json()
 
     topics_list = []
-    new_topic = {
-        "topic": "" 
-    }
     for dev in dev_conn:
         try:
             userID = dev['userID']
@@ -174,10 +189,9 @@ def getTopics():
         else:
             for sensorType in sensors:
                 topic = str(userID)+"/"+str(greenHouseID)+"/sensors/"+sensorType
-                new_topic = {
-                    "topic": topic
-                }
-                topics_list.append((new_topic))
+                topics_list.append({
+                                    "topic": topic
+                                })
                 MeasuresReceiver.subscribe(topic)
 
     database_dict = json.load(open(database, "r"))
@@ -193,7 +207,9 @@ def send_to_Thingspeak(topic, measure):
 
     global database
 
-    db = json.load(open(database, "r"))
+    db_file = open(database, "r")
+    db = json.load(db_file)
+    db_file.close()
     userID = topic.split("/")[0]
     greenHouseID = topic.split("/")[1]
     measureType = topic.split("/")[3]
@@ -214,6 +230,8 @@ def send_to_Thingspeak(topic, measure):
 
 if __name__ == "__main__":
     
+    time.sleep(15)
+    
     conf = {
         '/': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
@@ -222,8 +240,7 @@ if __name__ == "__main__":
     }
     cherrypy.tree.mount(regTopic(), '/addTopic', conf)
 
-    cherrypy.config.update({'server.socket_host': '127.0.0.1'})
-    cherrypy.config.update({'server.socket_port': 8080})
+    cherrypy.config.update({'server.socket_host': '0.0.0.0'})
 
     cherrypy.engine.start()
     # cherrypy.engine.block()
@@ -234,16 +251,16 @@ if __name__ == "__main__":
 
     # CAN THE MQTT BROKER CHANGE THROUGH TIME? I SUPPOSE NOT IN THIS CASE
     getBroker()
-
-    # BOOT FUNCTION TO RETRIEVE STARTING TOPICS
-    getTopics()
-
-    refresh_freq = 60
     
     broker_dict = json.load(open(database, "r"))["broker"]
     
     MeasuresReceiver = MQTT_subscriber(clientID, broker_dict["ip"], broker_dict["port"]) 
     MeasuresReceiver.start()
+
+    # BOOT FUNCTION TO RETRIEVE STARTING TOPICS
+    getTopics()
+
+    refresh_freq = 60
     
     while True:
         

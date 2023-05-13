@@ -1,0 +1,44 @@
+{   
+    "ip": "",
+    "port": -1, 
+    
+    "broker": {
+
+        "ip": "test.mosquitto.org",
+        "port": 1883,
+        "timestamp": 1663497809.8657904 
+    },
+
+    "strategies": [
+        
+        {
+            "topic": "0/0/weather",
+            "temperature": 20,
+            "humidity": 0.2,
+            "city": "Loano",          
+            "active": false,
+            "timestamp": 1663497809.8657904,
+            "open": false
+        },
+
+        {
+            "topic": "1/0/weather",
+            "temperature": 20,
+            "humidity": 0.2,
+            "city": "Loano",            
+            "active": false,
+            "timestamp": 1663497809.8657904,
+            "open": false
+        },
+
+        {
+            "topic": "id/greenHouseID/weather",
+            "temperature": -1,
+            "humidity": -1,
+            "city": "",
+            "active": false,
+            "timestamp": 1663497809.8657904,
+            "open": false 
+        }
+    ]
+}

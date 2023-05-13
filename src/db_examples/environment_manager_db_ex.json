@@ -1,0 +1,95 @@
+{   
+    "ip": "",
+    "port": -1, 
+    
+    "broker": {
+
+        "ip": "test.mosquitto.org",
+        "port": 1883,
+        "timestamp": 1663497809.8657904 
+    },
+
+    "actual_temperature": [
+
+        {
+            "userID": 0,
+            "greenHouseID": 0,
+            "temperature": 20,
+            "timestamp": 1663497809.8657904 
+        }, 
+
+        {
+            "userID": 1,
+            "greenHouseID": 0,
+            "temperature": 20,
+            "timestamp": 1663497809.8657904 
+        }
+
+    ],
+
+    "actual_humidity": [
+
+        {
+            "userID": 0,
+            "greenHouseID": 0,
+            "humidity": 0.2,
+            "timestamp": 1663497809.8657904 
+        }, 
+
+        {
+            "userID": 1,
+            "greenHouseID": 0,
+            "humidity": 0.2,
+            "timestamp": 1663497809.8657904 
+        }
+
+    ],
+
+    "strategies": [
+        
+        {
+            "topic_sens": {
+                "topic_temp": "0/0/sensors/temperature",
+                "topic_hum": "0/0/sensors/humidity"
+            },
+            "topic_act": {
+                "topic_temp": "0/0/environment/temperature",
+                "topic_hum": "0/0/environment/humidity"
+            },
+            "temperature": 20,
+            "humidity": 0.2, 
+            "active": false,
+            "timestamp": 1663497809.8657904 
+        },
+
+        {
+            "topic_sens": {
+                "topic_temp": "1/0/sensors/temperature",
+                "topic_hum": "1/0/sensors/humidity"
+            },
+            "topic_act": {
+                "topic_temp": "1/0/environment/temperature",
+                "topic_hum": "1/0/environment/humidity"
+            },
+            "temperature": 20,
+            "humidity": 0.2, 
+            "active": false,
+            "timestamp": 1663497809.8657904 
+        },
+
+        {
+            "topic_sens": {
+                "topic_temp": "userID/greenHouseID/sensors/temperature",
+                "topic_hum": "userID/greenHouseID/sensors/humidity"
+            },
+            "topic_act": {
+                "topic_temp": "userID/greenHouseID/environment/temperature",
+                "topic_hum": "userID/greenHouseID/environment/humidity"
+            },
+            "temperature": -1,
+            "humidity": 0.0, 
+            "active": false,
+            "timestamp": 1663497809.8657904 
+        }
+    ]
+}

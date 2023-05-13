@@ -5,11 +5,11 @@ from datetime import datetime
 import json
 import urllib
 
-from MQTT.MyMQTT import *
+from MyMQTT import *
 
 new_strat = False
 database = "db/weather_manager_db.json"
-resCatEndpoints = "http://127.0.0.1:4000"
+resCatEndpoints = "http://resource_catalog:8080"
 api = 'YOUR_API_KEY'
 
 class RegStrategy(object):
@@ -51,6 +51,17 @@ class RegStrategy(object):
 
         new_strat = True
         json.dump(database_dict, open(database, "w"), indent=3)
+        
+        result = {
+            "userID": userID,
+            "greenHouseID": greenHouseID,
+            "temperature": temperature,
+            "humidity": humidity,
+            "city" : city,
+            "active": active,
+            "timestamp": time.time()
+        }
+        return result
 
     def PUT(self, *path, **queries):
         """
@@ -77,6 +88,14 @@ class RegStrategy(object):
         
         new_strat = True
         json.dump(database_dict, open(database, "w"), indent=3)
+        
+        result = {
+            "userID": userID,
+            "greenHouseID": greenHouseID,
+            "active": active,
+            "timestamp": time.time()
+        }
+        return result
 
     def DELETE(self, *path, **queries):
         """
@@ -105,6 +124,13 @@ class RegStrategy(object):
 
         new_strat = True
         json.dump(database_dict, open(database, "w"), indent=3)
+        
+        result = {
+            "userID": userID,
+            "greenHouseID": greenHouseID,
+            "timestamp": time.time()
+        }
+        return result
     
     
 class MQTT_publisher(object):
@@ -134,16 +160,18 @@ def refresh():
     """
 
     global database
-    db = json.load(open(database, "r"))
+    db_file = open(database, "r")
+    db = json.load(db_file)
+    db_file.close()
 
     payload = {
         'ip': db["ip"], 
         'port': db["port"],
-        'functions': ["regStrategy"]}
+        'functions': [db["function"]]}
     
     url = resCatEndpoints+'/weather_manager'
     
-    requests.post(url, payload)
+    requests.post(url, json.dumps(payload))
     
 
 def getBroker():
@@ -185,15 +213,6 @@ def getStrategies():
     strategies = requests.get(url, params=params).json()
 
     strategy_list = []
-    strategy_dict = {
-        "topic": "",
-        "temperature": -1,
-        "humidity": -1,
-        "city": "",
-        "active": False,
-        "timestamp": -1,
-        "open": False
-    }
     for strat in strategies:
         try:
             userID = strat['userID']
@@ -206,13 +225,15 @@ def getStrategies():
             raise cherrypy.HTTPError(400, 'Wrong parameters')
         else:
             topic = str(userID)+"/"+str(greenHouseID)+"/weather"
-            strategy_dict["topic"] = topic
-            strategy_dict["temperature"] = temperature
-            strategy_dict["humidity"] = humidity
-            strategy_dict["city"] = city
-            strategy_dict["active"] = active
-            strategy_dict["timestamp"] = time.time()
-            strategy_list.append(strategy_dict)
+            strategy_list.append({
+                                    "topic": topic,
+                                    "temperature": temperature,
+                                    "humidity": humidity,
+                                    "city": city,
+                                    "active": active,
+                                    "timestamp": time.time(),
+                                    "open": False
+                                })
 
     database_dict = json.load(open(database, "r"))
     database_dict["strategies"] = strategy_list
@@ -261,6 +282,8 @@ def getMeasurements(city):
                                         
      
 if __name__ == '__main__':
+    
+    time.sleep(9)
     	
     conf = {
         '/': {
@@ -270,8 +293,7 @@ if __name__ == '__main__':
     }
     cherrypy.tree.mount(RegStrategy(), '/regStrategy', conf)
 
-    cherrypy.config.update({'server.socket_host': '127.0.0.1'})
-    cherrypy.config.update({'server.socket_port': 8080})
+    cherrypy.config.update({'server.socket_host': '0.0.0.0'})
 
     cherrypy.engine.start()
     # cherrypy.engine.block()
@@ -289,9 +311,11 @@ if __name__ == '__main__':
     refresh_freq = 60
     
     broker_dict = json.load(open(database, "r"))["broker"]
-    strategies = json.load(open(database, "r"))["strategies"]
+    db_file = open(database, "r")
+    db = json.load(db_file)
+    db_file.close()
     
-    publisher = MQTT_publisher(broker_dict["broker"], broker_dict["port"])
+    publisher = MQTT_publisher(broker_dict["ip"], broker_dict["port"])
     publisher.start()
     
     percentange = 0.98
@@ -308,7 +332,9 @@ if __name__ == '__main__':
 
         if new_strat:
 
-            db = json.load(open(database, "r"))
+            db_file = open(database, "r")
+            db = json.load(db_file)
+            db_file.close()
             new_strat = False
 
         for strat in db["strategies"]:

@@ -4,7 +4,7 @@ import time
 from datetime import datetime
 import json
 
-from MQTT.MyMQTT import *
+from MyMQTT import *
 
 # Global variables
 new_strat = False
@@ -13,8 +13,8 @@ new_measures = {
     "temperature": False,
     "humidity": False
 }
-database = "src/db/environment_manager_db.json"
-resCatEndpoints = "http://127.0.0.1:4000"
+database = "db/environment_manager_db.json"
+resCatEndpoints = "http://resource_catalog:8080"
 
 # Define a CherryPy class for handling strategy registration
 class RegStrategy(object):
@@ -76,6 +76,16 @@ class RegStrategy(object):
         new_strat = True
         json.dump(database_dict, open(database, "w"), indent=3)
 
+        result = {
+            "userID": userID,
+            "greenHouseID": greenHouseID,
+            "temperature": temperature, 
+            "humidity": humidity,
+            "active": active, 
+            "timestamp": time.time()
+        }
+        return result
+
     def PUT(self, *path, **queries):
         """
         Modify the state of activity of the strategy 
@@ -103,6 +113,14 @@ class RegStrategy(object):
         
         new_strat = True
         json.dump(database_dict, open(database, "w"), indent=3)
+
+        result = {
+            "userID": userID,
+            "greenHouseID": greenHouseID,
+            "active": active, 
+            "timestamp": time.time()
+        }
+        return result
 
     def DELETE(self, *path, **queries):
         """
@@ -139,6 +157,13 @@ class RegStrategy(object):
 
         # Write the updated database back to the file
         json.dump(database_dict, open(database, "w"), indent=3)
+
+        result = {
+            "userID": userID,
+            "greenHouseID": greenHouseID,
+            "timestamp": time.time()
+        }
+        return result
 
 
 class MQTT_subscriber_publisher(object):
@@ -177,7 +202,9 @@ class MQTT_subscriber_publisher(object):
             raise cherrypy.HTTPError(400, 'Wrong parameters')
 
         # Load the database
-        db = json.load(open(database, "r"))
+        db_file = open(database, "r")
+        db = json.load(db_file)
+        db_file.close()
 
         # Update the corresponding actual value in the database
         for actualValues in db["actual_"+topic[3]]:
@@ -205,16 +232,18 @@ def refresh():
     Resource Catalog making a post.
     """
     global database
-    db = json.load(open(database, "r"))
+    db_file = open(database, "r")
+    db = json.load(db_file)
+    db_file.close()
 
     payload = {
         'ip': db["ip"], 
         'port': db["port"],
-        'functions': ["regStrategy"]}
+        'functions': [db["function"]]}
     
     url = resCatEndpoints+'/environment_manager'
     
-    requests.post(url, payload)
+    requests.post(url, json.dumps(payload))
 
 
 def getBroker():
@@ -259,20 +288,6 @@ def getStrategies():
     strategies = requests.get(url, params=params).json()
 
     strategy_list = []
-    strategy_dict = {
-        "topic_sens": {
-            "topic_temp": "", 
-            "topic_hum": "", 
-        },
-        "topic_act": {
-            "topic_temp": "", 
-            "topic_hum": "", 
-        }, 
-        "temperature": -1,
-        "humidity": -1,
-        "active": False,
-        "timestamp": -1 
-    }
     for strat in strategies:
         try:
             userID = strat['userID']
@@ -288,15 +303,20 @@ def getStrategies():
             topic_sens_temp = str(userID)+"/"+str(greenHouseID)+"/sensors/temperature"
             topic_sens_hum = str(userID)+"/"+str(greenHouseID)+"/sensors/temperature"
 
-            strategy_dict["topic_sens"]["topic_temp"] = topic_sens_temp
-            strategy_dict["topic_sens"]["topic_hum"] = topic_sens_hum
-            strategy_dict["topic_act"]["topic_temp"] = topic_act_temp
-            strategy_dict["topic_act"]["topic_hum"] = topic_act_hum
-            strategy_dict["temperature"] = temperature
-            strategy_dict["humidity"] = humidity
-            strategy_dict["active"] = active
-            strategy_dict["timestamp"] = time.time()
-            strategy_list.append(strategy_dict)
+            strategy_list.append({
+                                    "topic_sens": {
+                                        "topic_temp": topic_sens_temp, 
+                                        "topic_hum": topic_sens_hum, 
+                                    },
+                                    "topic_act": {
+                                        "topic_temp": topic_act_temp, 
+                                        "topic_hum": topic_act_hum, 
+                                    }, 
+                                    "temperature": temperature,
+                                    "humidity": humidity,
+                                    "active": active,
+                                    "timestamp": time.time() 
+                                })
 
             # Subscribe to the MQTT topics of humidity and temperature
             mqtt_handler.subscribe(topic_sens_temp)
@@ -309,6 +329,8 @@ def getStrategies():
 
 
 if __name__=="__main__":
+    
+    time.sleep(7)
 
     # Configure CherryPy
     conf = {
@@ -319,8 +341,7 @@ if __name__=="__main__":
     }
     cherrypy.tree.mount(RegStrategy(), '/regStrategy', conf)
 
-    cherrypy.config.update({'server.socket_host': '127.0.0.1'})
-    cherrypy.config.update({'server.socket_port': 8080})
+    cherrypy.config.update({'server.socket_host': '0.0.0.0'})
 
     cherrypy.engine.start()
     # cherrypy.engine.block()
@@ -330,7 +351,7 @@ if __name__=="__main__":
 
     # Initialize the MQTT handler with the broker information
     broker_dict = json.load(open(database, "r"))["broker"]
-    mqtt_handler = MQTT_subscriber_publisher(broker_dict["broker"], broker_dict["port"])
+    mqtt_handler = MQTT_subscriber_publisher(broker_dict["ip"], broker_dict["port"])
     mqtt_handler.start()
 
     last_refresh = time.time() 

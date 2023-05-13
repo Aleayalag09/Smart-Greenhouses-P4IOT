@@ -4,11 +4,11 @@ import time
 from datetime import datetime
 import json
 
-from MQTT.MyMQTT import *
+from MyMQTT import *
 
 new_strat = False
-database = "src/db/irrigation_manager_db.json"
-resCatEndpoints = "http://127.0.0.1:4000"
+database = "db/irrigation_manager_db.json"
+resCatEndpoints = "http://resource_catalog:8080"
 
 class RegStrategy(object):
     exposed = True
@@ -55,6 +55,16 @@ class RegStrategy(object):
         new_strat = True
         json.dump(database_dict, open(database, "w"), indent=3)
 
+        result = {
+            "userID": userID,
+            "greenHouseID": greenHouseID,
+            "time": time_start, 
+            "water_quantity": water_quantity, 
+            "active": activeStrat, 
+            "timestamp": time.time()
+        }
+        return result
+
     def PUT(self, *path, **queries):
         """
         Modify the state of activity of one or all the strategies 
@@ -88,6 +98,14 @@ class RegStrategy(object):
         
         new_strat = True
         json.dump(database_dict, open(database, "w"), indent=3)
+        
+        result = {
+            "userID": userID,
+            "greenHouseID": greenHouseID,
+            "active": activeIrr, 
+            "timestamp": time.time()
+        }
+        return result
 
     def DELETE(self, *path, **queries):
         """
@@ -144,6 +162,13 @@ class RegStrategy(object):
             
             new_strat = True
             json.dump(database_dict, open(database, "w"), indent=3)
+        
+        result = {
+            "userID": userID,
+            "greenHouseID": greenHouseID,
+            "timestamp": time.time()
+        }
+        return result
 
 
 class MQTT_publisher(object):
@@ -173,16 +198,18 @@ def refresh():
     """
     
     global database
-    db = json.load(open(database, "r"))
+    db_file = open(database, "r")
+    db = json.load(db_file)
+    db_file.close()
 
     payload = {
         'ip': db["ip"], 
         'port': db["port"],
-        'functions': ["regStrategy"]}
+        'functions': [db["function"]]}
     
     url = resCatEndpoints+'/irrigation_manager'
     
-    requests.post(url, payload)
+    requests.post(url, json.dumps(payload))
 
 
 def getBroker():
@@ -199,7 +226,6 @@ def getBroker():
     try:
         ip = broker['ip']
         port = broker["port"]
-    
     except:
         raise cherrypy.HTTPError(400, 'Wrong parameters')
 
@@ -244,15 +270,16 @@ def getStrategies():
             raise cherrypy.HTTPError(400, 'Wrong parameters')
         else:
             topic = str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
-            strategy_dict["topic"] = topic
-            strategy_dict["time"] = time_start
-            strategy_dict["water_quantity"] = water_quantity
-            if active == False:
-                strategy_dict["active"] = False
-            else:
-                strategy_dict["active"] = active_strat
-            strategy_dict["timestamp"] = time.time()
-            strategy_list.append(strategy_dict)
+            if active == True:
+                active = active_strat
+
+            strategy_list.append({
+                                    "topic": topic,
+                                    "time": time_start,
+                                    "water_quantity": water_quantity,
+                                    "active": active,
+                                    "timestamp": time.time()
+                                })
 
     database_dict = json.load(open(database, "r"))
     database_dict["strategies"] = strategy_list
@@ -260,6 +287,8 @@ def getStrategies():
 
 
 if __name__=="__main__":
+
+    time.sleep(5)
 
     conf = {
         '/': {
@@ -269,8 +298,7 @@ if __name__=="__main__":
     }
     cherrypy.tree.mount(RegStrategy(), '/regStrategy', conf)
 
-    cherrypy.config.update({'server.socket_host': '127.0.0.1'})
-    cherrypy.config.update({'server.socket_port': 8080})
+    cherrypy.config.update({'server.socket_host': '0.0.0.0'})
 
     cherrypy.engine.start()
     # cherrypy.engine.block()
@@ -291,7 +319,7 @@ if __name__=="__main__":
     broker_dict = json.load(open(database, "r"))["broker"]
     strategies = json.load(open(database, "r"))["strategies"]
     
-    publisher = MQTT_publisher(broker_dict["broker"], broker_dict["port"])
+    publisher = MQTT_publisher(broker_dict["ip"], broker_dict["port"])
     publisher.start()
 
     while True:
