@@ -134,45 +134,42 @@ class MQTT_subscriber_publisher(object):
         # AND OUTPUTS THE RESULT OF THE OPERATION (the value that was set, C° for temp, ON/OFF for weather, ...)
         # CAMBIAR ESTO!!!!!!!!!!!
         if topic[2] == "window":
-            if value == "turn on":
+            if value == "on":
                 result = self.controller.turn_on_actuator(0)
-            elif value == "turn off":
+            elif value == "off":
                 result = self.controller.turn_off_actuator(0)       
             else:
                 print("Invalid Value")
             
         elif topic[2] == "humidifier":
-            if value == "turn on":
+            if value == "on":
                 result = self.controller.turn_on_actuator(1)
-            elif value == "turn off":
+            elif value == "off":
                 result = self.controller.turn_off_actuator(1)
-            elif value == "humidify":
-                result = self.controller.humidify(1)     
-            elif value == "dehumidify":
-                result = self.controller.dehumidify(1)
+            elif isinstance(value, (float, int)):
+                result = self.controller.set_value(1, value)     
             else:
                 print("Invalid Value")
+                
         elif topic[2] == "ac":
-            if value == "turn on":
+            if value == "on":
                 result = self.controller.turn_on_actuator(2)
-            elif value == "turn off":
+            elif value == "off":
                 result = self.controller.turn_off_actuator(2)
-            elif value == "heat":
-                result = self.controller.heat(2)     
-            elif value == "cool":
-                result = self.controller.cool(2)
+            elif isinstance(value, (float, int)):
+                result = self.controller.set_value(2, value)     
             else:
                 print("Invalid Value")
                 
         elif topic[2] == "pump":
-            if value == "turn on":
+            if value == "on":
                 result = self.controller.turn_on_actuator(3)
-            elif value == "turn off":
+            elif value == "off":
                 result = self.controller.turn_off_actuator(3)
-            elif isinstance(value, float) or isinstance(value, float):
-                result = self.controller.water_quantity(3, value)
-        else:
-            print("Invalid actuator")
+            elif isinstance(value, (float, int)):
+                result = self.controller.set_value(3, value)     
+            else:
+                print("Invalid Value")
 
         # If the command was successfull it should be seen from the UTILITY TOPIC of the actuator
         # THE UTILITY TOPIC SHOULD BE ACCESSED TO SEE IF THE STRATEGIES' COMMAND WERE SUCCESSFULL
@@ -193,18 +190,12 @@ class MQTT_subscriber_publisher(object):
         global database
         db = json.load(open(database, "r"))
         
-        timestamp = time.time()
-        
-        value = {"humidity" : 0,
-                 "temperature" : 0}
-        
         for sensor in self.controller.sensors:
             topic = str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"+sensor
             # THE FUNCTION getMeasure OF DEVICES TAKES THE MEASURE TYPE (temperature or humidity) AND THE TIMESTAMP (the function should
             # be based on some time values in order to produce realistic measures) AND OUTPUTS THE FLOAT VALUE OF THE MEASURE REQUIRED
-            value["humidity"], value['temperature'] = sensor.read_measurements(self.enviroment)
-
-        self.publish(topic, value, sensor.id)
+            sensor.read_measurements(self.enviroment)
+            self.publish(topic, sensor.value, sensor.id)
 
 def refresh():
     """

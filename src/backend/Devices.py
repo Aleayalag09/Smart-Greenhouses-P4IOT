@@ -31,32 +31,32 @@ class DHT11(Sensor):
         self.value["temperature"] = round(environment.temperature + self.error_temperature, 2)
                     
 class Window(Actuator):
-    def __init__(self, id: int, state: bool) -> None:
+    def __init__(self, id: int, state: bool = False) -> None:
         super().__init__(id, state)
         
 class Humidifier(Actuator):
-    def __init__(self, id: int, state: bool, value = -1) -> None:
+    def __init__(self, id: int, state: bool = True, value = 0) -> None:
         self.value = value
         super().__init__(id, state)
     
     def set_value(self, value):
-        self.value = value # -1 for dehumidify 1 for humidify
+        self.value = value # Humidity set point
         
 class AC(Actuator):
-    def __init__(self, id: int, state: bool, value = -1) -> None:
+    def __init__(self, id: int, state: bool = True, value = 0) -> None:
         self.value = value
         super().__init__(id, state)
     
     def set_value(self, value):
-        self.value = value # -1 for cool 1 for heat
+        self.value = value # Temperature set point
     
 class Pump(Actuator):
-    def __init__(self, id: int, state: bool, water_quantity = 0) -> None:
-        self.water_quantity = water_quantity
+    def __init__(self, id: int, state: bool = True, value = 0) -> None:
+        self.value = value
         super().__init__(id, state)
     
-    def set_value(self, water_quantity):
-        self.water_quantity = water_quantity # Amout of water that was used
+    def set_value(self, value):
+        self.value = value # Water Quantity
         
 class Environment(object):
     def __init__(self, actuators, city, temperature = round(random.uniform(0.0, 30.0),2), humidity = round(random.uniform(0.0, 1.0),2)):
@@ -71,10 +71,11 @@ class Environment(object):
         self.flag = 1
         
         # Hyperparameters
-        self.window_factor = 3600 # How much time it takes to have the same temperature - humidity if the a window is open
-        self.humidifier_countribuition = 0.001 # Proportion of the humidity that increase by second if a humidifier is on
-        self.pump_humidity_countribuition = 0.001 # Proportion of the humidity that increase by second for the total amount of water quantity
-        self.ac_countribuition = 0.3 # Proportion of the temperature that increase by second if a humidifier is on
+        self.window_factor = 3600 # How much time it takes to have the same temperature - humidity if the a window is open (1 hour)
+        self.humidifier_factor = 1200 # How much time it takes to have the same humidity as the set point (20 minutes)
+        self.ac_factor = 1200 # How much time it takes to have the same temperature as the set point (20 minutes)
+        self.pump_humidity_factor = 0.001 # Proportion of the humidity that increase by second for the total amount of water quantity
+        
 
         
     def city_measurements(self):
@@ -93,9 +94,11 @@ class Environment(object):
     def update_environment(self):
         print(f'Environment hum = {self.humidity}, Environment temp = {self.temperature}')
         window_intensity = 0
-        humidifier_intensity = 0
+        humidity_value = 0
         pump_intensity = 0
+        temperature_value = 0
         ac_intensity = 0
+        humidifier_intensity = 0
         actual_time = time.time()
         
         for actuator in self.actuators:
@@ -103,11 +106,16 @@ class Environment(object):
                 if isinstance(actuator, Window):
                     window_intensity += 1
                 if isinstance(actuator, Humidifier):
-                    humidifier_intensity += actuator.value
+                    humidifier_intensity += 1
+                    humidity_value += actuator.value
                 if isinstance(actuator, Pump):
-                    pump_intensity += actuator.water_quantity
+                    pump_intensity += actuator.value
                 if isinstance(actuator, AC):
-                    ac_intensity += actuator.value
+                    ac_intensity += 1
+                    temperature_value += actuator.value
+                    
+        humidity_value = humidity_value/humidifier_intensity
+        temperature_value = humidity_value/humidifier_intensity
         
         # To not overload the weather API            
         if self.flag:
@@ -117,16 +125,14 @@ class Environment(object):
         time_passed = actual_time - self.last_change  
         
         window_humidity = window_intensity*((self.city_humidity - self.humidity)/self.window_factor)*time_passed + self.humidity
-        humidifier_humidity = humidifier_intensity*self.humidifier_countribuition
-        pump_humidity = pump_intensity*self.pump_humidity_countribuition
+        humidifier_humidity = humidifier_intensity*((humidity_value - window_humidity)/self.humidifier_factor)*time_passed + window_humidity
+        pump_humidity = pump_intensity*self.pump_humidity_factor
         
         window_temperature = window_intensity*((self.city_temperature - self.temperature)/self.window_factor)*time_passed + self.temperature
-        ac_temperature = ac_intensity*self.ac_countribuition   
-         
+        ac_temperature = ac_intensity*((temperature_value - window_temperature)/self.ac_factor)*time_passed + window_temperature
         
-        
-        self.humidity = round(window_humidity + humidifier_humidity + pump_humidity, 2)
-        self.temperature = round(window_temperature + ac_temperature, 2)
+        self.humidity = round(humidifier_humidity + pump_humidity, 2)
+        self.temperature = round(ac_temperature, 2)
         
         self.last_change = actual_time
                     
@@ -147,35 +153,14 @@ class Controller(object):
                 actuator.turn_off()
                 return f"actuator {id} : is off"
     
-    def humidify(self,id):
+    def set_value(self, id, value):
         for actuator in self.actuators:
-            if actuator.id == id and isinstance(actuator, Humidifier):
-                actuator.set_value(1)
-                return f"humidifier {id} : is himidifying"
-            
-    def dehumidify(self,id):
-        for actuator in self.actuators:
-            if actuator.id == id and isinstance(actuator, Humidifier):
-                actuator.set_value(-1)
-                return f"humidifier {id} : is dehimidifying"
-    
-    def heat(self,id):
-        for actuator in self.actuators:
-            if actuator.id == id and isinstance(actuator, AC):
-                actuator.set_value(1)
-                return f"AC {id} : is heating"
-            
-    def cool(self,id):
-        for actuator in self.actuators:
-            if actuator.id == id and isinstance(actuator, AC):
-                actuator.set_value(-1)
-                return f"AC {id} : is cooling"
-            
-    def water_quantity(self, id, water_quantity):
-        for actuator in self.actuators:
-            if actuator.id == id and isinstance(actuator, Pump):
-                actuator.set_value(water_quantity)
-                return f"pump {id} : was set with {water_quantity}"
+            if actuator.id == id:
+                if not isinstance(actuator, Window):
+                    actuator.set_value(value)
+                    return f'{actuator.__class__.__name__} was set to: {value}'
+                else:
+                    return "Window can't have set point value"
     
     def read_sensor(self, id, environment):
         for sensor in self.sensors:
@@ -191,7 +176,7 @@ if __name__ == "__main__":
     id = 0
     actuators = []
     for windows in range(num_windows):
-        actuators.append(Window(id, True))
+        actuators.append(Window(id, False))
         id += 1
     for pump in range(num_pumps):
         actuators.append(Pump(id, True))

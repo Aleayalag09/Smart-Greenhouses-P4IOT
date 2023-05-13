@@ -1,48 +1,36 @@
 {
-    "ip": "",
-    "port": -1, 
-    
-    "broker": {
-
-        "ip": "test.mosquitto.org",
-        "port": 1883,
-        "timestamp": 1663497809.8657904 
-    },
-
-    "userID": 0,
-    "greenHouseID": 0,
-
-    "devices": 
-    {
-        "sensors": 
-        [
-            "temperature",
-            "humidity"
-        ],
-        "actuators": 
-        [
-            "temperature",
-            "humidity",
-            "irrigation",
-            "windows"
-        ]
-    },
-
-    "strategies":
-    {
-        "irrigation": 
-        [
-            "0/0/irrigation/0",
-            "0/0/irrigation/1"
-        ],
-        "environment": 
-        [
-            "0/0/environment/temperature",
-            "0/0/environment/humidity"
-        ],
-        "weather":
-        [
-            "0/0/weather"
-        ]
-    }
+   "ip": "",
+   "port": -1,
+   "broker": {
+      "ip": "test.mosquitto.org",
+      "port": 1883,
+      "timestamp": 1683976875.942557
+   },
+   "userID": 0,
+   "greenHouseID": 0,
+   "devices": {
+      "sensors": [
+         "temperature",
+         "humidity"
+      ],
+      "actuators": [
+         "temperature",
+         "humidity",
+         "irrigation",
+         "windows"
+      ]
+   },
+   "strategies": {
+      "irrigation": [
+         "0/0/irrigation/0",
+         "0/0/irrigation/1"
+      ],
+      "environment": [
+         "0/0/environment/temperature",
+         "0/0/environment/humidity"
+      ],
+      "weather": [
+         "0/0/weather"
+      ]
+   }
 }
