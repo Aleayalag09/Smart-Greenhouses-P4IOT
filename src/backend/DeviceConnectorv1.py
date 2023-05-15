@@ -106,7 +106,7 @@ class MQTT_subscriber_publisher(object):
         self.controller = Controller(sensors, actuators)
         self.enviroment = Environment(actuators, "Torino")
         # bn: measure type, e: events (objects), v: value(s), t: timestamp
-        self.message={'bn': None, 'e': {'t': None, 'v': None}}
+        self.message={'bn': "DeviceConnector", 'e': {'t': None, 'v': None}}
 
     def start(self):
         self.client.connect(self.broker, self.port)
@@ -120,15 +120,17 @@ class MQTT_subscriber_publisher(object):
         self.client.unsubscribe(topic)
 
     def stop(self):
-        self.client.loop_start()
+        self.client.loop_stop()
         
     def on_message(self, client, userdata, message):
         global database
 
         measure = json.loads(message.payload.decode("utf-8"))
         topic = message.topic
+        print(f'{measure} recieved in Device Connector')
         # [0]: userID, [1]: greenHouseID, [2]: actuator type (humidifier/window/pump/ac)
-        topic = self.topic.split("/")
+        topic = topic.split("/")
+        actuatortype = topic[3]
         result = None
 
         try:
@@ -139,7 +141,7 @@ class MQTT_subscriber_publisher(object):
         
         # THE FUNCTION setActuator OF DEVICES TAKES THE ACTUATOR TYPE, THE VALUE TO BE SET
         # AND OUTPUTS THE RESULT OF THE OPERATION (the value that was set, C° for temp, ON/OFF for weather, ...)
-        if topic[2] == "weather":
+        if actuatortype == "weather":
             if value == "open":
                 result = self.controller.turn_on_actuator(0)
             elif value == "close":
@@ -147,7 +149,7 @@ class MQTT_subscriber_publisher(object):
             else:
                 print("Invalid Value")
                 
-        elif topic[2] == "humidity":
+        elif actuatortype == "humidity":
             if value == "on":
                 result = self.controller.turn_on_actuator(1)
             elif value == "off":
@@ -157,7 +159,7 @@ class MQTT_subscriber_publisher(object):
             else:
                 print("Invalid Value")
                 
-        elif topic[2] == "temperature":
+        elif actuatortype == "temperature":
             if value == "on":
                 result = self.controller.turn_on_actuator(2)
             elif value == "off":
@@ -167,7 +169,7 @@ class MQTT_subscriber_publisher(object):
             else:
                 print("Invalid Value")
                 
-        elif topic[2] == "irrigation":
+        elif actuatortype == "irrigation":
             if value == "on":
                 result = self.controller.turn_on_actuator(3)
             elif value == "off":
@@ -187,7 +189,6 @@ class MQTT_subscriber_publisher(object):
 
     def publish(self, topic, value, measureType):
         self.client.loop_stop()
-        self.message["bn"] = measureType
         self.message["e"]["t"] = time.time()
         self.message["e"]["v"] = value
 
@@ -321,7 +322,7 @@ if __name__ == '__main__':
     
     mqtt_handler = MQTT_subscriber_publisher(broker_dict["ip"], broker_dict["port"])
     mqtt_handler.start()
-    mqtt_handler.subscribe("0/0/environment/#")
+    mqtt_handler.subscribe("0/0/actuator/#")
 
     last_refresh = time.time() 
     last_measure = time.time() 

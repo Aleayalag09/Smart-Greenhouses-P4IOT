@@ -12,10 +12,10 @@
     "strategies": [
         
         {
-            "topic": "0/0/irrigation/0",
-            "time": "07:00:00",
+            "topic": "0/0/actuator/irrigation",
+            "time": "23:32:00",
             "water_quantity": 2,
-            "active": false,
+            "active": true,
             "timestamp": 1663497809.8657904 
         },
 
