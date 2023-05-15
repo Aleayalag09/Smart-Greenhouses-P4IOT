@@ -24,7 +24,7 @@
             "temperature",
             "humidity",
             "irrigation",
-            "windows"
+            "weather"
         ]
     },
 

@@ -291,7 +291,7 @@ if __name__=="__main__":
     broker_dict = json.load(open(database, "r"))["broker"]
     strategies = json.load(open(database, "r"))["strategies"]
     
-    publisher = MQTT_publisher(broker_dict["broker"], broker_dict["port"])
+    publisher = MQTT_publisher(broker_dict["ip"], broker_dict["port"])
     publisher.start()
 
     while True:

@@ -168,36 +168,36 @@ class Controller(object):
                 sensor.read_measurements(environment)
                 return sensor.value
     
-if __name__ == "__main__":
-    num_windows = 1
-    num_pumps = 1
-    num_hum = 1
-    num_ac = 1
-    id = 0
-    actuators = []
-    for windows in range(num_windows):
-        actuators.append(Window(id, False))
-        id += 1
-    for pump in range(num_pumps):
-        actuators.append(Pump(id, True))
-        id += 1
-    for humidifier in range(num_hum):
-        actuators.append(Humidifier(id, True))
-        id += 1
-    for ac in range(num_ac):
-        actuators.append(AC(id, True))
-        id += 1
+# if __name__ == "__main__":
+#     num_windows = 1
+#     num_pumps = 1
+#     num_hum = 1
+#     num_ac = 1
+#     id = 0
+#     actuators = []
+#     for windows in range(num_windows):
+#         actuators.append(Window(id, False))
+#         id += 1
+#     for pump in range(num_pumps):
+#         actuators.append(Pump(id, True))
+#         id += 1
+#     for humidifier in range(num_hum):
+#         actuators.append(Humidifier(id, True))
+#         id += 1
+#     for ac in range(num_ac):
+#         actuators.append(AC(id, True))
+#         id += 1
         
-    sensor_1 = DHT11(0)
-    sensors = [sensor_1]
-    env_1 = Environment(actuators, "Torino")
-    raspberry = Controller(sensors, actuators)    
+#     sensor_1 = DHT11(0)
+#     sensors = [sensor_1]
+#     env_1 = Environment(actuators, "Torino")
+#     raspberry = Controller(sensors, actuators)    
     
-    last_time = time.time()
-    timer = 5 # seg
-    while True:
-        actual_time = time.time()
-        if (actual_time - last_time) >= timer:
-            measurement = raspberry.read_sensor(0, env_1)
-            print(f'sensor read: humidity = {measurement["humidity"]}, temperature = {measurement["temperature"]}')
-            last_time = actual_time
+#     last_time = time.time()
+#     timer = 5 # seg
+#     while True:
+#         actual_time = time.time()
+#         if (actual_time - last_time) >= timer:
+#             measurement = raspberry.read_sensor(0, env_1)
+#             print(f'sensor read: humidity = {measurement["humidity"]}, temperature = {measurement["temperature"]}')
+#             last_time = actual_time
