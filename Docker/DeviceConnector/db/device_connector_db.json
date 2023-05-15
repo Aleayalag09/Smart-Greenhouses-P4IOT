@@ -8,6 +8,14 @@
     "userID": 0,
     "greenHouseID": 0,
 
+    "real_devices": [
+        "DHT11",
+        "Window",
+        "Humidifier",
+        "AC",
+        "Pump"
+    ],
+
     "devices": 
     {
         "sensors": 

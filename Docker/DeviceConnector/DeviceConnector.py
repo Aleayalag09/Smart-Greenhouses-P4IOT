@@ -2,13 +2,19 @@ import json
 import time
 import requests
 import cherrypy
-import Devices
 
 from MyMQTT import *
+from Devices import *
 
 database = "db/device_connector_db.json"
 resCatEndpoints = "http://resource_catalog:8080"
 new_strat = False
+
+window_ID = 0
+humidifier_ID = 1
+ac_ID = 2
+pump_ID = 3
+dht11_ID = 0
 
 class RegStrategy(object):
     exposed = True
@@ -117,7 +123,39 @@ class MQTT_subscriber_publisher(object):
         # bn: measure type, e: events (objects), v: value(s), t: timestamp
         self.__message={'bn': None, 'e': {'t': None, 'v': None}}
 
-        self.client=MyMQTT("DeviceConnector", broker, port, None)
+        global database
+        global window_ID
+        global humidifier_ID
+        global ac_ID
+        global pump_ID
+        global dht11_ID
+
+        db_file = open(database, "r")
+        db = json.load(db_file)
+        db_file.close()
+
+        self.client=MyMQTT("DeviceConnector_"+str(db["userID"])+"_"+str(db["greenHouseID"]), broker, port, None)
+        
+        sensors = []
+        for real_device in db["real_devices"]:
+            if real_device == "DHT11":
+                sensors.append(DHT11(dht11_ID))
+
+        # If we want to add other sensors or actuators we just have to add the relative if condition
+
+        actuators = []
+        for real_device in db["real_devices"]:
+            if real_device == "Window":
+                sensors.append(Window(window_ID))
+            elif real_device == "Humidifier":
+                sensors.append(Humidifier(humidifier_ID))
+            elif real_device == "AC":
+                sensors.append(AC(ac_ID))
+            elif real_device == "Pump":
+                sensors.append(Pump(pump_ID))
+
+        self.controller = Controller(sensors, actuators)
+        self.enviroment = Environment(actuators, "Torino")
 
     def start (self):
         self.client.start()
@@ -132,7 +170,13 @@ class MQTT_subscriber_publisher(object):
         self.client.stop()
 
     def notify(self, topic, payload):
+
         global database
+        global window_ID
+        global humidifier_ID
+        global ac_ID
+        global pump_ID
+        global dht11_ID
 
         measure = json.loads(payload)
         # [0]: userID, [1]: greenHouseID, [2]: actuator type (temperature/humidity/weather/irrigation)
@@ -146,7 +190,32 @@ class MQTT_subscriber_publisher(object):
         
         # THE FUNCTION setActuator OF DEVICES TAKES THE ACTUATOR TYPE, THE VALUE TO BE SET
         # AND OUTPUTS THE RESULT OF THE OPERATION (the value that was set, C° for temp, ON/OFF for weather, ...)
-        result = Devices.setActuator(topic[2], value)
+        
+        if topic[2] == "weather":
+            if value == "on":
+                result = self.controller.turn_on_actuator(window_ID)
+            elif value == "off":
+                result = self.controller.turn_off_actuator(window_ID)       
+            else:
+                print("Invalid Value")
+                
+        elif topic[2] == "humidity":
+            if isinstance(value, (float, int)):
+                result = self.controller.set_value(humidifier_ID, value)     
+            else:
+                print("Invalid Value")
+                
+        elif topic[2] == "temperature":
+            if isinstance(value, (float, int)):
+                result = self.controller.set_value(ac_ID, value)     
+            else:
+                print("Invalid Value")
+                
+        elif topic[2] == "irrigation":
+            if isinstance(value, (float, int)):
+                result = self.controller.set_value(pump_ID, value)     
+            else:
+                print("Invalid Value")
 
         # If the command was successfull it should be seen from the UTILITY TOPIC of the actuator
         # THE UTILITY TOPIC SHOULD BE ACCESSED TO SEE IF THE STRATEGIES' COMMAND WERE SUCCESSFULL
@@ -158,6 +227,32 @@ class MQTT_subscriber_publisher(object):
         self.__message["e"]["v"] = value
 
         self.client.myPublish(topic, self.__message)
+    
+    def publishSensorMeasure(self, measureType):
+        """
+        Publish the measure of the sensor passed in the input
+        """
+        
+        global database
+        db_file = open(database, "r")
+        db = json.load(db_file)
+        db_file.close()
+
+        topic = str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"+measureType
+        
+        find = False
+        for sensor in self.controller.sensors:
+            
+            if find == False:
+                for key, value in sensor.value.items():
+                    if key == measureType:
+                        find = True
+                        break
+
+            if find == True:       
+                sensor.read_measurements(self.enviroment)
+                self.publish(topic, sensor.value[measureType])
+                break
 
 
 
@@ -253,27 +348,6 @@ def getStrategies():
     json.dump(db, open(database, "w"), indent=3)
 
 
-
-def publishSensorMeasure(sensor):
-    """
-    Publish the measure of the sensor passed in the input
-    """
-    
-    global database
-    db_file = open(database, "r")
-    db = json.load(db_file)
-    db_file.close()
-    
-    timestamp = time.time()
-
-    topic = str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"+sensor
-    # THE FUNCTION getMeasure OF DEVICES TAKES THE MEASURE TYPE (temperature or humidity) AND THE TIMESTAMP (the function should
-    # be based on some time values in order to produce realistic measures) AND OUTPUTS THE FLOAT VALUE OF THE MEASURE REQUIRED
-    value = Devices.getMeasure(sensor, timestamp)
-
-    mqtt_handler.publish(topic, value, sensor)
-
-
     
                         
 if __name__ == '__main__':
@@ -325,9 +399,9 @@ if __name__ == '__main__':
         if timestamp-last_measure >= measure_freq:
 
             last_measure = time.time()
-            for sensor in sensors:
+            for measureType in sensors:
 
-                publishSensorMeasure(sensor)
+                mqtt_handler.publishSensorMeasure(measureType)
             
 
 
