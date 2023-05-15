@@ -906,8 +906,8 @@ class DeviceConnectors(object):
             greenHouseID = input["greenHouseID"]
             ip = input["ip"]
             port = input["port"]
-            sensors = input["devices"]["sensors"]
-            actuators = input["devices"]["actuators"]
+            sensors = input["sensors"]
+            actuators = input["actuators"]
             functions = input["functions"]
         except:
             raise cherrypy.HTTPError(400, 'Wrong input')
@@ -933,8 +933,8 @@ class DeviceConnectors(object):
                             else:
                                 for dev_conn in greenhouse["deviceConnectors"]:
                                     if dev_conn["ip"] == ip and dev_conn["port"] == port:
-                                        dev_conn["device"]["sensors"] = sensors
-                                        dev_conn["device"]["actuators"] = actuators
+                                        dev_conn["devices"]["sensors"] = sensors
+                                        dev_conn["devices"]["actuators"] = actuators
                                         dev_conn["functions"] = functions
                                         dev_conn["timestamp"] = time.time()
                                         update = True
@@ -944,7 +944,7 @@ class DeviceConnectors(object):
 
                             if update == False:
                                 # I assume that there is just one Adaptor
-                                url_adaptor = db["thingspeak_adaptors"][0]["ip"]+":"+str(db["thingspeak_adaptors"][0]["port"])+"/"+db["thingspeak_adaptors"][0]["functions"][0]
+                                url_adaptor = "http://"+db["thingspeak_adaptors"][0]["ip"]+":"+str(db["thingspeak_adaptors"][0]["port"])+"/"+db["thingspeak_adaptors"][0]["functions"][0]
                                 payload = {
                                     "userID": userID,
                                     "greenHouseID": greenHouseID,
@@ -953,6 +953,8 @@ class DeviceConnectors(object):
                                 requests.post(url_adaptor, json.dumps(payload))
                             
                             json.dump(db, open("db/catalog.json", "w"), indent=3)
+
+                            return
         except:
             raise cherrypy.HTTPError(400, 'No user or greenhouse found')
         
@@ -1407,7 +1409,7 @@ def post_to_manager(strategyType = "", strat_info = {}):
         }
 
     # We suppose that the managers can have just one function (regStrategy)
-    url_manager = manager_info["ip"]+":"+str(manager_info["port"])+"/"+manager_info["functions"][0]
+    url_manager = "http://"+manager_info["ip"]+":"+str(manager_info["port"])+"/"+manager_info["functions"][0]
     requests.post(url_manager, json.dumps(payload))
 
 
@@ -1527,7 +1529,7 @@ def post_to_dev_conn(strategyType = "", strat_info = {}):
         }
         
     # We suppose that the device connectors have as the first function the function to manage the strategies (regStrategy)
-    url = dev_conn_info["ip"]+":"+str(dev_conn_info["port"])+"/"+dev_conn_info["functions"][0]
+    url = "http://"+dev_conn_info["ip"]+":"+str(dev_conn_info["port"])+"/"+dev_conn_info["functions"][0]
     requests.post(url, json.dumps(payload))
 
 
