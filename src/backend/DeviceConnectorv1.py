@@ -2,11 +2,12 @@ import json
 import time
 import requests
 import cherrypy
+import paho.mqtt.client as mqtt
 
 from Devices import *
 from MQTT.MyMQTT import *
 
-database = "src/db/device_connector_db.json"
+database = "src/db_examples/device_connector_db_ex.json"
 resCatEndpoints = "http://127.0.0.1:4000"
 new_strat = False
 
@@ -96,52 +97,62 @@ class RegStrategy(object):
         
 class MQTT_subscriber_publisher(object):
     def __init__(self, broker, port):
-        # bn: measure type, e: events (objects), v: value(s), t: timestamp
-        self.__message={'bn': None, 'e': {'t': None, 'v': None}}
-
-        self.client=MyMQTT("DeviceConnector", broker, port, None)
+        self.client=mqtt.Client("DeviceConnector")
+        self.broker = broker
+        self.port = port
+        self.topic = None
+        
         sensors = [DHT11(0)]
         actuators = [Window(0), Humidifier(1), AC(2), Pump(3)]
         self.controller = Controller(sensors, actuators)
         self.enviroment = Environment(actuators, "Torino")
+        # bn: measure type, e: events (objects), v: value(s), t: timestamp
+        self.message={'bn': None, 'e': {'t': None, 'v': None}}
+
+        
 
     def start (self):
-        self.client.start()
+        self.client.connect(self.broker, self.port)
+        self.client.loop_start()
 
     def subscribe(self, topic):
-        self.client.mySubscribe(topic)
+        self.client.subscribe(topic)
+        self.client.on_message= self.on_message
+        self.topic = topic
 
     def unsubscribe(self, topic):
         self.client.unsubscribe(topic)
 
     def stop (self):
-        self.client.stop()
-
-    def notify(self, topic, payload):
+        self.client.loop_start()
+        
+    def on_message(self, client, userdata, message):
         global database
 
-        measure = json.loads(payload)
+        measure = json.loads(message)
+        print(f'{measure} was received in device connector')
         # [0]: userID, [1]: greenHouseID, [2]: actuator type (humidifier/window/pump/ac)
-        topic = topic.split("/")
+        topic = self.topic.split("/")
 
         try:
             value = measure['e']['v']
             timestamp = measure['e']['t']
+            actuatortype = measure['bn']
         except:
             raise cherrypy.HTTPError(400, 'Wrong parameters')
         
         # THE FUNCTION setActuator OF DEVICES TAKES THE ACTUATOR TYPE, THE VALUE TO BE SET
         # AND OUTPUTS THE RESULT OF THE OPERATION (the value that was set, C° for temp, ON/OFF for weather, ...)
 
-        if topic[2] == "weather":
-            if value == "on":
+        if actuatortype == "weather":
+            if value == "open":
                 result = self.controller.turn_on_actuator(0)
-            elif value == "off":
+            elif value == "close":
                 result = self.controller.turn_off_actuator(0)       
             else:
                 print("Invalid Value")
                 
-        elif topic[2] == "humidity":
+        elif actuatortype == "humidity":
             if value == "on":
                 result = self.controller.turn_on_actuator(1)
             elif value == "off":
@@ -151,7 +162,7 @@ class MQTT_subscriber_publisher(object):
             else:
                 print("Invalid Value")
                 
-        elif topic[2] == "temperature":
+        elif actuatortype == "temperature":
             if value == "on":
                 result = self.controller.turn_on_actuator(2)
             elif value == "off":
@@ -161,7 +172,7 @@ class MQTT_subscriber_publisher(object):
             else:
                 print("Invalid Value")
                 
-        elif topic[2] == "irrigation":
+        elif actuatortype == "irrigation":
             if value == "on":
                 result = self.controller.turn_on_actuator(3)
             elif value == "off":
@@ -173,14 +184,18 @@ class MQTT_subscriber_publisher(object):
 
         # If the command was successfull it should be seen from the UTILITY TOPIC of the actuator
         # THE UTILITY TOPIC SHOULD BE ACCESSED TO SEE IF THE STRATEGIES' COMMAND WERE SUCCESSFULL
-        mqtt_handler.publish(topic[0]+"/"+topic[1]+"/"+topic[2]+"/utility", result, "utility")
+        mqtt_handler.publish(self.topic + "/"+ actuatortype +"/utility", result, "utility")
+        
 
     def publish(self, topic, value, measureType):
-        self.__message["bn"] = measureType
-        self.__message["e"]["t"] = time.time()
-        self.__message["e"]["v"] = value
+        self.client.loop_stop()
+        self.message["bn"] = measureType
+        self.message["e"]["t"] = time.time()
+        self.message["e"]["v"] = value
 
-        self.client.myPublish(topic, self.__message)
+        self.client.publish(topic, json.dumps(self.message))
+        
+        self.client.loop_start()
         
     def publishSensorMeasures(self):
         """
@@ -191,11 +206,15 @@ class MQTT_subscriber_publisher(object):
         db = json.load(open(database, "r"))
         
         for sensor in self.controller.sensors:
-            topic = str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"+sensor
             # THE FUNCTION getMeasure OF DEVICES TAKES THE MEASURE TYPE (temperature or humidity) AND THE TIMESTAMP (the function should
             # be based on some time values in order to produce realistic measures) AND OUTPUTS THE FLOAT VALUE OF THE MEASURE REQUIRED
             sensor.read_measurements(self.enviroment)
-            self.publish(topic, sensor.value, sensor.id)
+            topic = str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"+"temperature"
+            self.publish(topic, sensor.value['temperature'], 'temperature')
+            time.sleep(0.5)
+            topic = str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"+"humidity"
+            self.publish(topic, sensor.value['humidity'], 'humidity')
+        return f'was sent {sensor.value} to {str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"}' 
 
 def refresh():
     """
@@ -227,16 +246,14 @@ def getBroker():
 
     global database
 
-    # url = resCatEndpoints+'/broker'
-    # broker = requests.get(url).json()
+    url = resCatEndpoints+'/broker'
+    broker = requests.get(url).json()
 
-    # try:
-    #     ip = broker['ip']
-    #     port = broker["port"]   
-    # except:
-    #     raise cherrypy.HTTPError(400, 'Wrong parameters')
-    ip = "test.mosquitto.org"
-    port = 1883
+    try:
+        ip = broker['ip']
+        port = broker["port"]   
+    except:
+        raise cherrypy.HTTPError(400, 'Wrong parameters')
 
     database_dict = json.load(open(database, "r"))
     database_dict["broker"]["ip"] = ip
@@ -286,38 +303,39 @@ def getStrategies():
                      
 if __name__ == '__main__':
 
-    conf = {
-        '/': {
-            'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
-            'tools.sessions.on': True,
-        }
-    }
-    cherrypy.tree.mount(RegStrategy(), '/regStrategy', conf)
+    # conf = {
+    #     '/': {
+    #         'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
+    #         'tools.sessions.on': True,
+    #     }
+    # }
+    # cherrypy.tree.mount(RegStrategy(), '/regStrategy', conf)
 
-    cherrypy.config.update({'server.socket_host': '127.0.0.1'})
-    cherrypy.config.update({'server.socket_port': 8080})
+    # cherrypy.config.update({'server.socket_host': '127.0.0.1'})
+    # cherrypy.config.update({'server.socket_port': 8080})
 
-    cherrypy.engine.start()
+    # cherrypy.engine.start()
     # cherrypy.engine.block()
 
     # CAN THE MQTT BROKER CHANGE THROUGH TIME? I SUPPOSE NOT IN THIS CASE
-    getBroker()
+    # getBroker()
 
     broker_dict = json.load(open(database, "r"))["broker"]
     
     mqtt_handler = MQTT_subscriber_publisher(broker_dict["ip"], broker_dict["port"])
     mqtt_handler.start()
+    mqtt_handler.subscribe("0/0/temperature")
 
     last_refresh = time.time() 
     last_measure = time.time() 
     # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
-    refresh()
+    # refresh()
 
     # BOOT FUNCTION TO RETRIEVE STARTING STRATEGIES
-    getStrategies()
+    # getStrategies()
 
     refresh_freq = 60
-    measure_freq = 90
+    measure_freq = 10
 
     sensors = json.load(open(database, "r"))["devices"]["sensors"]
 
@@ -327,9 +345,9 @@ if __name__ == '__main__':
         if timestamp-last_refresh >= refresh_freq:
 
             last_refresh = time.time()
-            refresh()
+            # refresh()
 
         if timestamp-last_measure >= measure_freq:
 
             last_measure = time.time()
-            mqtt_handler.publishSensorMeasures()
+            print(mqtt_handler.publishSensorMeasures())

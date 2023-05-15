@@ -3,6 +3,7 @@ import requests
 import time
 from datetime import datetime
 import json
+import paho.mqtt.client as mqtt
 
 from MQTT.MyMQTT import *
 
@@ -13,7 +14,7 @@ new_measures = {
     "temperature": False,
     "humidity": False
 }
-database = "src/db/environment_manager_db.json"
+database = "src/db_examples/environment_manager_db_ex.json"
 resCatEndpoints = "http://127.0.0.1:4000"
 
 # Define a CherryPy class for handling strategy registration
@@ -143,36 +144,39 @@ class RegStrategy(object):
 
 class MQTT_subscriber_publisher(object):
     def __init__(self, broker, port):
+        
+        self.client= mqtt.Client("EnvironmentStrat")
+        self.broker = broker
+        self.port = port
+        self.topic = None
+        
         # bn: macro strategy name (environment), e: events (objects), v: value(s) (depends on what we want to set with the strategy), t: timestamp
-        self.__message={'bn': "EnvironmentStrat", 'e': {'t': None, 'v': None}}
-
-        self.client=MyMQTT("EnvironmentStrat", broker, port, None)
+        self.message={'bn': "EnvironmentStrat", 'e': {'t': None, 'v': None}}
 
     def start (self):
-        self.client.start()
+        self.client.connect(self.broker, self.port)
+        self.client.loop_start()
 
     def subscribe(self, topic):
-        self.client.mySubscribe(topic)
-
-    def unsubscribe(self, topic):
-        self.client.unsubscribe(topic)
-
-    def stop (self):
-        self.client.stop()
-
-    def notify(self, topic, payload):
+        self.client.subscribe(topic)
+        self.client.on_message= self.on_message
+        self.topic = topic
+    
+    def on_message(self, client, userdata, message):
         global database
         global new_measures
 
-        measure = json.loads(payload)
+        measure = json.loads(message.payload.decode("utf-8"))
+        print(f'{measure} was received in Env manager')
         # [0]: userID, [1]: greenHouseID, [2]: "sensors", [3]: sensor type (temperature/humidity)
-        topic = topic.split("/")
+        # topic = topic.split("/")
 
         try:
             # Unit of measure of the measure
             # unit = measure['unit']
             value = measure['e']['v']
             timestamp = measure['e']['t']
+            measuretype = measure['bn']
         except:
             raise cherrypy.HTTPError(400, 'Wrong parameters')
 
@@ -180,23 +184,40 @@ class MQTT_subscriber_publisher(object):
         db = json.load(open(database, "r"))
 
         # Update the corresponding actual value in the database
-        for actualValues in db["actual_"+topic[3]]:
-            if actualValues["userID"] == topic[0] and actualValues["greenHouseID"] == topic[1]:
-                actualValues[topic[3]] = value
+        topic = self.topic.split("/")
+        for actualValues in db["actual_"+measuretype]:
+            print(actualValues)
+            print(topic[0])
+            print(topic[1])
+            if actualValues["userID"] == int(topic[0]) and actualValues["greenHouseID"] == int(topic[1]):
+                print("Entre")
+                actualValues[measuretype] = value
                 actualValues["timestamp"] = timestamp
                 new_measures["new"] = True
-                new_measures[topic[3]] = True
+                new_measures[measuretype] = True
                 break
         # Write the updated database back to the file
         json.dump(db, open(database, "w"), indent=3)
+        return json.loads(message.payload.decode("utf-8"))
+
+    def unsubscribe(self, topic):
+        self.client.unsubscribe(topic)
+
+    def stop (self):
+        self.client.loop_stop()
 
     def publish(self, topic, value):
+        self.client.loop_stop()
         # Update the message with the current timestamp and value
-        self.__message["e"]["t"] = time.time()
-        self.__message["e"]["v"] = value
+        self.message["e"]["t"] = time.time()
+        self.message["e"]["v"] = value
 
         # Publish the message to the specified topic
-        self.client.myPublish(topic, self.__message)
+        self.client.publish(topic, json.dumps(self.message))
+        
+        self.client.loop_start()
+        
+        return f'{self.message} was sent to {topic}' 
 
 
 def refresh():
@@ -310,37 +331,40 @@ def getStrategies():
 
 if __name__=="__main__":
 
-    # Configure CherryPy
-    conf = {
-        '/': {
-            'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
-            'tools.sessions.on': True,
-        }
-    }
-    cherrypy.tree.mount(RegStrategy(), '/regStrategy', conf)
+    # # Configure CherryPy
+    # conf = {
+    #     '/': {
+    #         'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
+    #         'tools.sessions.on': True,
+    #     }
+    # }
+    # cherrypy.tree.mount(RegStrategy(), '/regStrategy', conf)
 
-    cherrypy.config.update({'server.socket_host': '127.0.0.1'})
-    cherrypy.config.update({'server.socket_port': 8080})
+    # cherrypy.config.update({'server.socket_host': '127.0.0.1'})
+    # cherrypy.config.update({'server.socket_port': 8080})
 
-    cherrypy.engine.start()
-    # cherrypy.engine.block()
+    # cherrypy.engine.start()
+    # # cherrypy.engine.block()
 
     # Get the broker information from the Resource Catalog
-    getBroker()
+    # getBroker()
 
     # Initialize the MQTT handler with the broker information
     broker_dict = json.load(open(database, "r"))["broker"]
-    mqtt_handler = MQTT_subscriber_publisher(broker_dict["broker"], broker_dict["port"])
+    print(broker_dict)
+    mqtt_handler = MQTT_subscriber_publisher(broker_dict["ip"], broker_dict["port"])
     mqtt_handler.start()
+    topic = "0/0/sensors/temperature"
+    mqtt_handler.subscribe(topic)
 
     last_refresh = time.time() 
 
-    # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
-    refresh()
+    # # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
+    # refresh()
 
-    # BOOT FUNCTION TO RETRIEVE STARTING STRATEGIES
-    getStrategies()
-
+    # # BOOT FUNCTION TO RETRIEVE STARTING STRATEGIES
+    # getStrategies()
+    
     strategies = json.load(open(database, "r"))["strategies"]
     
     refresh_freq = 60
@@ -354,12 +378,12 @@ if __name__=="__main__":
         if timestamp-last_refresh >= refresh_freq:
 
             last_refresh = time.time()
-            refresh()
+            # refresh()
 
-        if new_strat:
-            # Update the strategies if there are any changes
-            strategies = json.load(open(database, "r"))["strategies"]
-            new_strat = False
+        # if new_strat:
+        #     # Update the strategies if there are any changes
+        #     strategies = json.load(open(database, "r"))["strategies"]
+        #     new_strat = False
 
         # At the beginning we don't have any measures but we could already have some strategies
         # => we cannot enter this for if we don't have any new actual measure (if we already have some actual measures
@@ -373,11 +397,11 @@ if __name__=="__main__":
                     
                     # Accessible only if we have a new measure for the temperature
                     if new_measures["temperature"]:
-                        actual_temp = json.load(open(database, "r"))["actual_temperature"]
+                        actual_temp_db = json.load(open(database, "r"))["actual_temperature"]
                         new_measures["temperature"] = False
                         new_measures["new"] = False
 
-                        for temp in actual_temp:
+                        for temp in actual_temp_db:
                             if temp["userID"] == int(split_topic[0]) and temp["greenHouseID"] == int(split_topic[1]):
 
                                 if temp["temperature"] > percentange*strat["temperature"] or temp["temperature"] < percentange*strat["temperature"]:
