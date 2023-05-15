@@ -1,4 +1,5 @@
 {   
+    "ID": 0,
     "ip": "irrigation_manager",
     "port": 8080, 
     "function": "regStrategy",
