@@ -121,7 +121,13 @@ class RegStrategy(object):
 class MQTT_subscriber_publisher(object):
 
     def __init__(self, broker, port):
-        
+        global database
+        global window_ID
+        global humidifier_ID
+        global ac_ID
+        global pump_ID
+        global dht11_ID
+       
         db_file = open(database, "r")
         db = json.load(db_file)
         db_file.close()
@@ -133,13 +139,6 @@ class MQTT_subscriber_publisher(object):
 
         # bn: measure type, e: events (objects), v: value(s), t: timestamp
         self.__message={'bn': None, 'e': {'t': None, 'v': None}}
-
-        global database
-        global window_ID
-        global humidifier_ID
-        global ac_ID
-        global pump_ID
-        global dht11_ID
         
         sensors = []
         for real_device in db["real_devices"]:
@@ -347,18 +346,20 @@ def getStrategies():
         for strat in irr_strat["strat"]:
             topic = str(db["userID"])+"/"+str(db["greenHouseID"])+"/irrigation/"+str(strat["id"])
             db["strategies"]["irrigation"].append(topic)
+            mqtt_handler.subscribe(topic)
 
     if env_strat["strat"] != []:
-        for strat in env_strat["strat"]:
-            topic_temp = str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/temperature"
-            topic_hum = str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/humidity"
-            db["strategies"]["environment"].append(topic_temp)
-            db["strategies"]["environment"].append(topic_hum)
+        topic_temp = str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/temperature"
+        topic_hum = str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/humidity"
+        db["strategies"]["environment"].append(topic_temp)
+        db["strategies"]["environment"].append(topic_hum)
+        mqtt_handler.subscribe(topic_temp)
+        mqtt_handler.subscribe(topic_hum)
 
     if wea_strat["strat"] != []:
-        for strat in wea_strat["strat"]:
-            topic = str(db["userID"])+"/"+str(db["greenHouseID"])+"/weather"
-            db["strategies"]["weather"].append(topic)
+        topic = str(db["userID"])+"/"+str(db["greenHouseID"])+"/weather"
+        db["strategies"]["weather"].append(topic)
+        mqtt_handler.subscribe(topic)
 
     json.dump(db, open(database, "w"), indent=3)
 
@@ -399,7 +400,7 @@ if __name__ == '__main__':
     getStrategies()
 
     refresh_freq = 60
-    measure_freq = 90
+    measure_freq = 20
 
     sensors = json.load(open(database, "r"))["devices"]["sensors"]
 
