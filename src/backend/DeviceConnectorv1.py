@@ -100,7 +100,6 @@ class MQTT_subscriber_publisher(object):
         self.client=mqtt.Client("DeviceConnector")
         self.broker = broker
         self.port = port
-        self.topic = None
         
         sensors = [DHT11(0)]
         actuators = [Window(0), Humidifier(1), AC(2), Pump(3)]
@@ -109,28 +108,25 @@ class MQTT_subscriber_publisher(object):
         # bn: measure type, e: events (objects), v: value(s), t: timestamp
         self.message={'bn': None, 'e': {'t': None, 'v': None}}
 
-        
-
-    def start (self):
+    def start(self):
         self.client.connect(self.broker, self.port)
         self.client.loop_start()
 
     def subscribe(self, topic):
         self.client.subscribe(topic)
         self.client.on_message= self.on_message
-        self.topic = topic
 
     def unsubscribe(self, topic):
         self.client.unsubscribe(topic)
 
-    def stop (self):
+    def stop(self):
         self.client.loop_start()
         
     def on_message(self, client, userdata, message):
         global database
 
         measure = json.loads(message.payload.decode("utf-8"))
-        print(f'{measure} was received in device connector')
+        topic = message.topic
         # [0]: userID, [1]: greenHouseID, [2]: actuator type (humidifier/window/pump/ac)
         topic = self.topic.split("/")
         result = None
@@ -138,13 +134,12 @@ class MQTT_subscriber_publisher(object):
         try:
             value = measure['e']['v']
             timestamp = measure['e']['t']
-            actuatortype = measure['bn']
         except:
             raise cherrypy.HTTPError(400, 'Wrong parameters')
         
         # THE FUNCTION setActuator OF DEVICES TAKES THE ACTUATOR TYPE, THE VALUE TO BE SET
         # AND OUTPUTS THE RESULT OF THE OPERATION (the value that was set, C° for temp, ON/OFF for weather, ...)
-        if actuatortype == "weather":
+        if topic[2] == "weather":
             if value == "open":
                 result = self.controller.turn_on_actuator(0)
             elif value == "close":
@@ -152,7 +147,7 @@ class MQTT_subscriber_publisher(object):
             else:
                 print("Invalid Value")
                 
-        elif actuatortype == "humidity":
+        elif topic[2] == "humidity":
             if value == "on":
                 result = self.controller.turn_on_actuator(1)
             elif value == "off":
@@ -162,7 +157,7 @@ class MQTT_subscriber_publisher(object):
             else:
                 print("Invalid Value")
                 
-        elif actuatortype == "temperature":
+        elif topic[2] == "temperature":
             if value == "on":
                 result = self.controller.turn_on_actuator(2)
             elif value == "off":
@@ -172,7 +167,7 @@ class MQTT_subscriber_publisher(object):
             else:
                 print("Invalid Value")
                 
-        elif actuatortype == "irrigation":
+        elif topic[2] == "irrigation":
             if value == "on":
                 result = self.controller.turn_on_actuator(3)
             elif value == "off":
@@ -184,9 +179,10 @@ class MQTT_subscriber_publisher(object):
         
         print(result)
 
+        # Lets this part for later, right now lets just see the print of the result.
         # If the command was successfull it should be seen from the UTILITY TOPIC of the actuator
         # THE UTILITY TOPIC SHOULD BE ACCESSED TO SEE IF THE STRATEGIES' COMMAND WERE SUCCESSFULL
-        # mqtt_handler.publish(self.topic + "/"+ actuatortype +"/utility", result, "utility")
+        # mqtt_handler.publish(topic[0]+"/"+topic[1]+"/"+topic[2] +"/utility", result, "utility")
         
 
     def publish(self, topic, value, measureType):
