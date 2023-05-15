@@ -3,8 +3,7 @@ import requests
 import time
 from datetime import datetime
 import json
-
-from MyMQTT import *
+import paho.mqtt.client as mqtt
 
 # Global variables
 new_strat = False
@@ -167,37 +166,49 @@ class RegStrategy(object):
 
 
 class MQTT_subscriber_publisher(object):
+    
     def __init__(self, broker, port):
-        # bn: macro strategy name (environment), e: events (objects), v: value(s) (depends on what we want to set with the strategy), t: timestamp
-        self.__message={'bn': "EnvironmentStrat", 'e': {'t': None, 'v': None}}
+        
+        db_file = open(database, "r")
+        db = json.load(db_file)
+        db_file.close()
+        
+        self.client = mqtt.Client("EnvironmentManager_"+str(db["ID"]))
+        self.broker = broker
+        self.port = port
+        self.topic = None
 
-        self.client=MyMQTT("EnvironmentStrat", broker, port, None)
+        # bn: macro strategy name (environment), e: events (objects), v: value(s) (depends on what we want to set with the strategy), t: timestamp
+        self.__message={'bn': None, 'e': {'t': None, 'v': None}}
 
     def start (self):
-        self.client.start()
+        self.client.connect(self.broker, self.port)
+        self.client.loop_start()
 
     def subscribe(self, topic):
-        self.client.mySubscribe(topic)
+        self.client.subscribe(topic)
+        self.client.on_message= self.on_message
+        self.topic = topic
 
     def unsubscribe(self, topic):
         self.client.unsubscribe(topic)
 
     def stop (self):
-        self.client.stop()
+        self.client.loop_stop()
 
-    def notify(self, topic, payload):
+    def on_message(self, client, userdata, message):
         global database
         global new_measures
 
-        measure = json.loads(payload)
-        # [0]: userID, [1]: greenHouseID, [2]: "sensors", [3]: sensor type (temperature/humidity)
-        topic = topic.split("/")
+        measure = json.loads(message.payload)
+        topic = message.topic.split("/")
 
         try:
             # Unit of measure of the measure
             # unit = measure['unit']
             value = measure['e']['v']
             timestamp = measure['e']['t']
+            measuretype = measure['bn']
         except:
             raise cherrypy.HTTPError(400, 'Wrong parameters')
 
@@ -207,23 +218,28 @@ class MQTT_subscriber_publisher(object):
         db_file.close()
 
         # Update the corresponding actual value in the database
-        for actualValues in db["actual_"+topic[3]]:
-            if actualValues["userID"] == topic[0] and actualValues["greenHouseID"] == topic[1]:
-                actualValues[topic[3]] = value
+        for actualValues in db["actual_"+measuretype]:
+            if actualValues["userID"] == int(topic[0]) and actualValues["greenHouseID"] == int(topic[1]):
+                actualValues[measuretype] = value
                 actualValues["timestamp"] = timestamp
                 new_measures["new"] = True
-                new_measures[topic[3]] = True
+                new_measures[measuretype] = True
                 break
+
         # Write the updated database back to the file
         json.dump(db, open(database, "w"), indent=3)
 
-    def publish(self, topic, value):
+    def publish(self, topic, value, actuatorType):
+        self.client.loop_stop()
         # Update the message with the current timestamp and value
+        self.__message["bn"] = actuatorType
         self.__message["e"]["t"] = time.time()
         self.__message["e"]["v"] = value
 
         # Publish the message to the specified topic
-        self.client.myPublish(topic, self.__message)
+        self.client.publish(topic, json.dumps(self.__message))
+        
+        self.client.loop_start()
 
 
 def refresh():
@@ -402,7 +418,7 @@ if __name__=="__main__":
                             if temp["userID"] == int(split_topic[0]) and temp["greenHouseID"] == int(split_topic[1]):
 
                                 if temp["temperature"] > percentange*strat["temperature"] or temp["temperature"] < percentange*strat["temperature"]:
-                                    mqtt_handler.publish(strat["topic_act"]["topic_temp"], strat["temperature"])
+                                    mqtt_handler.publish(strat["topic_act"]["topic_temp"], strat["temperature"], "temperature")
 
                     # Accessible only if we have a new measure for the humidity
                     if new_measures["humidity"]:
@@ -414,4 +430,4 @@ if __name__=="__main__":
                             if hum["userID"] == int(split_topic[0]) and hum["greenHouseID"] == int(split_topic[1]):
 
                                 if hum["humidity"] > percentange*strat["humidity"] or hum["humidity"] < percentange*strat["humidity"]:
-                                    mqtt_handler.publish(strat["topic_act"]["topic_hum"], strat["humidity"])
+                                    mqtt_handler.publish(strat["topic_act"]["topic_hum"], strat["humidity"], "humidity")

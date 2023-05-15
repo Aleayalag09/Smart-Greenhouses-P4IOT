@@ -4,8 +4,7 @@ import time
 from datetime import datetime
 import json
 import urllib
-
-from MyMQTT import *
+import paho.mqtt.client as mqtt
 
 new_strat = False
 database = "db/weather_manager_db.json"
@@ -135,22 +134,35 @@ class RegStrategy(object):
     
 class MQTT_publisher(object):
     def __init__(self, broker, port):
-        # bn: macro strategy name (weather), e: events (objects), v: value(s) (depends on what we want to set with the strategy),  t: timestamp
-        self.__message={'bn': "WeatherStrat", 'e': {'t': None, 'v': None}}
+        
+        db_file = open(database, "r")
+        db = json.load(db_file)
+        db_file.close()
+        
+        self.client = mqtt.Client("WeatherManager_"+str(db["ID"]))
+        self.broker = broker
+        self.port = port
+        self.topic = None
 
-        self.client=MyMQTT("WeatherStrat", broker, port, None)
+        # bn: macro strategy name (irrigation), e: events (objects), v: value(s) (depends on what we want to set with the strategy),  t: timestamp
+        self.__message={'bn': "weather", 'e': {'t': None, 'v': None}}
 
     def start (self):
-        self.client.start()
+        self.client.connect(self.broker, self.port)
+        self.client.loop_start()
 
     def stop (self):
-        self.client.stop()
+        self.client.loop_stop()
 
     def publish(self, topic, value):
+        self.client.loop_stop()
+
         self.__message["e"]["t"] = time.time()
         self.__message["e"]["v"] = value
 
-        self.client.myPublish(topic, self.__message)
+        self.client.publish(topic, json.dumps(self.__message))
+        
+        self.client.loop_start()
     
         
 def refresh():
