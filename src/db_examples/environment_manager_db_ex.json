@@ -10,8 +10,8 @@
       {
          "userID": 0,
          "greenHouseID": 0,
-         "temperature": 16.09,
-         "timestamp": 1684141036.0255897
+         "temperature": 18.31,
+         "timestamp": 1684168144.0108986
       },
       {
          "userID": 1,
@@ -24,8 +24,8 @@
       {
          "userID": 0,
          "greenHouseID": 0,
-         "humidity": 0.2,
-         "timestamp": 1663497809.8657904
+         "humidity": 0.09,
+         "timestamp": 1684168144.0343263
       },
       {
          "userID": 1,

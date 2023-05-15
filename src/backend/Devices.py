@@ -115,7 +115,7 @@ class Environment(object):
                     temperature_value += actuator.value
                     
         humidity_value = humidity_value/humidifier_intensity
-        temperature_value = humidity_value/humidifier_intensity
+        temperature_value = temperature_value/ac_intensity
         
         # To not overload the weather API            
         if self.flag:
@@ -131,7 +131,7 @@ class Environment(object):
         window_temperature = window_intensity*((self.city_temperature - self.temperature)/self.window_factor)*time_passed + self.temperature
         ac_temperature = ac_intensity*((temperature_value - window_temperature)/self.ac_factor)*time_passed + window_temperature
         
-        self.humidity = round(humidifier_humidity + pump_humidity, 2)
+        self.humidity = round(humidifier_humidity + pump_humidity, 4)
         self.temperature = round(ac_temperature, 2)
         
         self.last_change = actual_time

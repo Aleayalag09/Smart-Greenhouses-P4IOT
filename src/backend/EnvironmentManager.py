@@ -49,7 +49,8 @@ class RegStrategy(object):
         topic_sens_hum = str(userID)+"/"+str(greenHouseID)+"/sensors/humidity"
         
         # Load the database JSON
-        database_dict = json.load(open(database, "r"))
+        with open(database, "r") as file:
+            database_dict = json.load(file)
 
         # Create a new strategy object
         new_strategy = {
@@ -75,7 +76,9 @@ class RegStrategy(object):
         database_dict["strategies"].append(new_strategy)
 
         new_strat = True
-        json.dump(database_dict, open(database, "w"), indent=3)
+        with open(database, "w") as file:
+            json.dump(database_dict, file, indent=3)
+        
 
     def PUT(self, *path, **queries):
         """
@@ -86,7 +89,8 @@ class RegStrategy(object):
         global database 
         global new_strat
         input = json.loads(cherrypy.request.body.read())
-        database_dict = json.load(open(database, "r"))
+        with open(database, "r") as file:
+            database_dict = json.load(file)
 
         # Extract input parameters from the request
         try:
@@ -103,7 +107,8 @@ class RegStrategy(object):
                     strat["active"] = active
         
         new_strat = True
-        json.dump(database_dict, open(database, "w"), indent=3)
+        with open(database, "w") as file:
+            json.dump(database_dict, file, indent=3)
 
     def DELETE(self, *path, **queries):
         """
@@ -120,7 +125,8 @@ class RegStrategy(object):
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
         
-        database_dict = json.load(open(database, "r"))
+        with open(database, "r") as file:
+            database_dict = json.load(file)
 
         idx = 0
         for strat in database_dict:
@@ -139,7 +145,8 @@ class RegStrategy(object):
         new_strat = True
 
         # Write the updated database back to the file
-        json.dump(database_dict, open(database, "w"), indent=3)
+        with open(database, "w") as file:
+            json.dump(database_dict, file, indent=3)
 
 
 class MQTT_subscriber_publisher(object):
@@ -151,7 +158,7 @@ class MQTT_subscriber_publisher(object):
         self.topic = None
         
         # bn: macro strategy name (environment), e: events (objects), v: value(s) (depends on what we want to set with the strategy), t: timestamp
-        self.message={'bn': "EnvironmentStrat", 'e': {'t': None, 'v': None}}
+        self.message={'bn': None, 'e': {'t': None, 'v': None}}
 
     def start (self):
         self.client.connect(self.broker, self.port)
@@ -168,8 +175,6 @@ class MQTT_subscriber_publisher(object):
 
         measure = json.loads(message.payload.decode("utf-8"))
         print(f'{measure} was received in Env manager')
-        # [0]: userID, [1]: greenHouseID, [2]: "sensors", [3]: sensor type (temperature/humidity)
-        # topic = topic.split("/")
 
         try:
             # Unit of measure of the measure
@@ -181,24 +186,22 @@ class MQTT_subscriber_publisher(object):
             raise cherrypy.HTTPError(400, 'Wrong parameters')
 
         # Load the database
-        db = json.load(open(database, "r"))
+        with open(database, "r") as file:
+            db = json.load(file)
 
         # Update the corresponding actual value in the database
         topic = self.topic.split("/")
         for actualValues in db["actual_"+measuretype]:
-            print(actualValues)
-            print(topic[0])
-            print(topic[1])
             if actualValues["userID"] == int(topic[0]) and actualValues["greenHouseID"] == int(topic[1]):
-                print("Entre")
                 actualValues[measuretype] = value
                 actualValues["timestamp"] = timestamp
                 new_measures["new"] = True
                 new_measures[measuretype] = True
                 break
+            
         # Write the updated database back to the file
-        json.dump(db, open(database, "w"), indent=3)
-        return json.loads(message.payload.decode("utf-8"))
+        with open(database, "w") as file:
+            json.dump(db, file, indent=3)
 
     def unsubscribe(self, topic):
         self.client.unsubscribe(topic)
@@ -206,9 +209,10 @@ class MQTT_subscriber_publisher(object):
     def stop (self):
         self.client.loop_stop()
 
-    def publish(self, topic, value):
+    def publish(self, topic, value, actuatorType):
         self.client.loop_stop()
         # Update the message with the current timestamp and value
+        self.message["bn"] = actuatorType
         self.message["e"]["t"] = time.time()
         self.message["e"]["v"] = value
 
@@ -226,7 +230,9 @@ def refresh():
     Resource Catalog making a post.
     """
     global database
-    db = json.load(open(database, "r"))
+    with open(database, "r") as file:
+        db = json.load(file)
+    # db = json.load(open(database, "r"))
 
     payload = {
         'ip': db["ip"], 
@@ -257,13 +263,17 @@ def getBroker():
         raise cherrypy.HTTPError(400, 'Wrong parameters')
 
     # Load the database
-    database_dict = json.load(open(database, "r"))
+    with open(database, "r") as file:
+        database_dict = json.load(file)
+    # database_dict = json.load(open(database, "r"))
 
     # Update the broker information in the database
     database_dict["broker"]["ip"] = ip
     database_dict["broker"]["port"] = port
     database_dict["broker"]["timestamp"] = time.time()
-    json.dump(database_dict, open(database, "w"), indent=3)
+    with open(database, "w") as file:
+        json.dump(database_dict, file, indent=3)
+    # json.dump(database_dict, open(database, "w"), indent=3)
 
 
 def getStrategies():
@@ -323,9 +333,13 @@ def getStrategies():
             mqtt_handler.subscribe(topic_sens_temp)
             mqtt_handler.subscribe(topic_sens_hum)
 
-    database_dict = json.load(open(database, "r"))
+    with open(database, "r") as file:
+        database_dict = json.load(file)
+    # database_dict = json.load(open(database, "r"))
     database_dict["strategies"] = strategy_list
-    json.dump(database_dict, open(database, "w"), indent=3)
+    with open(database, "w") as file:
+        json.dump(database_dict, file, indent=3)
+    # json.dump(database_dict, open(database, "w"), indent=3)
 
 
 
@@ -350,11 +364,13 @@ if __name__=="__main__":
     # getBroker()
 
     # Initialize the MQTT handler with the broker information
-    broker_dict = json.load(open(database, "r"))["broker"]
-    print(broker_dict)
+    with open(database, "r") as file:
+        broker_dict = json.load(file)["broker"]
+    # broker_dict = json.load(open(database, "r"))["broker"]
+
     mqtt_handler = MQTT_subscriber_publisher(broker_dict["ip"], broker_dict["port"])
     mqtt_handler.start()
-    topic = "0/0/sensors/temperature"
+    topic = "0/0/sensors/#"
     mqtt_handler.subscribe(topic)
 
     last_refresh = time.time() 
@@ -364,8 +380,9 @@ if __name__=="__main__":
 
     # # BOOT FUNCTION TO RETRIEVE STARTING STRATEGIES
     # getStrategies()
-    
-    strategies = json.load(open(database, "r"))["strategies"]
+    with open(database, "r") as file:
+        strategies = json.load(file)["strategies"]
+    # strategies = json.load(open(database, "r"))["strategies"]
     
     refresh_freq = 60
     percentange = 0.98
@@ -397,24 +414,36 @@ if __name__=="__main__":
                     
                     # Accessible only if we have a new measure for the temperature
                     if new_measures["temperature"]:
-                        actual_temp_db = json.load(open(database, "r"))["actual_temperature"]
-                        new_measures["temperature"] = False
-                        new_measures["new"] = False
+                        with open(database, "r") as file:
+                            try: 
+                                actual_temp = json.load(file)["actual_temperature"]
+                                new_measures["temperature"] = False
+                                new_measures["new"] = False 
+                                for temp in actual_temp:
+                                    if temp["userID"] == int(split_topic[0]) and temp["greenHouseID"] == int(split_topic[1]):
 
-                        for temp in actual_temp_db:
-                            if temp["userID"] == int(split_topic[0]) and temp["greenHouseID"] == int(split_topic[1]):
-
-                                if temp["temperature"] > percentange*strat["temperature"] or temp["temperature"] < percentange*strat["temperature"]:
-                                    mqtt_handler.publish(strat["topic_act"]["topic_temp"], strat["temperature"])
+                                        if temp["temperature"] > percentange*strat["temperature"] or temp["temperature"] < percentange*strat["temperature"]:
+                                            print(mqtt_handler.publish(strat["topic_act"]["topic_temp"], strat["temperature"], "temperature"))
+                            except:
+                                print(f'error done by json library, still the measure is stored.')
+                        # actual_temp = json.load(open(database, "r"))["actual_temperature"]
+                        # print(actual_temp)
+                        
 
                     # Accessible only if we have a new measure for the humidity
                     if new_measures["humidity"]:
-                        actual_hum = json.load(open(database, "r"))["actual_humidity"]
-                        new_measures["humidity"] = False
-                        new_measures["new"] = False
+                        with open(database, "r") as file:
+                            try:
+                                actual_hum = json.load(file)["actual_humidity"]
+                                new_measures["humidity"] = False
+                                new_measures["new"] = False
 
-                        for hum in actual_hum:
-                            if hum["userID"] == int(split_topic[0]) and hum["greenHouseID"] == int(split_topic[1]):
+                                for hum in actual_hum:
+                                    if hum["userID"] == int(split_topic[0]) and hum["greenHouseID"] == int(split_topic[1]):
 
-                                if hum["humidity"] > percentange*strat["humidity"] or hum["humidity"] < percentange*strat["humidity"]:
-                                    mqtt_handler.publish(strat["topic_act"]["topic_hum"], strat["humidity"])
+                                        if hum["humidity"] > percentange*strat["humidity"] or hum["humidity"] < percentange*strat["humidity"]:
+                                            mqtt_handler.publish(strat["topic_act"]["topic_hum"], strat["humidity"], "humidity")
+                        # actual_hum = json.load(open(database, "r"))["actual_humidity"]
+                            except:
+                                print(f'error done by json library, still the measure is stored.')
+                        
