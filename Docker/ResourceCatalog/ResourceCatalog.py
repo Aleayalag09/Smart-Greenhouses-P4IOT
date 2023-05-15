@@ -1324,6 +1324,9 @@ def remove_from_db(category = "", idx = -1):
     db = json.load(db_file)
     db_file.close()
     category = category.split("/")
+
+    if category[1] == "":
+        category = [category[0]]
     
     # DELETE a device connector of a greenhouse
     if len(category) == 4:
