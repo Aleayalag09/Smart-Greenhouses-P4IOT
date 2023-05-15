@@ -2,8 +2,7 @@ import cherrypy
 import requests
 import time
 import json
-
-from MyMQTT import *
+import paho.mqtt.client as mqtt
 
 database = "db/thingspeak_adaptor_db.json"
 resCatEndpoints = "http://resource_catalog:8080"
@@ -89,26 +88,38 @@ class regTopic(object):
         return result
 
 
-class MQTT_subscriber:
+class MQTT_subscriber(object):
 
-    def __init__(self, clientID, broker, port):
-        self.client = MyMQTT(clientID, broker, port, self)
+    def __init__(self, broker, port):
+        
+        db_file = open(database, "r")
+        db = json.load(db_file)
+        db_file.close()
+        
+        self.client = mqtt.Client("ThingSpeak_adaptor_"+str(db["ID"]))
+        self.broker = broker
+        self.port = port
+        self.topic = None
 
     def start (self):
-        self.client.start()
+        self.client.connect(self.broker, self.port)
+        self.client.loop_start()
 
     def subscribe(self, topic):
-        self.client.mySubscribe(topic)
+        self.client.subscribe(topic)
+        self.client.on_message= self.on_message
+        self.topic = topic
 
     def unsubscribe(self, topic):
         self.client.unsubscribe(topic)
 
     def stop (self):
-        self.client.stop()
+        self.client.loop_stop()
+        self.client.disconnect()
 
-    def notify(self, topic, payload):
-        measure = json.loads(payload)
-        topic = topic.split("/")
+    def on_message(self, client, userdata, message):
+        measure = json.loads(message.payload)
+        topic = message.topic
 
         try:
             # Unit of measure of the measure
