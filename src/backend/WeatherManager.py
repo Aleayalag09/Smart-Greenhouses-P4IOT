@@ -4,11 +4,12 @@ import time
 from datetime import datetime
 import json
 import urllib
+import paho.mqtt.client as mqtt
 
 from MQTT.MyMQTT import *
 
 new_strat = False
-database = "db/weather_manager_db.json"
+database = "src/db_examples/weather_manager_db_ex.json"
 resCatEndpoints = "http://127.0.0.1:4000"
 api = 'YOUR_API_KEY'
 
@@ -109,22 +110,29 @@ class RegStrategy(object):
     
 class MQTT_publisher(object):
     def __init__(self, broker, port):
+        self.client=mqtt.Client("WeatherManager")
+        self.broker = broker
+        self.port = port
+        
         # bn: macro strategy name (weather), e: events (objects), v: value(s) (depends on what we want to set with the strategy),  t: timestamp
-        self.__message={'bn': "WeatherStrat", 'e': {'t': None, 'v': None}}
+        self.message={'bn': "WeatherStrat", 'e': {'t': None, 'v': None}}
 
-        self.client=MyMQTT("WeatherStrat", broker, port, None)
 
-    def start (self):
-        self.client.start()
+    def start(self):
+        self.client.connect(self.broker, self.port)
+        self.client.loop_start()
 
-    def stop (self):
-        self.client.stop()
+    def stop(self):
+        self.client.loop_stop()
 
     def publish(self, topic, value):
-        self.__message["e"]["t"] = time.time()
-        self.__message["e"]["v"] = value
+        self.client.loop_stop()
+        self.message["e"]["t"] = time.time()
+        self.message["e"]["v"] = value
 
-        self.client.myPublish(topic, self.__message)
+        self.client.publish(topic, json.dumps(self.message))
+        print(f'weatheer manager sent to topic: {topic}, value: {self.message}')
+        self.client.loop_start()
     
         
 def refresh():
@@ -217,76 +225,52 @@ def getStrategies():
     database_dict = json.load(open(database, "r"))
     database_dict["strategies"] = strategy_list
     json.dump(database_dict, open(database, "w"), indent=3)
-    
 
-def getlocation(city):
-    """
-    This method takes the name of a place and 
-    extract the code key of that place.
-    """   
-
-    global api
-
-    search_address = 'http://dataservice.accuweather.com/locations/v1/cities/search?apikey='+api+'&q='+city+'&details=true'
-    with urllib.request.urlopen(search_address) as search_address:
-        data = json.loads(search_address.read().decode())
-    location_key = data[0]['Key']
-    return location_key    
-    
-def getWeather(city):
-    """
-    This method ask to the API Accuweather the weather 
-    conditions using the key code of the place 
-    and get a json of all the measuraments.
-    """
-
-    global api
-
-    key = getlocation(city)
-    weatherUrl= 'http://dataservice.accuweather.com/currentconditions/v1/'+key+'?apikey='+api+'&details=true'
-    with urllib.request.urlopen(weatherUrl) as weatherUrl:
-        data = json.loads(weatherUrl.read().decode())
-    return data
 
 def getMeasurements(city):
     """
     This method extract from a json the measurements of
     temperature and humidity of the specified city.
     """
-
-    data = getWeather(city)
-    temperature = data[0]['Temperature']['Metric']['Value']
-    humidity = data[0]['RelativeHumidity'] / 100
-    return temperature, humidity
-                                        
+    # search_address = 'http://dataservice.accuweather.com/locations/v1/cities/search?apikey='+api+'&q='+city+'&details=true'
+    # with urllib.request.urlopen(search_address) as search_address:
+    #     data = json.loads(search_address.read().decode())
+    # location_key = data[0]['Key']
+    # weatherUrl= 'http://dataservice.accuweather.com/currentconditions/v1/'+location_key+'?apikey='+api+'&details=true'
+    # with urllib.request.urlopen(weatherUrl) as weatherUrl:
+    #     data = json.loads(weatherUrl.read().decode())
+    # temperature = data[0]['Temperature']['Metric']['Value']
+    # humidity = data[0]['RelativeHumidity'] / 100
+    temperature, humidity = 20, 0.2
+    return temperature, humidity                                       
      
 if __name__ == '__main__':
     	
-    conf = {
-        '/': {
-            'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
-            'tools.sessions.on': True,
-        }
-    }
-    cherrypy.tree.mount(RegStrategy(), '/regStrategy', conf)
+    # conf = {
+    #     '/': {
+    #         'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
+    #         'tools.sessions.on': True,
+    #     }
+    # }
+    # cherrypy.tree.mount(RegStrategy(), '/regStrategy', conf)
 
-    cherrypy.config.update({'server.socket_host': '127.0.0.1'})
-    cherrypy.config.update({'server.socket_port': 8080})
+    # cherrypy.config.update({'server.socket_host': '127.0.0.1'})
+    # cherrypy.config.update({'server.socket_port': 8080})
 
-    cherrypy.engine.start()
-    # cherrypy.engine.block()
+    # cherrypy.engine.start()
+    # # cherrypy.engine.block()
     
-    last_refresh = time.time() 
-    # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
-    refresh()
+    # last_refresh = time.time() 
+    # # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
+    # refresh()
 
-    # CAN THE MQTT BROKER CHANGE THROUGH TIME? I SUPPOSE NOT IN THIS CASE
-    getBroker()
+    # # CAN THE MQTT BROKER CHANGE THROUGH TIME? I SUPPOSE NOT IN THIS CASE
+    # getBroker()
 
-    # BOOT FUNCTION TO RETRIEVE STARTING STRATEGIES
-    getStrategies()
+    # # BOOT FUNCTION TO RETRIEVE STARTING STRATEGIES
+    # getStrategies()
 
-    refresh_freq = 60
+    refresh_freq = 10
     
     broker_dict = json.load(open(database, "r"))["broker"]
     strategies = json.load(open(database, "r"))["strategies"]
@@ -295,6 +279,7 @@ if __name__ == '__main__':
     publisher.start()
     
     percentange = 0.98
+    last_refresh = time.time()
     
     while True:
         timestamp = time.time()
@@ -304,14 +289,13 @@ if __name__ == '__main__':
         if timestamp-last_refresh >= refresh_freq:
 
             last_refresh = time.time()
-            refresh()
+            # refresh()
 
         if new_strat:
-
             db = json.load(open(database, "r"))
             new_strat = False
 
-        for strat in db["strategies"]:
+        for strat in strategies:
             
             if strat["active"] == True:
                 temperature, humidity = getMeasurements(strat['city'])
@@ -332,7 +316,8 @@ if __name__ == '__main__':
                         new_strat = True
 
         if new_strat == True:
-            json.dump(db, open(database, "w"), indent=3)
+            # json.dump(db, open(database, "w"), indent=3)
+            pass
 
                 
     

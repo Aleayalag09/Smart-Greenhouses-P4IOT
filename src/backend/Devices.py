@@ -138,7 +138,7 @@ class Environment(object):
         window_temperature = window_intensity*((self.city_temperature - self.temperature)/self.window_factor)*time_passed + self.temperature
         ac_temperature = ac_intensity*((temperature_value - window_temperature)/self.ac_factor)*time_passed + window_temperature
         
-        self.humidity = round(humidifier_humidity + pump_humidity, 4)
+        self.humidity = round(humidifier_humidity + pump_humidity, 5)
         self.temperature = round(ac_temperature, 2)
         
         self.last_change = actual_time
@@ -152,13 +152,13 @@ class Controller(object):
         for actuator in self.actuators:
             if actuator.id == id:
                 actuator.turn_on()
-                return f"actuator {id} : is on"
+                return f"actuator {actuator.__class__.__name__} : is on"
     
     def turn_off_actuator(self,id):
         for actuator in self.actuators:
             if actuator.id == id:
                 actuator.turn_off()
-                return f"actuator {id} : is off"
+                return f"actuator {actuator.__class__.__name__} : is off"
     
     def set_value(self, id, value):
         for actuator in self.actuators:

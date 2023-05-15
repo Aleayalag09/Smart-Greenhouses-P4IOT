@@ -158,7 +158,7 @@ class MQTT_subscriber_publisher(object):
         self.topic = None
         
         # bn: macro strategy name (environment), e: events (objects), v: value(s) (depends on what we want to set with the strategy), t: timestamp
-        self.message={'bn': None, 'e': {'t': None, 'v': None}}
+        self.message={'bn': "EnvironmentStrat", 'e': {'t': None, 'v': None}}
 
     def start (self):
         self.client.connect(self.broker, self.port)
@@ -174,14 +174,15 @@ class MQTT_subscriber_publisher(object):
         global new_measures
 
         measure = json.loads(message.payload.decode("utf-8"))
-        print(f'{measure} was received in Env manager')
+        topic = message.topic
+        topic = topic.split("/")
+        measuretype = topic[3]
 
         try:
             # Unit of measure of the measure
             # unit = measure['unit']
             value = measure['e']['v']
             timestamp = measure['e']['t']
-            measuretype = measure['bn']
         except:
             raise cherrypy.HTTPError(400, 'Wrong parameters')
 
@@ -190,7 +191,7 @@ class MQTT_subscriber_publisher(object):
             db = json.load(file)
 
         # Update the corresponding actual value in the database
-        topic = self.topic.split("/")
+        print(measuretype)
         for actualValues in db["actual_"+measuretype]:
             if actualValues["userID"] == int(topic[0]) and actualValues["greenHouseID"] == int(topic[1]):
                 actualValues[measuretype] = value
@@ -212,7 +213,6 @@ class MQTT_subscriber_publisher(object):
     def publish(self, topic, value, actuatorType):
         self.client.loop_stop()
         # Update the message with the current timestamp and value
-        self.message["bn"] = actuatorType
         self.message["e"]["t"] = time.time()
         self.message["e"]["v"] = value
 

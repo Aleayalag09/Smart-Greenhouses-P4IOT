@@ -10,8 +10,8 @@
       {
          "userID": 0,
          "greenHouseID": 0,
-         "temperature": 24.9,
-         "timestamp": 1684174826.8372083
+         "temperature": 21.24,
+         "timestamp": 1684187341.0247629
       },
       {
          "userID": 1,
@@ -24,8 +24,8 @@
       {
          "userID": 0,
          "greenHouseID": 0,
-         "humidity": 0.69,
-         "timestamp": 1684174827.846338
+         "humidity": 0.67,
+         "timestamp": 1684187342.0421965
       },
       {
          "userID": 1,
@@ -41,8 +41,8 @@
             "topic_hum": "0/0/sensors/humidity"
          },
          "topic_act": {
-            "topic_temp": "0/0/environment/temperature",
-            "topic_hum": "0/0/environment/humidity"
+            "topic_temp": "0/0/actuator/temperature",
+            "topic_hum": "0/0/actuator/humidity"
          },
          "temperature": 20,
          "humidity": 0.2,
@@ -55,8 +55,8 @@
             "topic_hum": "1/0/sensors/humidity"
          },
          "topic_act": {
-            "topic_temp": "1/0/environment/temperature",
-            "topic_hum": "1/0/environment/humidity"
+            "topic_temp": "1/0/actuator/temperature",
+            "topic_hum": "1/0/actuator/humidity"
          },
          "temperature": 20,
          "humidity": 0.2,

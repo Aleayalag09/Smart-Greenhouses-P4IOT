@@ -3,11 +3,12 @@ import requests
 import time
 from datetime import datetime
 import json
+import paho.mqtt.client as mqtt
 
 from MQTT.MyMQTT import *
 
 new_strat = False
-database = "src/db/irrigation_manager_db.json"
+database = "src/db_examples/irrigation_manager_db_ex.json"
 resCatEndpoints = "http://127.0.0.1:4000"
 
 class RegStrategy(object):
@@ -148,22 +149,28 @@ class RegStrategy(object):
 
 class MQTT_publisher(object):
     def __init__(self, broker, port):
+        self.client=mqtt.Client("IrrigationStrat")
+        self.broker = broker
+        self.port = port
+        
         # bn: macro strategy name (irrigation), e: events (objects), v: value(s) (depends on what we want to set with the strategy),  t: timestamp
-        self.__message={'bn': "IrrigationStrat", 'e': {'t': None, 'v': None}}
+        self.message={'bn': "IrrigationStrat", 'e': {'t': None, 'v': None}}
 
-        self.client=MyMQTT("IrrigationStrat", broker, port, None)
+    def start(self):
+        self.client.connect(self.broker, self.port)
+        self.client.loop_start()
 
-    def start (self):
-        self.client.start()
-
-    def stop (self):
-        self.client.stop()
+    def stop(self):
+        self.client.loop_stop()
 
     def publish(self, topic, value):
-        self.__message["e"]["t"] = time.time()
-        self.__message["e"]["v"] = value
+        self.client.loop_stop()
+        self.message["e"]["t"] = time.time()
+        self.message["e"]["v"] = value
 
-        self.client.myPublish(topic, self.__message)
+        self.client.publish(topic, json.dumps(self.message))
+        print(f'irrigation manager sent to topic: {topic}, value: {self.message}')
+        self.client.loop_start()
 
 
 def refresh():
@@ -261,39 +268,41 @@ def getStrategies():
 
 if __name__=="__main__":
 
-    conf = {
-        '/': {
-            'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
-            'tools.sessions.on': True,
-        }
-    }
-    cherrypy.tree.mount(RegStrategy(), '/regStrategy', conf)
+    # conf = {
+    #     '/': {
+    #         'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
+    #         'tools.sessions.on': True,
+    #     }
+    # }
+    # cherrypy.tree.mount(RegStrategy(), '/regStrategy', conf)
 
-    cherrypy.config.update({'server.socket_host': '127.0.0.1'})
-    cherrypy.config.update({'server.socket_port': 8080})
+    # cherrypy.config.update({'server.socket_host': '127.0.0.1'})
+    # cherrypy.config.update({'server.socket_port': 8080})
 
-    cherrypy.engine.start()
-    # cherrypy.engine.block()
+    # cherrypy.engine.start()
+    # # cherrypy.engine.block()
 
 
-    last_refresh = time.time() 
-    # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
-    refresh()
+    # last_refresh = time.time() 
+    # # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
+    # refresh()
 
-    # CAN THE MQTT BROKER CHANGE THROUGH TIME? I SUPPOSE NOT IN THIS CASE
-    getBroker()
+    # # CAN THE MQTT BROKER CHANGE THROUGH TIME? I SUPPOSE NOT IN THIS CASE
+    # getBroker()
 
-    # BOOT FUNCTION TO RETRIEVE STARTING STRATEGIES
-    getStrategies()
+    # # BOOT FUNCTION TO RETRIEVE STARTING STRATEGIES
+    # getStrategies()
 
-    refresh_freq = 60
+    refresh_freq = 10
     
     broker_dict = json.load(open(database, "r"))["broker"]
     strategies = json.load(open(database, "r"))["strategies"]
     
     publisher = MQTT_publisher(broker_dict["ip"], broker_dict["port"])
     publisher.start()
-
+    
+    last_refresh = time.time()
+    istime = True
     while True:
         timestamp = time.time()
         time_start = datetime.fromtimestamp(timestamp)
@@ -302,7 +311,7 @@ if __name__=="__main__":
         if timestamp-last_refresh >= refresh_freq:
 
             last_refresh = time.time()
-            refresh()
+            # refresh()
 
         if new_strat:
 
@@ -310,7 +319,10 @@ if __name__=="__main__":
             new_strat = False
 
         for strat in strategies:
-            
             # AGGIUNGERE UN RANGE DI CONTROLLO IN MODO DA NON RISCHIARE DI PERDERE IL COMANDO PER QUESTIONE DI SECONDI
-            if strat["time"] == time_start and strat["active"] == True:
+            # Just for prove changed and for or here
+            
+            # if strat["time"] == time_start and strat["active"] == True:
+            if istime and strat["active"] == True:
                 publisher.publish(strat["topic"], strat["water_quantity"])
+                istime = False

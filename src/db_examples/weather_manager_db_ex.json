@@ -12,11 +12,11 @@
     "strategies": [
         
         {
-            "topic": "0/0/weather",
+            "topic": "0/0/actuator/weather",
             "temperature": 20,
             "humidity": 0.2,
             "city": "Loano",          
-            "active": false,
+            "active": true,
             "timestamp": 1663497809.8657904,
             "open": false
         },
