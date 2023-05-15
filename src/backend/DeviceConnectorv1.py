@@ -129,10 +129,11 @@ class MQTT_subscriber_publisher(object):
     def on_message(self, client, userdata, message):
         global database
 
-        measure = json.loads(message)
+        measure = json.loads(message.payload.decode("utf-8"))
         print(f'{measure} was received in device connector')
         # [0]: userID, [1]: greenHouseID, [2]: actuator type (humidifier/window/pump/ac)
         topic = self.topic.split("/")
+        result = None
 
         try:
             value = measure['e']['v']
@@ -143,7 +144,6 @@ class MQTT_subscriber_publisher(object):
         
         # THE FUNCTION setActuator OF DEVICES TAKES THE ACTUATOR TYPE, THE VALUE TO BE SET
         # AND OUTPUTS THE RESULT OF THE OPERATION (the value that was set, C° for temp, ON/OFF for weather, ...)
-
         if actuatortype == "weather":
             if value == "open":
                 result = self.controller.turn_on_actuator(0)
@@ -168,7 +168,7 @@ class MQTT_subscriber_publisher(object):
             elif value == "off":
                 result = self.controller.turn_off_actuator(2)
             elif isinstance(value, (float, int)):
-                result = self.controller.set_value(2, value)     
+                result = self.controller.set_value(2, value)    
             else:
                 print("Invalid Value")
                 
@@ -181,10 +181,12 @@ class MQTT_subscriber_publisher(object):
                 result = self.controller.set_value(3, value)     
             else:
                 print("Invalid Value")
+        
+        print(result)
 
         # If the command was successfull it should be seen from the UTILITY TOPIC of the actuator
         # THE UTILITY TOPIC SHOULD BE ACCESSED TO SEE IF THE STRATEGIES' COMMAND WERE SUCCESSFULL
-        mqtt_handler.publish(self.topic + "/"+ actuatortype +"/utility", result, "utility")
+        # mqtt_handler.publish(self.topic + "/"+ actuatortype +"/utility", result, "utility")
         
 
     def publish(self, topic, value, measureType):
@@ -211,7 +213,6 @@ class MQTT_subscriber_publisher(object):
             sensor.read_measurements(self.enviroment)
             topic = str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"+"temperature"
             self.publish(topic, sensor.value['temperature'], 'temperature')
-            time.sleep(0.5)
             topic = str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"+"humidity"
             self.publish(topic, sensor.value['humidity'], 'humidity')
         return f'was sent {sensor.value} to {str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"}' 
@@ -324,7 +325,7 @@ if __name__ == '__main__':
     
     mqtt_handler = MQTT_subscriber_publisher(broker_dict["ip"], broker_dict["port"])
     mqtt_handler.start()
-    mqtt_handler.subscribe("0/0/temperature")
+    mqtt_handler.subscribe("0/0/environment/#")
 
     last_refresh = time.time() 
     last_measure = time.time() 
