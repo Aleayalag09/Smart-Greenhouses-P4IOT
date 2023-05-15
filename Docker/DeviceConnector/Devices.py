@@ -93,26 +93,26 @@ class Environment(object):
         
     def update_environment(self):
         print(f'Environment hum = {self.humidity}, Environment temp = {self.temperature}')
-        window_intensity = 0
+        window_intensity = 1
         humidity_value = 0
-        pump_intensity = 0
+        pump_intensity = 1
         temperature_value = 0
-        ac_intensity = 0
-        humidifier_intensity = 0
+        ac_intensity = 1
+        humidifier_intensity = 1
         actual_time = time.time()
         
-        for actuator in self.actuators:
-            if actuator.state:
-                if isinstance(actuator, Window):
-                    window_intensity += 1
-                if isinstance(actuator, Humidifier):
-                    humidifier_intensity += 1
-                    humidity_value += actuator.value
-                if isinstance(actuator, Pump):
-                    pump_intensity += actuator.value
-                if isinstance(actuator, AC):
-                    ac_intensity += 1
-                    temperature_value += actuator.value
+        # for actuator in self.actuators:
+        #     if actuator.state:
+        #         if isinstance(actuator, Window):
+        #             window_intensity += 1
+        #         if isinstance(actuator, Humidifier):
+        #             humidifier_intensity += 1
+        #             humidity_value += actuator.value
+        #         if isinstance(actuator, Pump):
+        #             pump_intensity += actuator.value
+        #         if isinstance(actuator, AC):
+        #             ac_intensity += 1
+        #             temperature_value += actuator.value
                     
         humidity_value = humidity_value/humidifier_intensity
         temperature_value = temperature_value/ac_intensity

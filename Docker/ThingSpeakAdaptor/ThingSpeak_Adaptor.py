@@ -6,7 +6,6 @@ import paho.mqtt.client as mqtt
 
 database = "db/thingspeak_adaptor_db.json"
 resCatEndpoints = "http://resource_catalog:8080"
-clientID = "adaptor"
 url_thingspeak = "https://api.thingspeak.com/update?api_key=YOUR_API_KEY
 
 class regTopic(object):
@@ -265,7 +264,7 @@ if __name__ == "__main__":
     
     broker_dict = json.load(open(database, "r"))["broker"]
     
-    MeasuresReceiver = MQTT_subscriber(clientID, broker_dict["ip"], broker_dict["port"]) 
+    MeasuresReceiver = MQTT_subscriber(broker_dict["ip"], broker_dict["port"]) 
     MeasuresReceiver.start()
 
     # BOOT FUNCTION TO RETRIEVE STARTING TOPICS
@@ -274,8 +273,12 @@ if __name__ == "__main__":
     refresh_freq = 60
     
     while True:
-        
-        time.sleep(5)
+        timestamp = time.time()
+
+        if timestamp-last_refresh >= refresh_freq:
+
+            last_refresh = time.time()
+            refresh()
     
     MQTTSubscriber.stop()
     
