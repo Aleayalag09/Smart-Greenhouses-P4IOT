@@ -92,13 +92,17 @@ class Environment(object):
         
         
     def update_environment(self):
+        
         print(f'Environment hum = {self.humidity}, Environment temp = {self.temperature}')
+        
         window_intensity = 0
-        humidity_value = 0
-        pump_intensity = 0
-        temperature_value = 0
         ac_intensity = 0
+        pump_intensity = 0
         humidifier_intensity = 0
+        
+        temperature_value = self.temperature
+        humidity_value = self.humidity
+        
         actual_time = time.time()
         
         for actuator in self.actuators:
@@ -113,15 +117,18 @@ class Environment(object):
                 if isinstance(actuator, AC):
                     ac_intensity += 1
                     temperature_value += actuator.value
-                    
-        humidity_value = humidity_value/humidifier_intensity
-        temperature_value = temperature_value/ac_intensity
+
+        if humidifier_intensity != 0:
+            humidity_value = humidity_value/humidifier_intensity
+        if ac_intensity != 0:
+            temperature_value = temperature_value/ac_intensity
         
         # To not overload the weather API            
-        if self.flag:
-            self.city_temperature, self.city_humidity = self.city_measurements()
-            self.flag = 0
-            
+        # if self.flag:
+        #     self.city_temperature, self.city_humidity = self.city_measurements()
+        #     self.flag = 0
+        
+        self.city_temperature, self.city_humidity = 20, 0.5
         time_passed = actual_time - self.last_change  
         
         window_humidity = window_intensity*((self.city_humidity - self.humidity)/self.window_factor)*time_passed + self.humidity
