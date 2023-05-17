@@ -11,10 +11,10 @@ class User(object):
         """
         Returns a specific user or all the users.
         """
+        
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
         users = db["users"]
         
         try:
@@ -42,9 +42,9 @@ class User(object):
         before this function is called. 
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         users = db["users"]
         new_user = {
             "userName": "userName",
@@ -72,7 +72,9 @@ class User(object):
         else:
             users.append(new_user)
             db["users"] = users
-            json.dump(db, open("db/catalog.json", "w"), indent=3)
+            
+            with open("db/catalog.json", "w") as file:
+                json.dump(db, file, indent=3)
             
             return new_user
             
@@ -95,9 +97,9 @@ class User(object):
         
         input = json.loads(cherrypy.request.body.read())
         
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         users = db["users"]
         
         keys_to_change = input.keys()
@@ -116,7 +118,9 @@ class User(object):
                             raise cherrypy.HTTPError(400, 'No valid key')
                     user["timestamp"] = time.time()
                     db["users"] = users
-                    json.dump(db, open("db/catalog.json", "w"), indent=3)
+                    
+                    with open("db/catalog.json", "w") as file:
+                        json.dump(db, file, indent=3)
                     
                     return "Updated keys: "+str(keys)
         except:
@@ -138,9 +142,9 @@ class User(object):
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
         
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         users = db["users"]
         
         for idx, user in enumerate(users):
@@ -181,7 +185,9 @@ class User(object):
 
                 users.pop(idx)
                 db["users"] = users
-                json.dump(db, open("db/catalog.json", "w"), indent=3)
+
+                with open("db/catalog.json", "w") as file:
+                    json.dump(db, file, indent=3)
 
                 return "Deleted user "+str(id)
             
@@ -197,9 +203,9 @@ class GreenHouse(object):
         the greenhouses of an user.
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         users = db["users"]
         
         try:
@@ -232,9 +238,9 @@ class GreenHouse(object):
         before this function is called. 
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         users = db["users"]
         try:
             userID = int(queries['id'])
@@ -270,7 +276,9 @@ class GreenHouse(object):
                     user['greenHouses'].append(new_greenhouse)
                     user["timestamp"] = time.time()
                     db["users"] = users
-                    json.dump(db, open("db/catalog.json", "w"), indent=3)
+                    
+                    with open("db/catalog.json", "w") as file:
+                        json.dump(db, file, indent=3)
                     
                     return "New greenhouse for user "+str(userID)+": "+str(new_greenhouse)
         
@@ -292,9 +300,9 @@ class GreenHouse(object):
         
         input = json.loads(cherrypy.request.body.read())
         
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         users = db["users"]
         
         keys_to_change = input.keys()
@@ -315,7 +323,9 @@ class GreenHouse(object):
                                     raise cherrypy.HTTPError(400, 'No valid key')
                             user["timestamp"] = time.time()
                             db["users"] = users
-                            json.dump(db, open("db/catalog.json", "w"), indent=3)
+                            
+                            with open("db/catalog.json", "w") as file:
+                                json.dump(db, file, indent=3)
 
                             return "Updated keys: "+str(keys)
         except:  
@@ -338,9 +348,9 @@ class GreenHouse(object):
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
         
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         users = db["users"]
         try: 
             for user in users:
@@ -383,7 +393,9 @@ class GreenHouse(object):
                             user['greenHouses'].pop(idx)
                             user["timestamp"] = time.time()
                             db["users"] = users
-                            json.dump(db, open("db/catalog.json", "w"), indent=3)
+                            
+                            with open("db/catalog.json", "w") as file:
+                                json.dump(db, file, indent=3)
 
                             return "Deleted greenhouse "+str(greenHouseID)+" of user "+str(id)
         except:     
@@ -404,9 +416,9 @@ class Strategy(object):
         Manager mode: dedicated to the strategy managers for boot operations.
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         users = db["users"]
         
         try:
@@ -502,9 +514,9 @@ class Strategy(object):
         first delete it and then create a new one.
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         users = db["users"]
         try:
             id = queries['id']
@@ -552,7 +564,9 @@ class Strategy(object):
 
                                     user['timestamp'] = time.time()
                                     db["users"] = users
-                                    json.dump(db, open("db/catalog.json", "w"), indent=3)
+                                    
+                                    with open("db/catalog.json", "w") as file:
+                                        json.dump(db, file, indent=3)
 
                                     post_manager_dict = {
                                         'userID': id, 
@@ -606,7 +620,9 @@ class Strategy(object):
                                 
                                 user['timestamp'] = time.time()
                                 db["users"] = users
-                                json.dump(db, open("db/catalog.json", "w"), indent=3)
+                                
+                                with open("db/catalog.json", "w") as file:
+                                    json.dump(db, file, indent=3)
 
                                 try:
                                     post_to_manager(strategyType, post_manager_dict)
@@ -643,9 +659,9 @@ class Strategy(object):
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
         
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         users = db["users"]
 
         try:
@@ -673,7 +689,9 @@ class Strategy(object):
                             else:
                                 user["timestamp"] = time.time()
                                 db["users"] = users
-                                json.dump(db, open("db/catalog.json", "w"), indent=3)
+                                
+                                with open("db/catalog.json", "w") as file:
+                                    json.dump(db, file, indent=3)
 
                                 if flagIrr:
                                     put_manager_dict = {
@@ -720,9 +738,9 @@ class Strategy(object):
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
         
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         users = db["users"]
 
         strat_dict = {
@@ -743,7 +761,9 @@ class Strategy(object):
                                     greenhouse['strategies']['irrigation'] = strat_dict
                                     user["timestamp"] = time.time()
                                     db["users"] = users
-                                    json.dump(db, open("db/catalog.json", "w"), indent=3)
+                                    
+                                    with open("db/catalog.json", "w") as file:
+                                        json.dump(db, file, indent=3)
 
                                     delete_manager_dict = {
                                         'userID': id, 
@@ -804,7 +824,9 @@ class Strategy(object):
                                         greenhouse['strategies']['irrigation']["timestamp"] = time.time()
                                         user["timestamp"] = time.time()
                                         db["users"] = users
-                                        json.dump(db, open("db/catalog.json", "w"), indent=3)
+                                        
+                                        with open("db/catalog.json", "w") as file:
+                                            json.dump(db, file, indent=3)
 
                                         return "Deleted irrigation strategy "+str(strategyID)+" for greenhouse "+str(greenHouseID)+" of user "+str(id)
                             else:
@@ -815,7 +837,9 @@ class Strategy(object):
                                 else:
                                     user["timestamp"] = time.time()
                                     db["users"] = users
-                                    json.dump(db, open("db/catalog.json", "w"), indent=3)
+                                    
+                                    with open("db/catalog.json", "w") as file:
+                                        json.dump(db, file, indent=3)
 
                                     delete_manager_dict = {
                                         'userID': id, 
@@ -845,9 +869,9 @@ class DeviceConnectors(object):
         of a user greenhouse.
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         users = db["users"]
         
         try:
@@ -896,9 +920,9 @@ class DeviceConnectors(object):
         greenhouse the device connectors.
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         input = json.loads(cherrypy.request.body.read())
 
         try:
@@ -952,7 +976,8 @@ class DeviceConnectors(object):
                                 }
                                 requests.post(url_adaptor, json.dumps(payload))
                             
-                            json.dump(db, open("db/catalog.json", "w"), indent=3)
+                            with open("db/catalog.json", "w") as file:
+                                json.dump(db, file, indent=3)
 
                             return
         except:
@@ -969,9 +994,9 @@ class Broker(object):
         Returns the broker endpoints and timestamp.
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         broker = db["broker"]
         
         return json.dumps(broker, indent=3)
@@ -989,16 +1014,18 @@ def brokerLoader():
     Loads the static endpoints of the broker.
     """
 
-    db_file = open("db/catalog.json", "r")
-    db = json.load(db_file)
-    db_file.close()
-    broker = json.load(open("db/broker.json", "r"))
+    with open("db/catalog.json", "r") as file:
+        db = json.load(file)
+    
+    with open("db/broker.json", "r") as file:
+        broker = json.load(file)
 
     db["broker"]["ip"] = broker["ip"]
     db["broker"]["port"] = broker["port"]
     db["broker"]["timestamp"] = time.time()
 
-    json.dump(db, open("db/catalog.json", "w"), indent=3)
+    with open("db/catalog.json", "w") as file:
+        json.dump(db, file, indent=3)
 
 
 class ThingSpeakAdaptor(object):
@@ -1010,9 +1037,9 @@ class ThingSpeakAdaptor(object):
         (endpoints, functions and timestamp).
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         thingspeak_adaptors = db["thingspeak_adaptors"]
         
         return json.dumps(thingspeak_adaptors, indent=3)
@@ -1023,9 +1050,9 @@ class ThingSpeakAdaptor(object):
         (endpoints, functions and timestamp).
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         input = json.loads(cherrypy.request.body.read())
 
         try:
@@ -1054,7 +1081,8 @@ class ThingSpeakAdaptor(object):
             if update == False:
                 db["thingspeak_adaptors"].append(thingspeak_adaptor_dict)
 
-        json.dump(db, open("db/catalog.json", "w"), indent=3)
+        with open("db/catalog.json", "w") as file:
+            json.dump(db, file, indent=3)
 
 
 class ThingSpeak(object):
@@ -1065,9 +1093,9 @@ class ThingSpeak(object):
         Returns the ThingSpeak endpoints and timestamp.
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         thingspeak = db["thingspeak"]
         
         return json.dumps(thingspeak, indent=3)
@@ -1077,16 +1105,18 @@ def thingSpeakLoader():
     Loads the static endpoints of ThingSpeak.
     """
 
-    db_file = open("db/catalog.json", "r")
-    db = json.load(db_file)
-    db_file.close()
-    thingspeak = json.load(open("db/thingspeak.json", "r"))
+    with open("db/catalog.json", "r") as file:
+        db = json.load(file)
+
+    with open("db/thingspeak.json", "r") as file:
+        thingspeak = json.load(file)
 
     db["thingspeak"]["ip"] = thingspeak["ip"]
     db["thingspeak"]["port"] = thingspeak["port"]
     db["thingspeak"]["timestamp"] = time.time()
 
-    json.dump(db, open("db/catalog.json", "w"), indent=3)
+    with open("db/catalog.json", "w") as file:
+        json.dump(db, file, indent=3)
 
 
 # In the POST process the function must create the dictionary structure that will be added to the list in the database (like the managers)
@@ -1098,9 +1128,9 @@ class WebPage(object):
         Returns the webpages endpoints and timestamp.
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+        
         webpages = db["webpages"]
         
         return json.dumps(webpages, indent=3)
@@ -1121,9 +1151,9 @@ class WeatherAPI(object):
         Returns the weather API endpoints and timestamp.
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         weather_API = db["weather_API"]
         
         return json.dumps(weather_API, indent=3)
@@ -1133,16 +1163,18 @@ def weatherAPILoader():
     Loads the static endpoints of the weather API.
     """
     
-    db_file = open("db/catalog.json", "r")
-    db = json.load(db_file)
-    db_file.close()
-    weather_API = json.load(open("db/weatherAPI.json", "r"))
+    with open("db/catalog.json", "r") as file:
+        db = json.load(file)
+        
+    with open("db/weatherAPI.json", "r") as file:
+        weather_API = json.load(file)
 
     db["weather_API"]["ip"] = weather_API["ip"]
     db["weather_API"]["port"] = weather_API["port"]
     db["weather_API"]["timestamp"] = time.time()
 
-    json.dump(db, open("db/catalog.json", "w"), indent=3)
+    with open("db/catalog.json", "w") as file:
+        json.dump(db, file, indent=3)
 
 
 class IrrigationManager(object):
@@ -1154,9 +1186,9 @@ class IrrigationManager(object):
         (endpoints, functions and timestamp).
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         irr_manager = db["managers"]["irrigation"]
         
         return json.dumps(irr_manager, indent=3)
@@ -1167,9 +1199,9 @@ class IrrigationManager(object):
         (endpoints, functions and timestamp).
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         input = json.loads(cherrypy.request.body.read())
 
         try:
@@ -1198,7 +1230,8 @@ class IrrigationManager(object):
             if update == False:
                 db["managers"]["irrigation"].append(manager_dict)
 
-        json.dump(db, open("db/catalog.json", "w"), indent=3)
+        with open("db/catalog.json", "w") as file:
+            json.dump(db, file, indent=3)
             
 
 class EnvironmentManager(object):
@@ -1210,9 +1243,9 @@ class EnvironmentManager(object):
         (endpoints, functions and timestamp).
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         env_manager = db["managers"]["environment"]
         
         return json.dumps(env_manager, indent=3)
@@ -1223,9 +1256,9 @@ class EnvironmentManager(object):
         (endpoints, functions and timestamp).
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+        
         input = json.loads(cherrypy.request.body.read())
 
         try:
@@ -1254,7 +1287,8 @@ class EnvironmentManager(object):
             if update == False:
                 db["managers"]["environment"].append(manager_dict)
         
-        json.dump(db, open("db/catalog.json", "w"), indent=3)
+        with open("db/catalog.json", "w") as file:
+            json.dump(db, file, indent=3)
 
 
 class WeatherManager(object):
@@ -1266,9 +1300,9 @@ class WeatherManager(object):
         (endpoints, functions and timestamp).
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         wea_manager = db["managers"]["weather"]
         
         return json.dumps(wea_manager, indent=3)
@@ -1279,9 +1313,9 @@ class WeatherManager(object):
         (endpoints, functions and timestamp).
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         input = json.loads(cherrypy.request.body.read())
 
         try:
@@ -1310,7 +1344,8 @@ class WeatherManager(object):
             if update == False:
                 db["managers"]["weather"].append(manager_dict)
 
-        json.dump(db, open("db/catalog.json", "w"), indent=3)
+        with open("db/catalog.json", "w") as file:
+            json.dump(db, file, indent=3)
 
 
 def remove_from_db(category = "", idx = -1):
@@ -1322,9 +1357,9 @@ def remove_from_db(category = "", idx = -1):
     - Webpage
     """
 
-    db_file = open("db/catalog.json", "r")
-    db = json.load(db_file)
-    db_file.close()
+    with open("db/catalog.json", "r") as file:
+        db = json.load(file)
+
     category = category.split("/")
 
     if category[1] == "":
@@ -1356,7 +1391,8 @@ def remove_from_db(category = "", idx = -1):
     else:
         db[category[0]].pop(idx)
 
-    json.dump(db, open("db/catalog.json", "w"), indent=3)
+    with open("db/catalog.json", "w") as file:
+        json.dump(db, file, indent=3)
 
 
 def post_to_manager(strategyType = "", strat_info = {}):
@@ -1365,9 +1401,8 @@ def post_to_manager(strategyType = "", strat_info = {}):
     in order to create a new strategy.
     """
 
-    db_file = open("db/catalog.json", "r")
-    db = json.load(db_file)
-    db_file.close()
+    with open("db/catalog.json", "r") as file:
+        db = json.load(file)
 
     # We suppose that there is just one manager per type (and we take just the first of the list)
     try:
@@ -1419,9 +1454,8 @@ def put_to_manager(strategyType = "", strat_info = {}):
     in order to update the activity state of a strategy.
     """
 
-    db_file = open("db/catalog.json", "r")
-    db = json.load(db_file)
-    db_file.close()
+    with open("db/catalog.json", "r") as file:
+        db = json.load(file)
 
     # We suppose that there is just one manager per type (and we take just the first of the list)
     try:
@@ -1464,9 +1498,8 @@ def delete_to_manager(strategyType = "", strat_info = {}):
     in order to delete a strategy.
     """
     
-    db_file = open("db/catalog.json", "r")
-    db = json.load(db_file)
-    db_file.close()
+    with open("db/catalog.json", "r") as file:
+        db = json.load(file)
 
     # We suppose that there is just one manager per type (and we take just the first of the list)
     try:
@@ -1503,9 +1536,8 @@ def post_to_dev_conn(strategyType = "", strat_info = {}):
     in order to create a strategy.
     """
     
-    db_file = open("db/catalog.json", "r")
-    db = json.load(db_file)
-    db_file.close()
+    with open("db/catalog.json", "r") as file:
+        db = json.load(file)
 
     # We suppose that there is just one device connector per greenhouse (and we take just the first of the list)
     try:
@@ -1539,9 +1571,8 @@ def delete_to_dev_conn(strategyType = "", strat_info = {}):
     in order to delete a strategy.
     """
     
-    db_file = open("db/catalog.json", "r")
-    db = json.load(db_file)
-    db_file.close()
+    with open("db/catalog.json", "r") as file:
+        db = json.load(file)
 
     # We suppose that there is just one device connector per greenhouse (and we take just the first of the list)
     try:
@@ -1601,9 +1632,8 @@ if __name__=="__main__":
     cherrypy.engine.start()
     # cherrypy.engine.block()
 
-    db_file = open("db/catalog.json", "r")
-    db = json.load(db_file)
-    db_file.close()
+    with open("db/catalog.json", "r") as file:
+        db = json.load(file)
 
     # BOOT: retrieve the BROKER ENDPOINTS from a json file
     brokerLoader()
@@ -1678,9 +1708,9 @@ if __name__=="__main__":
             
 
         # time.sleep(60)
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         thingspeak_adaptors = db["thingspeak_adaptors"]
         webpages = db["webpages"]
         irrigation_managers = db["managers"]["irrigation"]
