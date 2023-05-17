@@ -47,7 +47,8 @@ class RegStrategy(object):
         topic_sens_hum = str(userID)+"/"+str(greenHouseID)+"/sensors/humidity"
         
         # Load the database JSON
-        database_dict = json.load(open(database, "r"))
+        with open(database, "r") as file:
+            db = json.load(file)
 
         # Create a new strategy object
         new_strategy = {
@@ -70,10 +71,11 @@ class RegStrategy(object):
         mqtt_handler.subscribe(topic_sens_hum)
 
         # Add the new strategy to the database
-        database_dict["strategies"].append(new_strategy)
+        db["strategies"].append(new_strategy)
 
         new_strat = True
-        json.dump(database_dict, open(database, "w"), indent=3)
+        with open(database, "w") as file:
+            json.dump(db, file, indent=3)
 
         result = {
             "userID": userID,
@@ -94,7 +96,9 @@ class RegStrategy(object):
         global database 
         global new_strat
         input = json.loads(cherrypy.request.body.read())
-        database_dict = json.load(open(database, "r"))
+        
+        with open(database, "r") as file:
+            db = json.load(file)
 
         # Extract input parameters from the request
         try:
@@ -105,13 +109,14 @@ class RegStrategy(object):
             raise cherrypy.HTTPError(400, 'Wrong input')
         else:
             # Update the state of activity for the matching strategy
-            for strat in database_dict["strategies"]:
+            for strat in db["strategies"]:
                 split_topic = strat["topic_sens"]["topic_temp"].split("/")
                 if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID:
                     strat["active"] = active
         
         new_strat = True
-        json.dump(database_dict, open(database, "w"), indent=3)
+        with open(database, "w") as file:
+            json.dump(db, file, indent=3)
 
         result = {
             "userID": userID,
@@ -136,10 +141,11 @@ class RegStrategy(object):
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
         
-        database_dict = json.load(open(database, "r"))
+        with open(database, "r") as file:
+            db = json.load(file)
 
         idx = 0
-        for strat in database_dict:
+        for strat in db:
             # Check if the strategy matches the provided userID and greenHouseID
             if strat["topic_sens"]["topic_temp"].split("/")[0] == userID and strat["topic_sens"]["topic_temp"].split("/")[1] == greenHouseID:
                 # Unsubscribe from the sensors topics before removing completely the strategy from the db
@@ -150,12 +156,13 @@ class RegStrategy(object):
                 idx += 1
         
         # Remove the strategy from the strategies list in the database
-        database_dict["strategies"].pop(idx)
+        db["strategies"].pop(idx)
 
         new_strat = True
 
         # Write the updated database back to the file
-        json.dump(database_dict, open(database, "w"), indent=3)
+        with open(database, "w") as file:
+            json.dump(db, file, indent=3)
 
         result = {
             "userID": userID,
@@ -169,9 +176,8 @@ class MQTT_subscriber_publisher(object):
     
     def __init__(self, broker, port):
         
-        db_file = open(database, "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open(database, "r") as file:
+            db = json.load(file)
         
         self.client = mqtt.Client("EnvironmentManager_"+str(db["ID"]))
         self.broker = broker
@@ -213,21 +219,33 @@ class MQTT_subscriber_publisher(object):
             raise cherrypy.HTTPError(400, 'Wrong parameters')
 
         # Load the database
-        db_file = open(database, "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open(database, "r") as file:
+            db = json.load(file)
 
         # Update the corresponding actual value in the database
-        for actualValues in db["actual_"+measuretype]:
-            if actualValues["userID"] == int(topic[0]) and actualValues["greenHouseID"] == int(topic[1]):
-                actualValues[measuretype] = value
-                actualValues["timestamp"] = timestamp
-                new_measures["new"] = True
-                new_measures[measuretype] = True
-                break
+        if len(db["actual_"+measuretype]) != 0:
+            for actualValue in db["actual_"+measuretype]:
+                if actualValue["userID"] == int(topic[0]) and actualValue["greenHouseID"] == int(topic[1]):
+                    actualValue[measuretype] = value
+                    actualValue["timestamp"] = timestamp
+                    new_measures["new"] = True
+                    new_measures[measuretype] = True
+
+        else:
+            actual_value = {
+                "userID": int(topic[0]),
+                "greenHouseID": int(topic[1]),
+                measuretype: value,
+                "timestamp": timestamp
+            }
+            db["actual_"+measuretype].append(actual_value)
+        
+            new_measures["new"] = True
+            new_measures[measuretype] = True
 
         # Write the updated database back to the file
-        json.dump(db, open(database, "w"), indent=3)
+        with open(database, "w") as file:
+            json.dump(db, file, indent=3)
 
     def publish(self, topic, value, actuatorType):
         self.client.loop_stop()
@@ -248,9 +266,9 @@ def refresh():
     Resource Catalog making a post.
     """
     global database
-    db_file = open(database, "r")
-    db = json.load(db_file)
-    db_file.close()
+    
+    with open(database, "r") as file:
+        db = json.load(file)
 
     payload = {
         'ip': db["ip"], 
@@ -281,13 +299,15 @@ def getBroker():
         raise cherrypy.HTTPError(400, 'Wrong parameters')
 
     # Load the database
-    database_dict = json.load(open(database, "r"))
+    with open(database, "r") as file:
+        db = json.load(file)
 
-    # Update the broker information in the database
-    database_dict["broker"]["ip"] = ip
-    database_dict["broker"]["port"] = port
-    database_dict["broker"]["timestamp"] = time.time()
-    json.dump(database_dict, open(database, "w"), indent=3)
+    db["broker"]["ip"] = ip
+    db["broker"]["port"] = port
+    db["broker"]["timestamp"] = time.time()
+
+    with open(database, "w") as file:
+        json.dump(db, file, indent=3)
 
 
 def getStrategies():
@@ -298,6 +318,7 @@ def getStrategies():
     """
 
     global database
+    global new_strat
 
     url = resCatEndpoints+'/strategy/manager'
     params = {"strategyType": "environment"}
@@ -316,8 +337,9 @@ def getStrategies():
         else:
             topic_act_temp = str(userID)+"/"+str(greenHouseID)+"/environment/temperature"
             topic_act_hum = str(userID)+"/"+str(greenHouseID)+"/environment/humidity"
+
             topic_sens_temp = str(userID)+"/"+str(greenHouseID)+"/sensors/temperature"
-            topic_sens_hum = str(userID)+"/"+str(greenHouseID)+"/sensors/temperature"
+            topic_sens_hum = str(userID)+"/"+str(greenHouseID)+"/sensors/humidity"
 
             strategy_list.append({
                                     "topic_sens": {
@@ -337,10 +359,15 @@ def getStrategies():
             # Subscribe to the MQTT topics of humidity and temperature
             mqtt_handler.subscribe(topic_sens_temp)
             mqtt_handler.subscribe(topic_sens_hum)
-
-    database_dict = json.load(open(database, "r"))
-    database_dict["strategies"] = strategy_list
-    json.dump(database_dict, open(database, "w"), indent=3)
+    
+    with open(database, "r") as file:
+        db = json.load(file)
+    
+    db["strategies"] = strategy_list
+    new_strat = True
+    
+    with open(database, "w") as file:
+        json.dump(db, file, indent=3)
 
 
 
@@ -364,9 +391,12 @@ if __name__=="__main__":
 
     # Get the broker information from the Resource Catalog
     getBroker()
+    
+    with open(database, "r") as file:
+        db = json.load(file)
 
     # Initialize the MQTT handler with the broker information
-    broker_dict = json.load(open(database, "r"))["broker"]
+    broker_dict = db["broker"]
     mqtt_handler = MQTT_subscriber_publisher(broker_dict["ip"], broker_dict["port"])
     mqtt_handler.start()
 
@@ -378,7 +408,7 @@ if __name__=="__main__":
     # BOOT FUNCTION TO RETRIEVE STARTING STRATEGIES
     getStrategies()
 
-    strategies = json.load(open(database, "r"))["strategies"]
+    strategies = db["strategies"]
     
     refresh_freq = 60
     percentange = 0.98
@@ -395,13 +425,17 @@ if __name__=="__main__":
 
         if new_strat:
             # Update the strategies if there are any changes
-            strategies = json.load(open(database, "r"))["strategies"]
+            with open(database, "r") as file:
+                db = json.load(file)
+
+            strategies = db["strategies"]
             new_strat = False
 
         # At the beginning we don't have any measures but we could already have some strategies
         # => we cannot enter this for if we don't have any new actual measure (if we already have some actual measures
         # but they are not new it's useless to send new commands, they were already sent previously)
         if new_measures["new"]:
+            time.sleep(3)
             for strat in strategies:
 
                 if strat["active"] == True:
@@ -410,24 +444,32 @@ if __name__=="__main__":
                     
                     # Accessible only if we have a new measure for the temperature
                     if new_measures["temperature"]:
-                        actual_temp = json.load(open(database, "r"))["actual_temperature"]
+                        with open(database, "r") as file:
+                            db = json.load(file)
+
+                        actual_temp = db["actual_temperature"]
                         new_measures["temperature"] = False
                         new_measures["new"] = False
 
                         for temp in actual_temp:
                             if temp["userID"] == int(split_topic[0]) and temp["greenHouseID"] == int(split_topic[1]):
 
-                                if temp["temperature"] > percentange*strat["temperature"] or temp["temperature"] < percentange*strat["temperature"]:
+                                if temp["temperature"] > (2-percentange)*strat["temperature"] or temp["temperature"] < percentange*strat["temperature"]:
                                     mqtt_handler.publish(strat["topic_act"]["topic_temp"], strat["temperature"], "temperature")
+                                else:
+                                    cherrypy.HTTPError(400, str(temp["temperature"])+" strat: "+str(strat["temperature"]))
 
                     # Accessible only if we have a new measure for the humidity
                     if new_measures["humidity"]:
-                        actual_hum = json.load(open(database, "r"))["actual_humidity"]
+                        with open(database, "r") as file:
+                            db = json.load(file)
+
+                        actual_hum = db["actual_humidity"]
                         new_measures["humidity"] = False
                         new_measures["new"] = False
 
                         for hum in actual_hum:
                             if hum["userID"] == int(split_topic[0]) and hum["greenHouseID"] == int(split_topic[1]):
 
-                                if hum["humidity"] > percentange*strat["humidity"] or hum["humidity"] < percentange*strat["humidity"]:
+                                if hum["humidity"] > (2-percentange)*strat["humidity"] or hum["humidity"] < percentange*strat["humidity"]:
                                     mqtt_handler.publish(strat["topic_act"]["topic_hum"], strat["humidity"], "humidity")

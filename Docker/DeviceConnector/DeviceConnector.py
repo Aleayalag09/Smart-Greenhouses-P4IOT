@@ -27,6 +27,7 @@ class RegStrategy(object):
         global database
         global new_strat
         input = json.loads(cherrypy.request.body.read())
+
         db_file = open(database, "r")
         db = json.load(db_file)
         db_file.close()
@@ -61,7 +62,9 @@ class RegStrategy(object):
         db["strategies"][strategyType].append(newStrategy_topic)
 
         new_strat = True
-        json.dump(db, open(database, "w"), indent=3)
+        db_file = open(database, "w")
+        json.dump(db, db_file, indent=3)
+        db_file.close()
         
         result = {
             "strategyType": strategyType,
@@ -76,6 +79,7 @@ class RegStrategy(object):
 
         global database
         global new_strat
+
         db_file = open(database, "r")
         db = json.load(db_file)
         db_file.close()
@@ -108,7 +112,9 @@ class RegStrategy(object):
             db["strategies"][strategyType] = []
 
         new_strat = True
-        json.dump(db, open(database, "w"), indent=3)
+        db_file = open(database, "w")
+        json.dump(db, db_file, indent=3)
+        db_file.close()
         
         result = {
             "strategyType": strategyType,
@@ -150,13 +156,13 @@ class MQTT_subscriber_publisher(object):
         actuators = []
         for real_device in db["real_devices"]:
             if real_device == "Window":
-                sensors.append(Window(window_ID))
+                actuators.append(Window(window_ID))
             elif real_device == "Humidifier":
-                sensors.append(Humidifier(humidifier_ID))
+                actuators.append(Humidifier(humidifier_ID))
             elif real_device == "AC":
-                sensors.append(AC(ac_ID))
+                actuators.append(AC(ac_ID))
             elif real_device == "Pump":
-                sensors.append(Pump(pump_ID))
+                actuators.append(Pump(pump_ID))
 
         self.controller = Controller(sensors, actuators)
         self.enviroment = Environment(actuators, "Torino")
@@ -230,7 +236,7 @@ class MQTT_subscriber_publisher(object):
 
         # If the command was successfull it should be seen from the UTILITY TOPIC of the actuator
         # THE UTILITY TOPIC SHOULD BE ACCESSED TO SEE IF THE STRATEGIES' COMMAND WERE SUCCESSFULL
-        mqtt_handler.publish(db["userID"]+"/"+db["greenHouseID"]+"/"+actuatorType+"/utility", result, "utility")
+        mqtt_handler.publish(str(db["userID"])+"/"+str(db["greenHouseID"])+"/utility/"+actuatorType, result, "utility")
 
     def publish(self, topic, value, measureType):
         self.client.loop_stop()
@@ -248,6 +254,7 @@ class MQTT_subscriber_publisher(object):
         """
         
         global database
+
         db_file = open(database, "r")
         db = json.load(db_file)
         db_file.close()
@@ -263,10 +270,9 @@ class MQTT_subscriber_publisher(object):
                         find = True
                         break
 
-            if find == True:       
-                sensor.read_measurements(self.enviroment)
-                self.publish(topic, sensor.value[measureType], measureType)
-                break
+        if find == True:       
+            sensor.read_measurements(self.enviroment)
+            self.publish(topic, sensor.value[measureType], measureType)
 
 
 
@@ -277,6 +283,7 @@ def refresh():
     """
 
     global database
+    
     db_file = open(database, "r")
     db = json.load(db_file)
     db_file.close()
@@ -311,12 +318,18 @@ def getBroker():
         port = broker["port"]   
     except:
         raise cherrypy.HTTPError(400, 'Wrong parameters')
+    
+    db_file = open(database, "r")
+    db = json.load(db_file)
 
-    database_dict = json.load(open(database, "r"))
-    database_dict["broker"]["ip"] = ip
-    database_dict["broker"]["port"] = port
-    database_dict["broker"]["timestamp"] = time.time()
-    json.dump(database_dict, open(database, "w"), indent=3)
+    db["broker"]["ip"] = ip
+    db["broker"]["port"] = port
+    db["broker"]["timestamp"] = time.time()
+
+    db_file.close()
+    db_file = open(database, "w")
+    json.dump(db, db_file, indent=3)
+    db_file.close()
 
 
 def getStrategies():
@@ -327,6 +340,8 @@ def getStrategies():
     """
 
     global database
+    global new_strat
+
     db_file = open(database, "r")
     db = json.load(db_file)
     db_file.close()
@@ -360,15 +375,18 @@ def getStrategies():
         topic = str(db["userID"])+"/"+str(db["greenHouseID"])+"/weather"
         db["strategies"]["weather"].append(topic)
         mqtt_handler.subscribe(topic)
-
-    json.dump(db, open(database, "w"), indent=3)
+    
+    new_strat = True
+    db_file = open(database, "w")
+    json.dump(db, db_file, indent=3)
+    db_file.close()
 
 
     
                         
 if __name__ == '__main__':
     
-    time.sleep(30)
+    time.sleep(10)
 
     conf = {
         '/': {
@@ -385,8 +403,11 @@ if __name__ == '__main__':
 
     # CAN THE MQTT BROKER CHANGE THROUGH TIME? I SUPPOSE NOT IN THIS CASE
     getBroker()
+    
+    db_file = open(database, "r")
+    db = json.load(db_file)
 
-    broker_dict = json.load(open(database, "r"))["broker"]
+    broker_dict = db["broker"]
     
     mqtt_handler = MQTT_subscriber_publisher(broker_dict["ip"], broker_dict["port"])
     mqtt_handler.start()
@@ -402,7 +423,9 @@ if __name__ == '__main__':
     refresh_freq = 60
     measure_freq = 20
 
-    sensors = json.load(open(database, "r"))["devices"]["sensors"]
+    sensors = db["devices"]["sensors"]
+    
+    db_file.close()
 
     while True:
         timestamp = time.time()
