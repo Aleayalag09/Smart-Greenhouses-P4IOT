@@ -1,5 +1,5 @@
 { 
-   "ip": "resource_catalog",
+   "ip": "http://resource_catalog",
    "port": 8080, 
    
    "managers": 

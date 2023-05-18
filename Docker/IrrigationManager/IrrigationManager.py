@@ -51,7 +51,7 @@ class RegStrategy(object):
         if activeIrr == False:
             for strat in db["strategies"]:
                 split_topic = strat["topic"].split("/")
-                if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID:
+                if int(split_topic[0]) == int(userID) and int(split_topic[1]) == int(greenHouseID):
                     strat["active"] = activeIrr
 
         new_strat = True
@@ -95,12 +95,12 @@ class RegStrategy(object):
         except:
             for strat in db["strategies"]:
                 split_topic = strat["topic"].split("/")
-                if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID:
+                if int(split_topic[0]) == int(userID) and int(split_topic[1]) == int(greenHouseID):
                     strat["active"] = activeIrr
         else:
             for strat in db["strategies"]:
                 split_topic = strat["topic"].split("/")
-                if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID and int(split_topic[3]) == stratID:
+                if int(split_topic[0]) == int(userID) and int(split_topic[1]) == int(greenHouseID) and int(split_topic[3]) == int(stratID):
                     strat["active"] = activeStrat
         
         new_strat = True
@@ -144,9 +144,10 @@ class RegStrategy(object):
                 idxs = []
                 for idx, strat in enumerate(db["strategies"]):
                     split_topic = strat["topic"].split("/")
-                    if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID:
+                    if int(split_topic[0]) == int(userID) and int(split_topic[1]) == int(greenHouseID):
                         idxs.append(idx)
 
+                idxs.sort(reverse=True)
                 for idx in idxs:
                     db["strategies"].pop(idx)
                 
@@ -154,6 +155,8 @@ class RegStrategy(object):
                 db_file = open(database, "w")
                 json.dump(db, db_file, indent=3)
                 db_file.close()
+
+                return
 
             raise cherrypy.HTTPError(400, 'Bad request')
         else:
@@ -173,8 +176,8 @@ class RegStrategy(object):
 
             for strat in db["strategies"]:
                 split_topic = strat["topic"].split("/")
-                if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID and int(split_topic[3]) > stratID:
-                    strat["topic"] = userID+"/"+greenHouseID+"/irrigation/"+str(int(split_topic[3])-1)
+                if int(split_topic[0]) == int(userID) and int(split_topic[1]) == int(greenHouseID) and int(split_topic[3]) > int(stratID):
+                    strat["topic"] = str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(int(split_topic[3])-1)
             
             new_strat = True
             db_file = open(database, "w")
@@ -344,15 +347,17 @@ if __name__=="__main__":
     cherrypy.engine.start()
     # cherrypy.engine.block()
 
-
-    last_refresh = time.time() 
-    # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
-    refresh()
-
     # CAN THE MQTT BROKER CHANGE THROUGH TIME? I SUPPOSE NOT IN THIS CASE
     getBroker()
 
+    last_refresh = time.time() 
+    
+    # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
+    time.sleep(0.5)
+    refresh()
+
     # BOOT FUNCTION TO RETRIEVE STARTING STRATEGIES
+    time.sleep(0.5)
     getStrategies()
 
     refresh_freq = 60

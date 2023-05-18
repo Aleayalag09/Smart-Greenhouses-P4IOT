@@ -52,6 +52,8 @@ class RegStrategy(object):
 
         # Create a new strategy object
         new_strategy = {
+            "userID": int(userID),
+            "greenHouseID": int(greenHouseID),
             "topic_sens": {
                 "topic_temp": topic_sens_temp, 
                 "topic_hum": topic_sens_hum, 
@@ -60,9 +62,15 @@ class RegStrategy(object):
                 "topic_temp": topic_act_temp, 
                 "topic_hum": topic_act_hum, 
             }, 
-            "temperature": temperature, 
-            "humidity": humidity,
+            "temperature": float(temperature), 
+            "humidity": float(humidity),
             "active": active, 
+            "window_factor": 0,
+            "humidifier_factor": 0,
+            "ac_factor": 0,
+            "window_open": False,
+            "last_message_temp": 0,
+            "last_message_hum": 0,
             "timestamp": time.time()
         }
 
@@ -76,6 +84,9 @@ class RegStrategy(object):
         new_strat = True
         with open(database, "w") as file:
             json.dump(db, file, indent=3)
+
+        time.sleep(0.5)
+        getFactors(userID, greenHouseID)
 
         result = {
             "userID": userID,
@@ -110,8 +121,7 @@ class RegStrategy(object):
         else:
             # Update the state of activity for the matching strategy
             for strat in db["strategies"]:
-                split_topic = strat["topic_sens"]["topic_temp"].split("/")
-                if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID:
+                if strat["userID"] == int(userID) and strat["greenHouseID"] == int(greenHouseID):
                     strat["active"] = active
         
         new_strat = True
@@ -145,9 +155,9 @@ class RegStrategy(object):
             db = json.load(file)
 
         idx = 0
-        for strat in db:
+        for strat in db["strategies"]:
             # Check if the strategy matches the provided userID and greenHouseID
-            if strat["topic_sens"]["topic_temp"].split("/")[0] == userID and strat["topic_sens"]["topic_temp"].split("/")[1] == greenHouseID:
+            if strat["userID"] == int(userID) and strat["greenHouseID"] == int(greenHouseID):
                 # Unsubscribe from the sensors topics before removing completely the strategy from the db
                 mqtt_handler.unsubscribe(strat["topic_sens"]["topic_temp"])
                 mqtt_handler.unsubscribe(strat["topic_sens"]["topic_hum"])
@@ -222,26 +232,36 @@ class MQTT_subscriber_publisher(object):
         with open(database, "r") as file:
             db = json.load(file)
 
-        # Update the corresponding actual value in the database
-        if len(db["actual_"+measuretype]) != 0:
-            for actualValue in db["actual_"+measuretype]:
-                if actualValue["userID"] == int(topic[0]) and actualValue["greenHouseID"] == int(topic[1]):
-                    actualValue[measuretype] = value
-                    actualValue["timestamp"] = timestamp
-                    new_measures["new"] = True
-                    new_measures[measuretype] = True
-
+        # If the message is received from the weather manager the script must change the parameter
+        # related to the window for the strategy of that user and greenhouse
+        if measuretype == "weather":
+            for strat in db["strategies"]:
+                if strat["userID"] == int(topic[0]) and strat["greenHouseID"] == int(topic[1]):
+                    if value == "open":
+                        strat["window_open"] == True
+                    elif value == "close":
+                        strat["window_open"] == False
         else:
-            actual_value = {
-                "userID": int(topic[0]),
-                "greenHouseID": int(topic[1]),
-                measuretype: value,
-                "timestamp": timestamp
-            }
-            db["actual_"+measuretype].append(actual_value)
-        
-            new_measures["new"] = True
-            new_measures[measuretype] = True
+            # Update the corresponding actual value in the database
+            if len(db["actual_"+measuretype]) != 0:
+                for actualValue in db["actual_"+measuretype]:
+                    if actualValue["userID"] == int(topic[0]) and actualValue["greenHouseID"] == int(topic[1]):
+                        actualValue[measuretype] = float(value)
+                        actualValue["timestamp"] = timestamp
+                        new_measures["new"] = True
+                        new_measures[measuretype] = True
+
+            else:
+                actual_value = {
+                    "userID": int(topic[0]),
+                    "greenHouseID": int(topic[1]),
+                    measuretype: float(value),
+                    "timestamp": timestamp
+                }
+                db["actual_"+measuretype].append(actual_value)
+            
+                new_measures["new"] = True
+                new_measures[measuretype] = True
 
         # Write the updated database back to the file
         with open(database, "w") as file:
@@ -342,6 +362,8 @@ def getStrategies():
             topic_sens_hum = str(userID)+"/"+str(greenHouseID)+"/sensors/humidity"
 
             strategy_list.append({
+                                    "userID": int(userID),
+                                    "greenHouseID": int(greenHouseID),
                                     "topic_sens": {
                                         "topic_temp": topic_sens_temp, 
                                         "topic_hum": topic_sens_hum, 
@@ -350,15 +372,24 @@ def getStrategies():
                                         "topic_temp": topic_act_temp, 
                                         "topic_hum": topic_act_hum, 
                                     }, 
-                                    "temperature": temperature,
-                                    "humidity": humidity,
+                                    "temperature": float(temperature),
+                                    "humidity": float(humidity),
                                     "active": active,
+                                    "window_factor": 0,
+                                    "humidifier_factor": 0,
+                                    "ac_factor": 0,
+                                    "window_open": False,
+                                    "last_message_temp": 0,
+                                    "last_message_hum": 0,
                                     "timestamp": time.time() 
                                 })
 
             # Subscribe to the MQTT topics of humidity and temperature
             mqtt_handler.subscribe(topic_sens_temp)
             mqtt_handler.subscribe(topic_sens_hum)
+
+            topic_weather = str(userID)+"/"+str(greenHouseID)+"/weather"
+            mqtt_handler.subscribe(topic_weather)
     
     with open(database, "r") as file:
         db = json.load(file)
@@ -366,6 +397,64 @@ def getStrategies():
     db["strategies"] = strategy_list
     new_strat = True
     
+    with open(database, "w") as file:
+        json.dump(db, file, indent=3)
+
+
+def getFactors(userID, greenHouseID):
+    """
+    Retrieves from the Resource Catalog the hyperparameters
+    of a specific greenhouse of a user.
+    """
+
+    global database
+
+    url = resCatEndpoints+'/device_connectors'
+    params = {"id": userID, "greenHouseID": greenHouseID}
+    devConn = requests.get(url, params=params).json()
+
+    if len(devConn) == 1:
+        try:
+            window_factor = devConn[0]['window_factor']
+            humidifier_factor = devConn[0]['humidifier_factor']
+            ac_factor = devConn[0]['ac_factor']
+        
+        except:
+            raise cherrypy.HTTPError(400, 'Wrong parameters')
+
+        # Load the database
+        with open(database, "r") as file:
+            db = json.load(file)
+
+        for strat in db["strategies"]:
+            if strat["userID"] == int(userID) and strat["greenHouseID"] == int(greenHouseID):
+                strat["window_factor"] = int(window_factor)
+                strat["humidifier_factor"] = int(humidifier_factor)
+                strat["ac_factor"] = int(ac_factor)
+                strat["timestamp"] = time.time()
+
+        with open(database, "w") as file:
+            json.dump(db, file, indent=3)
+    else:
+        # For now, we have just 1 device connector even if we obtain a list from the GET
+        pass
+
+
+def setLastMessage(userID, greenHouseID, type):
+    """
+    Set the time for the last message of type <type>.
+    """
+
+    global database
+
+    # Load the database
+    with open(database, "r") as file:
+        db = json.load(file)
+
+    for strat in db["strategies"]:
+        if strat["userID"] == int(userID) and strat["greenHouseID"] == int(greenHouseID):
+            strat["last_message_"+type] = time.time()
+
     with open(database, "w") as file:
         json.dump(db, file, indent=3)
 
@@ -403,15 +492,15 @@ if __name__=="__main__":
     last_refresh = time.time() 
 
     # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
+    time.sleep(0.5)
     refresh()
 
     # BOOT FUNCTION TO RETRIEVE STARTING STRATEGIES
+    time.sleep(0.5)
     getStrategies()
-
-    strategies = db["strategies"]
     
     refresh_freq = 60
-    percentange = 0.98
+    percentange = 0.95
 
     while True:
         timestamp = time.time()
@@ -428,22 +517,20 @@ if __name__=="__main__":
             with open(database, "r") as file:
                 db = json.load(file)
 
-            strategies = db["strategies"]
             new_strat = False
 
         # At the beginning we don't have any measures but we could already have some strategies
         # => we cannot enter this for if we don't have any new actual measure (if we already have some actual measures
         # but they are not new it's useless to send new commands, they were already sent previously)
         if new_measures["new"]:
-            time.sleep(3)
-            for strat in strategies:
+            time.sleep(0.5)
+            for strat in db["strategies"]:
 
-                if strat["active"] == True:
-                    # [0]: userID, [1]: greenHouseID, [2]: "sensors", [3]: sensor type (temperature/humidity)
-                    split_topic = strat["topic_sens"]["topic_temp"].split("/")
+                # If the window is opened the strategy must stop to not waste energy
+                if strat["active"] == True and strat["window_open"] == False:
                     
-                    # Accessible only if we have a new measure for the temperature
-                    if new_measures["temperature"]:
+                    # Accessible only if we have a new measure for the temperature and if it's passed enough time from the last message 
+                    if new_measures["temperature"] and (timestamp - strat["last_message_temp"]) > strat["ac_factor"]:
                         with open(database, "r") as file:
                             db = json.load(file)
 
@@ -452,15 +539,22 @@ if __name__=="__main__":
                         new_measures["new"] = False
 
                         for temp in actual_temp:
-                            if temp["userID"] == int(split_topic[0]) and temp["greenHouseID"] == int(split_topic[1]):
+                            if temp["userID"] == strat["userID"] and temp["greenHouseID"] == strat["greenHouseID"]:
+                                
+                                # If the hyperparameters are not yet present we must retrieve them first
+                                if strat["ac_factor"] == 0:
+                                    getFactors(strat["userID"], strat["greenHouseID"])
+                                    time.sleep(0.5)
 
                                 if temp["temperature"] > (2-percentange)*strat["temperature"] or temp["temperature"] < percentange*strat["temperature"]:
                                     mqtt_handler.publish(strat["topic_act"]["topic_temp"], strat["temperature"], "temperature")
-                                else:
-                                    cherrypy.HTTPError(400, str(temp["temperature"])+" strat: "+str(strat["temperature"]))
+                                    
+                                    setLastMessage(strat["userID"], strat["greenHouseID"], "temp")
+                                    new_strat = True
 
-                    # Accessible only if we have a new measure for the humidity
-                    if new_measures["humidity"]:
+
+                    # Accessible only if we have a new measure for the humidity and if it's passed enough time from the last message 
+                    if new_measures["humidity"] and (timestamp - strat["last_message_hum"]) > strat["humidifier_factor"]:
                         with open(database, "r") as file:
                             db = json.load(file)
 
@@ -469,7 +563,14 @@ if __name__=="__main__":
                         new_measures["new"] = False
 
                         for hum in actual_hum:
-                            if hum["userID"] == int(split_topic[0]) and hum["greenHouseID"] == int(split_topic[1]):
+                            if hum["userID"] == strat["userID"] and hum["greenHouseID"] == strat["greenHouseID"]:
+
+                                if strat["ac_factor"] == 0:
+                                    getFactors(strat["userID"], strat["greenHouseID"])
+                                    time.sleep(0.5)
 
                                 if hum["humidity"] > (2-percentange)*strat["humidity"] or hum["humidity"] < percentange*strat["humidity"]:
                                     mqtt_handler.publish(strat["topic_act"]["topic_hum"], strat["humidity"], "humidity")
+                                    
+                                    setLastMessage(strat["userID"], strat["greenHouseID"], "hum")
+                                    new_strat = True
