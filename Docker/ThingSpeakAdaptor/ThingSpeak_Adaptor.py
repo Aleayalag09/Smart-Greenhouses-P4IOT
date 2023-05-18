@@ -59,30 +59,29 @@ class regTopic(object):
         """
 
         global database
-        input = json.loads(cherrypy.request.body.read())
+        # input = json.loads(cherrypy.request.body.read())
         
         db_file = open(database, "r")
         db = json.load(db_file)
         db_file.close()
 
         try:
-            userID = input["userID"]
-            greenHouseID = input["greenHouseID"]
-            sensors = input["sensors"]
+            userID = queries["userID"]
+            greenHouseID = queries["greenHouseID"]
         except:
             raise cherrypy.HTTPError(400, 'Wrong input')
         
         idxs = []
         for idx, topicdb in enumerate(db["topics"]):
-            for sensorType in sensors:
 
-                topic = str(userID)+"/"+str(greenHouseID)+"/sensors/"+sensorType
-                if topic == topicdb["topic"]:
-                    idxs.append(idx)
-                    MeasuresReceiver.unsubscribe(topic)
+            split_topic = topicdb["topic"].split("/")
+            if int(userID) == int(split_topic[0]) and int(greenHouseID) == int(split_topic[1]):
+                idxs.append(idx)
+                MeasuresReceiver.unsubscribe(topicdb["topic"])
 
+        idxs.sort(reverse=True)
         for idx in idxs:
-            db.pop(idx)
+            db["topics"].pop(idx)
 
         db_file = open(database, "w")
         json.dump(db, db_file, indent=3)
@@ -91,7 +90,6 @@ class regTopic(object):
         result = {
             "userID": userID,
             "greenHouseID": greenHouseID,
-            "sensors": sensors,
             "timestamp": time.time()
         }
         return result
@@ -249,9 +247,9 @@ def send_to_Thingspeak(topic, measure):
     measureType = topic.split("/")[3]
 
     for user in db["users"]:
-        if user["userID"] == userID:
+        if user["userID"] == int(userID):
             for greenhouse in user["greenHouses"]:
-                if greenhouse["greenHouseID"] == greenHouseID:
+                if greenhouse["greenHouseID"] == int(greenHouseID):
 
                     thingspeak_key = user["KEY"]
                     field = greenhouse[measureType]
@@ -264,7 +262,7 @@ def send_to_Thingspeak(topic, measure):
 
 if __name__ == "__main__":
     
-    time.sleep(15)
+    time.sleep(10)
     
     conf = {
         '/': {
@@ -279,13 +277,9 @@ if __name__ == "__main__":
     cherrypy.engine.start()
     # cherrypy.engine.block()
 
-    last_refresh = time.time() 
-    # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
-    refresh()
-
     # CAN THE MQTT BROKER CHANGE THROUGH TIME? I SUPPOSE NOT IN THIS CASE
     getBroker()
-    
+
     db_file = open(database, "r")
     db = json.load(db_file)
     broker_dict = db["broker"]
@@ -294,7 +288,13 @@ if __name__ == "__main__":
     MeasuresReceiver = MQTT_subscriber(broker_dict["ip"], broker_dict["port"]) 
     MeasuresReceiver.start()
 
+    last_refresh = time.time() 
+    # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
+    time.sleep(0.5)
+    refresh()
+
     # BOOT FUNCTION TO RETRIEVE STARTING TOPICS
+    time.sleep(0.5)
     getTopics()
 
     refresh_freq = 60

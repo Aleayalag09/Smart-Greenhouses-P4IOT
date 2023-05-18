@@ -1,6 +1,6 @@
 {   
     "ID": 0,
-    "ip": "environment_manager",
+    "ip": "http://environment_manager",
     "port": 8080, 
     "function": "regStrategy",
     

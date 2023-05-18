@@ -16,12 +16,12 @@ ac_ID = 2
 pump_ID = 3
 dht11_ID = 0
 
-class RegStrategy(object):
+class RegTopic(object):
     exposed = True
  
     def POST(self, *path, **queries):
         """
-        Logs a new strategy and updates the state of activity of the greenhouse. 
+        Logs a new strategy and subscribes to its MQTT topic. 
         """
 
         global database
@@ -46,20 +46,26 @@ class RegStrategy(object):
                 raise cherrypy.HTTPError(400, 'Missing input')
             else:
                 newStrategy_topic = str(db["userID"])+"/"+str(db["greenHouseID"])+"/irrigation/"+str(strategyID)
+                # Subscribe to the MQTT topics
                 mqtt_handler.subscribe(newStrategy_topic)
+                
+                db["strategies"][strategyType].append(newStrategy_topic)
 
         elif strategyType == "environment":
             newStrategy_topic_temp = str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/temperature"
             newStrategy_topic_hum = str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/humidity"
+            # Subscribe to the MQTT topics
             mqtt_handler.subscribe(newStrategy_topic_temp)
             mqtt_handler.subscribe(newStrategy_topic_hum)
+            
+            db["strategies"][strategyType].append(newStrategy_topic_temp)
+            db["strategies"][strategyType].append(newStrategy_topic_hum)
         else:
             newStrategy_topic = str(db["userID"])+"/"+str(db["greenHouseID"])+"/"+strategyType
+            # Subscribe to the MQTT topics
             mqtt_handler.subscribe(newStrategy_topic)
-
-        # Subscribe to the MQTT topics
-
-        db["strategies"][strategyType].append(newStrategy_topic)
+            
+            db["strategies"][strategyType].append(newStrategy_topic)
 
         new_strat = True
         db_file = open(database, "w")
@@ -98,7 +104,7 @@ class RegStrategy(object):
             else:
                 for step, topic in enumerate(db["strategies"]["irrigation"]):
                     split_topic = topic.split("/")
-                    if int(split_topic[3]) == strategyID:
+                    if int(split_topic[3]) == int(strategyID):
                         db["strategies"]["irrigation"].pop(step)
                         mqtt_handler.unsubscribe(topic)
                         break
@@ -146,26 +152,26 @@ class MQTT_subscriber_publisher(object):
         # bn: measure type, e: events (objects), v: value(s), t: timestamp
         self.__message={'bn': None, 'e': {'t': None, 'v': None}}
         
-        sensors = []
+        self.sensors = []
         for real_device in db["real_devices"]:
             if real_device == "DHT11":
-                sensors.append(DHT11(dht11_ID))
+                self.sensors.append(DHT11(dht11_ID))
 
         # If we want to add other sensors or actuators we just have to add the relative if condition
 
-        actuators = []
+        self.actuators = []
         for real_device in db["real_devices"]:
             if real_device == "Window":
-                actuators.append(Window(window_ID))
+                self.actuators.append(Window(window_ID))
             elif real_device == "Humidifier":
-                actuators.append(Humidifier(humidifier_ID))
+                self.actuators.append(Humidifier(humidifier_ID))
             elif real_device == "AC":
-                actuators.append(AC(ac_ID))
+                self.actuators.append(AC(ac_ID))
             elif real_device == "Pump":
-                actuators.append(Pump(pump_ID))
+                self.actuators.append(Pump(pump_ID))
 
-        self.controller = Controller(sensors, actuators)
-        self.enviroment = Environment(actuators, "Torino")
+        self.controller = Controller(self.sensors, self.actuators)
+        self.enviroment = Environment(self.actuators, "Torino")
 
     def start (self):
         self.client.connect(self.broker, self.port)
@@ -211,8 +217,23 @@ class MQTT_subscriber_publisher(object):
         if actuatorType == "weather":
             if value == "open":
                 result = self.controller.turn_on_actuator(window_ID)
+
+                # If we open the window we must switch OFF Humidifier and AC
+                for actuator in self.actuators:
+                    if isinstance(actuator, AC):
+                        result = result+" - "+self.controller.turn_off_actuator(ac_ID)
+                    elif isinstance(actuator, Humidifier):
+                        result = result+" - "+self.controller.turn_off_actuator(humidifier_ID)
+
             elif value == "close":
-                result = self.controller.turn_off_actuator(window_ID)       
+                result = self.controller.turn_off_actuator(window_ID) 
+                
+                # If we close the window we must switch ON Humidifier and AC      
+                for actuator in self.actuators:
+                    if isinstance(actuator, AC):
+                        result = result+" - "+self.controller.turn_on_actuator(ac_ID)
+                    elif isinstance(actuator, Humidifier):
+                        result = result+" - "+self.controller.turn_on_actuator(humidifier_ID)
             else:
                 print("Invalid Value")
                 
@@ -295,7 +316,11 @@ def refresh():
         'port': db["port"],
         "sensors": db["devices"]["sensors"],
         "actuators": db["devices"]["actuators"],
-        'functions': [db["function"]]}
+        'functions': [db["function"]],
+        'window_factor': db["window_factor"],
+        'humidifier_factor': db["humidifier_factor"],
+        'ac_factor': db["ac_factor"]
+    }
     
     url = resCatEndpoints+'/device_connectors'
     
@@ -332,10 +357,11 @@ def getBroker():
     db_file.close()
 
 
-def getStrategies():
+def getTopics():
     """
-    Retrieves all the strategies for the specific
+    Retrieves all the topics for the specific
     user ID and greenhouse ID in the Resource Catalog.
+
     Called at the BOOT.
     """
 
@@ -386,7 +412,7 @@ def getStrategies():
                         
 if __name__ == '__main__':
     
-    time.sleep(10)
+    time.sleep(15)
 
     conf = {
         '/': {
@@ -394,7 +420,7 @@ if __name__ == '__main__':
             'tools.sessions.on': True,
         }
     }
-    cherrypy.tree.mount(RegStrategy(), '/regStrategy', conf)
+    cherrypy.tree.mount(RegTopic(), '/regTopic', conf)
 
     cherrypy.config.update({'server.socket_host': '0.0.0.0'})
 
@@ -415,10 +441,12 @@ if __name__ == '__main__':
     last_refresh = time.time() 
     last_measure = time.time() 
     # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
+    time.sleep(0.5)
     refresh()
 
     # BOOT FUNCTION TO RETRIEVE STARTING STRATEGIES
-    getStrategies()
+    time.sleep(0.5)
+    getTopics()
 
     refresh_freq = 60
     measure_freq = 20

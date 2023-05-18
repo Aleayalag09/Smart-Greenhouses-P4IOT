@@ -90,7 +90,7 @@ class RegStrategy(object):
         else:
             for strat in db["strategies"]:
                 split_topic = strat["topic"].split("/")
-                if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID:
+                if int(split_topic[0]) == int(userID) and int(split_topic[1]) == int(greenHouseID):
                     strat["active"] = active
         
         new_strat = True
@@ -339,15 +339,18 @@ if __name__ == '__main__':
 
     cherrypy.engine.start()
     # cherrypy.engine.block()
-    
-    last_refresh = time.time() 
-    # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
-    refresh()
 
     # CAN THE MQTT BROKER CHANGE THROUGH TIME? I SUPPOSE NOT IN THIS CASE
     getBroker()
+    
+    last_refresh = time.time() 
+    
+    # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
+    time.sleep(0.5)
+    refresh()
 
     # BOOT FUNCTION TO RETRIEVE STARTING STRATEGIES
+    time.sleep(0.5)
     getStrategies()
 
     refresh_freq = 60
@@ -360,7 +363,7 @@ if __name__ == '__main__':
     publisher = MQTT_publisher(broker_dict["ip"], broker_dict["port"])
     publisher.start()
     
-    percentange = 0.98
+    percentange = 0.95
     
     while True:
         timestamp = time.time()

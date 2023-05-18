@@ -66,14 +66,14 @@ class Environment(object):
         self.last_change = time.time()
         self.city = city
         self.api = 'YOUR_API_KEY'
-        self.city_temperature = None
-        self.city_humidity = None
-        self.flag = 1
+        self.city_temperature = 20
+        self.city_humidity = 0.5
+        self.flag = False
         
         # Hyperparameters
         self.window_factor = 3600 # How much time it takes to have the same temperature - humidity if the a window is open (1 hour)
-        self.humidifier_factor = 1200 # How much time it takes to have the same humidity as the set point (20 minutes)
-        self.ac_factor = 1200 # How much time it takes to have the same temperature as the set point (20 minutes)
+        self.humidifier_factor = 60 # How much time it takes to have the same humidity as the set point (20 minutes)
+        self.ac_factor = 60 # How much time it takes to have the same temperature as the set point (20 minutes)
         self.pump_humidity_factor = 0.001 # Proportion of the humidity that increase by second for the total amount of water quantity
         
 
@@ -92,7 +92,7 @@ class Environment(object):
         
         
     def update_environment(self):
-        print(f'Environment hum = {self.humidity}, Environment temp = {self.temperature}')
+        # print(f'Environment hum = {self.humidity}, Environment temp = {self.temperature}')
 
         window_intensity = 0
 
@@ -125,7 +125,7 @@ class Environment(object):
         # To not overload the weather API            
         if self.flag:
             self.city_temperature, self.city_humidity = self.city_measurements()
-            self.flag = 0
+            self.flag = False
             
         time_passed = actual_time - self.last_change  
         
@@ -163,7 +163,7 @@ class Controller(object):
             if actuator.id == id:
                 if not isinstance(actuator, Window):
                     actuator.set_value(value)
-                    return f'{actuator.__class__.__name__} was set to: {value}'
+                    return f'{actuator.__class__.__name__} was set to: {actuator.value}'
                 else:
                     return "Window can't have set point value"
     
