@@ -650,9 +650,9 @@ class Strategy(object):
             id = queries['id']
             greenHouseID = queries['greenHouseID']
             strategyType = queries['strategyType']
-            if queries['active'] == "false":
+            if queries['active'] == "False":
                 active = False
-            elif queries['active'] == "true":
+            elif queries['active'] == "True":
                 active = True
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
