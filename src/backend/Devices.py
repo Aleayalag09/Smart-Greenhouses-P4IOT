@@ -22,12 +22,14 @@ class DHT11(Sensor):
     def __init__(self, id: int) -> None:
         super().__init__(id)
         self.value = {"temperature" : 0, "humidity" : 0}
-        self.error_humidity =round(random.uniform(-0.04, 0.04),2)
-        self.error_temperature = round(random.uniform(-2.0, 2.0),2)
+        # self.error_humidity =round(random.uniform(-0.04, 0.04),2)
+        # self.error_temperature = round(random.uniform(-2.0, 2.0),2)
+        self.error_humidity = 0
+        self.error_temperature = 0 
     
     def read_measurements(self, environment):
         environment.update_environment()
-        self.value["humidity"] = round(environment.humidity + self.error_humidity, 2)
+        self.value["humidity"] = round(environment.humidity + self.error_humidity, 5)
         self.value["temperature"] = round(environment.temperature + self.error_temperature, 2)
                     
 class Window(Actuator):
