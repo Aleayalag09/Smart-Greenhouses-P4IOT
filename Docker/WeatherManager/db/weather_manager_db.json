@@ -1,6 +1,6 @@
 {   
     "ID": 0,
-    "ip": "weather_manager",
+    "ip": "http://weather_manager",
     "port": 8080, 
     "function": "regStrategy",
     

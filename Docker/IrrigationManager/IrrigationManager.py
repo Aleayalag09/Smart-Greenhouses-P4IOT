@@ -34,7 +34,10 @@ class RegStrategy(object):
             raise cherrypy.HTTPError(400, 'Wrong input')
         
         topic = str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
-        database_dict = json.load(open(database, "r"))
+
+        db_file = open(database, "r")
+        db = json.load(db_file)
+        db_file.close()
     
         new_strategy = {
             "topic": topic, 
@@ -43,16 +46,18 @@ class RegStrategy(object):
             "active": activeStrat, 
             "timestamp": time.time()
         }
-        database_dict["strategies"].append(new_strategy)
+        db["strategies"].append(new_strategy)
 
         if activeIrr == False:
-            for strat in database_dict["strategies"]:
+            for strat in db["strategies"]:
                 split_topic = strat["topic"].split("/")
-                if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID:
+                if int(split_topic[0]) == int(userID) and int(split_topic[1]) == int(greenHouseID):
                     strat["active"] = activeIrr
 
         new_strat = True
-        json.dump(database_dict, open(database, "w"), indent=3)
+        db_file = open(database, "w")
+        json.dump(db, db_file, indent=3)
+        db_file.close()
 
         result = {
             "userID": userID,
@@ -73,7 +78,10 @@ class RegStrategy(object):
         global database 
         global new_strat
         input = json.loads(cherrypy.request.body.read())
-        database_dict = json.load(open(database, "r"))
+        
+        db_file = open(database, "r")
+        db = json.load(db_file)
+        db_file.close()
 
         try:
             userID = input['userID']
@@ -85,18 +93,20 @@ class RegStrategy(object):
             stratID = input['stratID']
             activeStrat = input['activeStrat']
         except:
-            for strat in database_dict["strategies"]:
+            for strat in db["strategies"]:
                 split_topic = strat["topic"].split("/")
-                if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID:
+                if int(split_topic[0]) == int(userID) and int(split_topic[1]) == int(greenHouseID):
                     strat["active"] = activeIrr
         else:
-            for strat in database_dict["strategies"]:
+            for strat in db["strategies"]:
                 split_topic = strat["topic"].split("/")
-                if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID and int(split_topic[3]) == stratID:
+                if int(split_topic[0]) == int(userID) and int(split_topic[1]) == int(greenHouseID) and int(split_topic[3]) == int(stratID):
                     strat["active"] = activeStrat
         
         new_strat = True
-        json.dump(database_dict, open(database, "w"), indent=3)
+        db_file = open(database, "w")
+        json.dump(db, db_file, indent=3)
+        db_file.close()
         
         result = {
             "userID": userID,
@@ -127,40 +137,52 @@ class RegStrategy(object):
             except: 
                 pass
             else:
-                database_dict = json.load(open(database, "r"))
+                db_file = open(database, "r")
+                db = json.load(db_file)
+                db_file.close()
 
                 idxs = []
-                for idx, strat in enumerate(database_dict["strategies"]):
+                for idx, strat in enumerate(db["strategies"]):
                     split_topic = strat["topic"].split("/")
-                    if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID:
+                    if int(split_topic[0]) == int(userID) and int(split_topic[1]) == int(greenHouseID):
                         idxs.append(idx)
 
+                idxs.sort(reverse=True)
                 for idx in idxs:
-                    database_dict["strategies"].pop(idx)
+                    db["strategies"].pop(idx)
                 
                 new_strat = True
-                json.dump(database_dict, open(database, "w"), indent=3)
+                db_file = open(database, "w")
+                json.dump(db, db_file, indent=3)
+                db_file.close()
+
+                return
 
             raise cherrypy.HTTPError(400, 'Bad request')
         else:
             topic = str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
-            database_dict = json.load(open(database, "r"))
+            
+            db_file = open(database, "r")
+            db = json.load(db_file)
+            db_file.close()
 
             idx = 0
-            for strat in database_dict["strategies"]:
+            for strat in db["strategies"]:
                 if strat["topic"] == topic:
                     break
                 else:
                     idx += 1
-            database_dict["strategies"].pop(idx)
+            db["strategies"].pop(idx)
 
-            for strat in database_dict["strategies"]:
+            for strat in db["strategies"]:
                 split_topic = strat["topic"].split("/")
-                if int(split_topic[0]) == userID and int(split_topic[1]) == greenHouseID and int(split_topic[3]) > stratID:
-                    strat["topic"] = userID+"/"+greenHouseID+"/irrigation/"+str(int(split_topic[3])-1)
+                if int(split_topic[0]) == int(userID) and int(split_topic[1]) == int(greenHouseID) and int(split_topic[3]) > int(stratID):
+                    strat["topic"] = str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(int(split_topic[3])-1)
             
             new_strat = True
-            json.dump(database_dict, open(database, "w"), indent=3)
+            db_file = open(database, "w")
+            json.dump(db, db_file, indent=3)
+            db_file.close()
         
         result = {
             "userID": userID,
@@ -228,7 +250,7 @@ def refresh():
 def getBroker():
     """
     Retrieves from the Resource Catalog the endpoints
-    (ip, port, timestamp) of the broker used in the system. 
+    (ip, port, timestamp) of the broker used in the system.
     """
 
     global database
@@ -239,14 +261,22 @@ def getBroker():
     try:
         ip = broker['ip']
         port = broker["port"]
+    
     except:
         raise cherrypy.HTTPError(400, 'Wrong parameters')
 
-    database_dict = json.load(open(database, "r"))
-    database_dict["broker"]["ip"] = ip
-    database_dict["broker"]["port"] = port
-    database_dict["broker"]["timestamp"] = time.time()
-    json.dump(database_dict, open(database, "w"), indent=3)
+    # Load the database
+    db_file = open(database, "r")
+    db = json.load(db_file)
+
+    db["broker"]["ip"] = ip
+    db["broker"]["port"] = port
+    db["broker"]["timestamp"] = time.time()
+
+    db_file.close()
+    db_file = open(database, "w")
+    json.dump(db, db_file, indent=3)
+    db_file.close()
 
 
 def getStrategies():
@@ -257,19 +287,13 @@ def getStrategies():
     """
 
     global database
+    global new_strat
 
     url = resCatEndpoints+'/strategy/manager'
     params = {"strategyType": "irrigation"}
     strategies = requests.get(url, params=params).json()
 
     strategy_list = []
-    strategy_dict = {
-        "topic": "",
-        "time": "00:00:00",
-        "water_quantity": -1,
-        "active": False,
-        "timestamp": -1 
-    }
     for strat in strategies:
         try:
             userID = strat['userID']
@@ -294,9 +318,16 @@ def getStrategies():
                                     "timestamp": time.time()
                                 })
 
-    database_dict = json.load(open(database, "r"))
-    database_dict["strategies"] = strategy_list
-    json.dump(database_dict, open(database, "w"), indent=3)
+    db_file = open(database, "r")
+    db = json.load(db_file)
+    db_file.close()
+
+    db["strategies"] = strategy_list
+    new_strat = True
+
+    db_file = open(database, "w")
+    json.dump(db, db_file, indent=3)
+    db_file.close()
 
 
 if __name__=="__main__":
@@ -316,24 +347,31 @@ if __name__=="__main__":
     cherrypy.engine.start()
     # cherrypy.engine.block()
 
-
-    last_refresh = time.time() 
-    # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
-    refresh()
-
     # CAN THE MQTT BROKER CHANGE THROUGH TIME? I SUPPOSE NOT IN THIS CASE
     getBroker()
 
+    last_refresh = time.time() 
+    
+    # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
+    time.sleep(0.5)
+    refresh()
+
     # BOOT FUNCTION TO RETRIEVE STARTING STRATEGIES
+    time.sleep(0.5)
     getStrategies()
 
     refresh_freq = 60
     
-    broker_dict = json.load(open(database, "r"))["broker"]
-    strategies = json.load(open(database, "r"))["strategies"]
+    db_file = open(database, "r")
+    db = json.load(db_file)
+    
+    broker_dict = db["broker"]
+    strategies = db["strategies"]
     
     publisher = MQTT_publisher(broker_dict["ip"], broker_dict["port"])
     publisher.start()
+    
+    db_file.close()
 
     while True:
         timestamp = time.time()
@@ -347,7 +385,9 @@ if __name__=="__main__":
 
         if new_strat:
 
-            strategies = json.load(open(database, "r"))["strategies"]
+            db_file = open(database, "r")
+            db = json.load(db_file)
+            db_file.close()
             new_strat = False
 
         for strat in strategies:

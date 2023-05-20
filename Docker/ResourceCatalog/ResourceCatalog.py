@@ -11,10 +11,10 @@ class User(object):
         """
         Returns a specific user or all the users.
         """
+        
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
         users = db["users"]
         
         try:
@@ -42,9 +42,9 @@ class User(object):
         before this function is called. 
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         users = db["users"]
         new_user = {
             "userName": "userName",
@@ -72,7 +72,9 @@ class User(object):
         else:
             users.append(new_user)
             db["users"] = users
-            json.dump(db, open("db/catalog.json", "w"), indent=3)
+            
+            with open("db/catalog.json", "w") as file:
+                json.dump(db, file, indent=3)
             
             return new_user
             
@@ -95,9 +97,9 @@ class User(object):
         
         input = json.loads(cherrypy.request.body.read())
         
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         users = db["users"]
         
         keys_to_change = input.keys()
@@ -116,7 +118,9 @@ class User(object):
                             raise cherrypy.HTTPError(400, 'No valid key')
                     user["timestamp"] = time.time()
                     db["users"] = users
-                    json.dump(db, open("db/catalog.json", "w"), indent=3)
+                    
+                    with open("db/catalog.json", "w") as file:
+                        json.dump(db, file, indent=3)
                     
                     return "Updated keys: "+str(keys)
         except:
@@ -138,9 +142,9 @@ class User(object):
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
         
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         users = db["users"]
         
         for idx, user in enumerate(users):
@@ -157,10 +161,9 @@ class User(object):
                         url_adaptor = db["thingspeak_adaptors"][0]["ip"]+":"+str(db["thingspeak_adaptors"][0]["port"])+"/"+db["thingspeak_adaptors"][0]["functions"][0]
                         payload = {
                             "userID": id,
-                            "greenHouseID": i,
-                            "sensors": dev_conn["devices"]["sensors"]
+                            "greenHouseID": i
                         }
-                        requests.delete(url_adaptor, payload)
+                        requests.delete(url_adaptor, params=payload)
 
                     # We can communicate that the strategy manager is not present if we want 
                     try:
@@ -181,7 +184,9 @@ class User(object):
 
                 users.pop(idx)
                 db["users"] = users
-                json.dump(db, open("db/catalog.json", "w"), indent=3)
+
+                with open("db/catalog.json", "w") as file:
+                    json.dump(db, file, indent=3)
 
                 return "Deleted user "+str(id)
             
@@ -197,9 +202,9 @@ class GreenHouse(object):
         the greenhouses of an user.
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         users = db["users"]
         
         try:
@@ -209,7 +214,7 @@ class GreenHouse(object):
             raise cherrypy.HTTPError(400, 'Bad request')
         else:
             try:
-                if queries['greenHouseID']== "all":
+                if queries['greenHouseID'] == "all":
                     for user in users:
                         if user['id'] == int(id):
                             return json.dumps(user['greenHouses'], indent=3)
@@ -232,9 +237,9 @@ class GreenHouse(object):
         before this function is called. 
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         users = db["users"]
         try:
             userID = int(queries['id'])
@@ -263,14 +268,16 @@ class GreenHouse(object):
                 try:
                     new_greenhouse["greenHouseName"] = input['greenHouseName']
                     new_greenhouse["city"] = input['city']
-                    new_greenhouse["greenHouseID"] = input["greenHouseID"]
+                    new_greenhouse["greenHouseID"] = int(input["greenHouseID"])
                 except:
                     raise cherrypy.HTTPError(400, 'Wrong parameter')
                 else:
                     user['greenHouses'].append(new_greenhouse)
                     user["timestamp"] = time.time()
                     db["users"] = users
-                    json.dump(db, open("db/catalog.json", "w"), indent=3)
+                    
+                    with open("db/catalog.json", "w") as file:
+                        json.dump(db, file, indent=3)
                     
                     return "New greenhouse for user "+str(userID)+": "+str(new_greenhouse)
         
@@ -292,9 +299,9 @@ class GreenHouse(object):
         
         input = json.loads(cherrypy.request.body.read())
         
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         users = db["users"]
         
         keys_to_change = input.keys()
@@ -315,7 +322,9 @@ class GreenHouse(object):
                                     raise cherrypy.HTTPError(400, 'No valid key')
                             user["timestamp"] = time.time()
                             db["users"] = users
-                            json.dump(db, open("db/catalog.json", "w"), indent=3)
+                            
+                            with open("db/catalog.json", "w") as file:
+                                json.dump(db, file, indent=3)
 
                             return "Updated keys: "+str(keys)
         except:  
@@ -338,9 +347,9 @@ class GreenHouse(object):
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
         
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         users = db["users"]
         try: 
             for user in users:
@@ -358,10 +367,9 @@ class GreenHouse(object):
                                 url_adaptor = db["thingspeak_adaptors"][0]["ip"]+":"+str(db["thingspeak_adaptors"][0]["port"])+"/"+db["thingspeak_adaptors"][0]["functions"][0]
                                 payload = {
                                     "userID": id,
-                                    "greenHouseID": greenHouseID,
-                                    "sensors": dev_conn["devices"]["sensors"]
+                                    "greenHouseID": greenHouseID
                                 }
-                                requests.delete(url_adaptor, payload)
+                                requests.delete(url_adaptor, params=payload)
 
                             # We can communicate that the strategy manager is not present if we want 
                             try:
@@ -383,7 +391,9 @@ class GreenHouse(object):
                             user['greenHouses'].pop(idx)
                             user["timestamp"] = time.time()
                             db["users"] = users
-                            json.dump(db, open("db/catalog.json", "w"), indent=3)
+                            
+                            with open("db/catalog.json", "w") as file:
+                                json.dump(db, file, indent=3)
 
                             return "Deleted greenhouse "+str(greenHouseID)+" of user "+str(id)
         except:     
@@ -404,9 +414,9 @@ class Strategy(object):
         Manager mode: dedicated to the strategy managers for boot operations.
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         users = db["users"]
         
         try:
@@ -502,9 +512,9 @@ class Strategy(object):
         first delete it and then create a new one.
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         users = db["users"]
         try:
             id = queries['id']
@@ -552,7 +562,9 @@ class Strategy(object):
 
                                     user['timestamp'] = time.time()
                                     db["users"] = users
-                                    json.dump(db, open("db/catalog.json", "w"), indent=3)
+                                    
+                                    with open("db/catalog.json", "w") as file:
+                                        json.dump(db, file, indent=3)
 
                                     post_manager_dict = {
                                         'userID': id, 
@@ -606,7 +618,9 @@ class Strategy(object):
                                 
                                 user['timestamp'] = time.time()
                                 db["users"] = users
-                                json.dump(db, open("db/catalog.json", "w"), indent=3)
+                                
+                                with open("db/catalog.json", "w") as file:
+                                    json.dump(db, file, indent=3)
 
                                 try:
                                     post_to_manager(strategyType, post_manager_dict)
@@ -643,9 +657,9 @@ class Strategy(object):
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
         
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         users = db["users"]
 
         try:
@@ -673,7 +687,9 @@ class Strategy(object):
                             else:
                                 user["timestamp"] = time.time()
                                 db["users"] = users
-                                json.dump(db, open("db/catalog.json", "w"), indent=3)
+                                
+                                with open("db/catalog.json", "w") as file:
+                                    json.dump(db, file, indent=3)
 
                                 if flagIrr:
                                     put_manager_dict = {
@@ -720,9 +736,9 @@ class Strategy(object):
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
         
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         users = db["users"]
 
         strat_dict = {
@@ -743,18 +759,17 @@ class Strategy(object):
                                     greenhouse['strategies']['irrigation'] = strat_dict
                                     user["timestamp"] = time.time()
                                     db["users"] = users
-                                    json.dump(db, open("db/catalog.json", "w"), indent=3)
+                                    
+                                    with open("db/catalog.json", "w") as file:
+                                        json.dump(db, file, indent=3)
 
                                     delete_manager_dict = {
                                         'userID': id, 
                                         'greenHouseID': greenHouseID
                                     }
-
-                                    try:
-                                        delete_to_manager("irrigation", delete_manager_dict)
-                                        delete_to_dev_conn("irrigation", delete_manager_dict)
-                                    except:
-                                        pass
+                                
+                                    delete_to_manager("irrigation", delete_manager_dict)
+                                    delete_to_dev_conn("irrigation", delete_manager_dict)
 
                                     return "Deleted all irrigation strategies for greenhouse "+str(greenHouseID)+" of user "+str(id)
                                 else:
@@ -763,48 +778,32 @@ class Strategy(object):
                                     except:
                                         raise cherrypy.HTTPError(400, 'Strategy not found')
                                     else:
+                                        devconn_strat_ID = len(greenhouse['strategies']['irrigation']['strat'])-1
+                                        delete_manager_dict = {
+                                            'userID': id, 
+                                            'greenHouseID': greenHouseID,
+                                            'stratID': devconn_strat_ID
+                                        }
+                                        delete_to_dev_conn("irrigation", delete_manager_dict)
                                         delete_manager_dict = {
                                             'userID': id, 
                                             'greenHouseID': greenHouseID,
                                             'stratID': strategyID
                                         }
-                                        try:
-                                            delete_to_manager("irrigation", delete_manager_dict)
-                                            delete_to_dev_conn("irrigation", delete_manager_dict)
-                                        except:
-                                            pass
+                                        delete_to_manager("irrigation", delete_manager_dict)
 
                                         for i in range(len(greenhouse['strategies']['irrigation']['strat'])):
                                             if i>strategyID:
                                                 index = int(greenhouse['strategies']['irrigation']['strat'][i]["id"]) - 1
                                                 greenhouse['strategies']['irrigation']['strat'][i]["id"] = index
-                                                
-                                                # Since we update the IDs in the catalog DB we have to update them also in the irrigation
-                                                # manager and the device connector (we delete the older and create a new one with the
-                                                # updated ID)  
-                                                delete_manager_dict["stratID"] = (index+1)
-                                                post_manager_dict = {
-                                                    'userID': id, 
-                                                    'greenHouseID': greenHouseID,
-                                                    'active': greenhouse['strategies']['irrigation']['active'], 
-                                                    'stratID': index,
-                                                    'time': greenhouse['strategies']['irrigation']['strat'][i]["time"], 
-                                                    'water_quantity': greenhouse['strategies']['irrigation']['strat'][i]["water_quantity"],
-                                                    'activeStrat': greenhouse['strategies']['irrigation']['strat'][i]["active"]
-                                                }
-                                                try:
-                                                    delete_to_manager("irrigation", delete_manager_dict)
-                                                    delete_to_dev_conn("irrigation", delete_manager_dict)
-                                                    post_to_manager("irrigation", post_manager_dict)
-                                                    post_to_dev_conn("irrigation", post_manager_dict)
-                                                except:
-                                                    pass
 
                                         greenhouse['strategies']['irrigation']['strat'].pop(strategyID)
                                         greenhouse['strategies']['irrigation']["timestamp"] = time.time()
                                         user["timestamp"] = time.time()
                                         db["users"] = users
-                                        json.dump(db, open("db/catalog.json", "w"), indent=3)
+                                        
+                                        with open("db/catalog.json", "w") as file:
+                                            json.dump(db, file, indent=3)
 
                                         return "Deleted irrigation strategy "+str(strategyID)+" for greenhouse "+str(greenHouseID)+" of user "+str(id)
                             else:
@@ -815,18 +814,17 @@ class Strategy(object):
                                 else:
                                     user["timestamp"] = time.time()
                                     db["users"] = users
-                                    json.dump(db, open("db/catalog.json", "w"), indent=3)
+                                    
+                                    with open("db/catalog.json", "w") as file:
+                                        json.dump(db, file, indent=3)
 
                                     delete_manager_dict = {
                                         'userID': id, 
                                         'greenHouseID': greenHouseID
                                     }
 
-                                    try:
-                                        delete_to_manager(strategyType, delete_manager_dict)
-                                        delete_to_dev_conn(strategyType, delete_manager_dict)
-                                    except:
-                                        pass
+                                    delete_to_manager(strategyType, delete_manager_dict)
+                                    delete_to_dev_conn(strategyType, delete_manager_dict)
 
                                     
                                     return "Deleted all "+strategyType+" strategies for greenhouse "+str(greenHouseID)+" of user "+str(id)
@@ -845,9 +843,9 @@ class DeviceConnectors(object):
         of a user greenhouse.
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         users = db["users"]
         
         try:
@@ -896,9 +894,9 @@ class DeviceConnectors(object):
         greenhouse the device connectors.
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         input = json.loads(cherrypy.request.body.read())
 
         try:
@@ -909,6 +907,9 @@ class DeviceConnectors(object):
             sensors = input["sensors"]
             actuators = input["actuators"]
             functions = input["functions"]
+            window_factor = input["window_factor"]
+            humidifier_factor = input["humidifier_factor"]
+            ac_factor = input["ac_factor"]
         except:
             raise cherrypy.HTTPError(400, 'Wrong input')
 
@@ -920,13 +921,16 @@ class DeviceConnectors(object):
                 "actuators": actuators
             },
             "functions": functions,
+            "window_factor": window_factor,
+            "humidifier_factor": humidifier_factor,
+            "ac_factor": ac_factor,
             "timestamp": time.time()
         }
         try:
             for user in db["users"]:
-                if user["id"] == userID:
+                if user["id"] == int(userID):
                     for greenhouse in user["greenHouses"]:
-                        if greenhouse["greenHouseID"] == greenHouseID:
+                        if greenhouse["greenHouseID"] == int(greenHouseID):
                             update = False
                             if len(greenhouse["deviceConnectors"]) == 0:
                                 greenhouse["deviceConnectors"].append(dev_conn_dict)
@@ -936,6 +940,9 @@ class DeviceConnectors(object):
                                         dev_conn["devices"]["sensors"] = sensors
                                         dev_conn["devices"]["actuators"] = actuators
                                         dev_conn["functions"] = functions
+                                        dev_conn["window_factor"] = window_factor
+                                        dev_conn["humidifier_factor"] = humidifier_factor 
+                                        dev_conn["ac_factor"] = ac_factor
                                         dev_conn["timestamp"] = time.time()
                                         update = True
                                 
@@ -944,7 +951,7 @@ class DeviceConnectors(object):
 
                             if update == False:
                                 # I assume that there is just one Adaptor
-                                url_adaptor = "http://"+db["thingspeak_adaptors"][0]["ip"]+":"+str(db["thingspeak_adaptors"][0]["port"])+"/"+db["thingspeak_adaptors"][0]["functions"][0]
+                                url_adaptor = db["thingspeak_adaptors"][0]["ip"]+":"+str(db["thingspeak_adaptors"][0]["port"])+"/"+db["thingspeak_adaptors"][0]["functions"][0]
                                 payload = {
                                     "userID": userID,
                                     "greenHouseID": greenHouseID,
@@ -952,7 +959,8 @@ class DeviceConnectors(object):
                                 }
                                 requests.post(url_adaptor, json.dumps(payload))
                             
-                            json.dump(db, open("db/catalog.json", "w"), indent=3)
+                            with open("db/catalog.json", "w") as file:
+                                json.dump(db, file, indent=3)
 
                             return
         except:
@@ -969,9 +977,9 @@ class Broker(object):
         Returns the broker endpoints and timestamp.
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         broker = db["broker"]
         
         return json.dumps(broker, indent=3)
@@ -989,16 +997,18 @@ def brokerLoader():
     Loads the static endpoints of the broker.
     """
 
-    db_file = open("db/catalog.json", "r")
-    db = json.load(db_file)
-    db_file.close()
-    broker = json.load(open("db/broker.json", "r"))
+    with open("db/catalog.json", "r") as file:
+        db = json.load(file)
+    
+    with open("db/broker.json", "r") as file:
+        broker = json.load(file)
 
     db["broker"]["ip"] = broker["ip"]
     db["broker"]["port"] = broker["port"]
     db["broker"]["timestamp"] = time.time()
 
-    json.dump(db, open("db/catalog.json", "w"), indent=3)
+    with open("db/catalog.json", "w") as file:
+        json.dump(db, file, indent=3)
 
 
 class ThingSpeakAdaptor(object):
@@ -1010,9 +1020,9 @@ class ThingSpeakAdaptor(object):
         (endpoints, functions and timestamp).
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         thingspeak_adaptors = db["thingspeak_adaptors"]
         
         return json.dumps(thingspeak_adaptors, indent=3)
@@ -1023,9 +1033,9 @@ class ThingSpeakAdaptor(object):
         (endpoints, functions and timestamp).
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         input = json.loads(cherrypy.request.body.read())
 
         try:
@@ -1054,7 +1064,8 @@ class ThingSpeakAdaptor(object):
             if update == False:
                 db["thingspeak_adaptors"].append(thingspeak_adaptor_dict)
 
-        json.dump(db, open("db/catalog.json", "w"), indent=3)
+        with open("db/catalog.json", "w") as file:
+            json.dump(db, file, indent=3)
 
 
 class ThingSpeak(object):
@@ -1065,9 +1076,9 @@ class ThingSpeak(object):
         Returns the ThingSpeak endpoints and timestamp.
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         thingspeak = db["thingspeak"]
         
         return json.dumps(thingspeak, indent=3)
@@ -1077,16 +1088,18 @@ def thingSpeakLoader():
     Loads the static endpoints of ThingSpeak.
     """
 
-    db_file = open("db/catalog.json", "r")
-    db = json.load(db_file)
-    db_file.close()
-    thingspeak = json.load(open("db/thingspeak.json", "r"))
+    with open("db/catalog.json", "r") as file:
+        db = json.load(file)
+
+    with open("db/thingspeak.json", "r") as file:
+        thingspeak = json.load(file)
 
     db["thingspeak"]["ip"] = thingspeak["ip"]
     db["thingspeak"]["port"] = thingspeak["port"]
     db["thingspeak"]["timestamp"] = time.time()
 
-    json.dump(db, open("db/catalog.json", "w"), indent=3)
+    with open("db/catalog.json", "w") as file:
+        json.dump(db, file, indent=3)
 
 
 # In the POST process the function must create the dictionary structure that will be added to the list in the database (like the managers)
@@ -1098,9 +1111,9 @@ class WebPage(object):
         Returns the webpages endpoints and timestamp.
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+        
         webpages = db["webpages"]
         
         return json.dumps(webpages, indent=3)
@@ -1121,9 +1134,9 @@ class WeatherAPI(object):
         Returns the weather API endpoints and timestamp.
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         weather_API = db["weather_API"]
         
         return json.dumps(weather_API, indent=3)
@@ -1133,16 +1146,18 @@ def weatherAPILoader():
     Loads the static endpoints of the weather API.
     """
     
-    db_file = open("db/catalog.json", "r")
-    db = json.load(db_file)
-    db_file.close()
-    weather_API = json.load(open("db/weatherAPI.json", "r"))
+    with open("db/catalog.json", "r") as file:
+        db = json.load(file)
+        
+    with open("db/weatherAPI.json", "r") as file:
+        weather_API = json.load(file)
 
     db["weather_API"]["ip"] = weather_API["ip"]
     db["weather_API"]["port"] = weather_API["port"]
     db["weather_API"]["timestamp"] = time.time()
 
-    json.dump(db, open("db/catalog.json", "w"), indent=3)
+    with open("db/catalog.json", "w") as file:
+        json.dump(db, file, indent=3)
 
 
 class IrrigationManager(object):
@@ -1154,9 +1169,9 @@ class IrrigationManager(object):
         (endpoints, functions and timestamp).
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         irr_manager = db["managers"]["irrigation"]
         
         return json.dumps(irr_manager, indent=3)
@@ -1167,9 +1182,9 @@ class IrrigationManager(object):
         (endpoints, functions and timestamp).
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         input = json.loads(cherrypy.request.body.read())
 
         try:
@@ -1198,7 +1213,8 @@ class IrrigationManager(object):
             if update == False:
                 db["managers"]["irrigation"].append(manager_dict)
 
-        json.dump(db, open("db/catalog.json", "w"), indent=3)
+        with open("db/catalog.json", "w") as file:
+            json.dump(db, file, indent=3)
             
 
 class EnvironmentManager(object):
@@ -1210,9 +1226,9 @@ class EnvironmentManager(object):
         (endpoints, functions and timestamp).
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         env_manager = db["managers"]["environment"]
         
         return json.dumps(env_manager, indent=3)
@@ -1223,9 +1239,9 @@ class EnvironmentManager(object):
         (endpoints, functions and timestamp).
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+        
         input = json.loads(cherrypy.request.body.read())
 
         try:
@@ -1254,7 +1270,8 @@ class EnvironmentManager(object):
             if update == False:
                 db["managers"]["environment"].append(manager_dict)
         
-        json.dump(db, open("db/catalog.json", "w"), indent=3)
+        with open("db/catalog.json", "w") as file:
+            json.dump(db, file, indent=3)
 
 
 class WeatherManager(object):
@@ -1266,9 +1283,9 @@ class WeatherManager(object):
         (endpoints, functions and timestamp).
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         wea_manager = db["managers"]["weather"]
         
         return json.dumps(wea_manager, indent=3)
@@ -1279,9 +1296,9 @@ class WeatherManager(object):
         (endpoints, functions and timestamp).
         """
 
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open("db/catalog.json", "r") as file:
+            db = json.load(file)
+
         input = json.loads(cherrypy.request.body.read())
 
         try:
@@ -1310,7 +1327,8 @@ class WeatherManager(object):
             if update == False:
                 db["managers"]["weather"].append(manager_dict)
 
-        json.dump(db, open("db/catalog.json", "w"), indent=3)
+        with open("db/catalog.json", "w") as file:
+            json.dump(db, file, indent=3)
 
 
 def remove_from_db(category = "", idx = -1):
@@ -1322,9 +1340,9 @@ def remove_from_db(category = "", idx = -1):
     - Webpage
     """
 
-    db_file = open("db/catalog.json", "r")
-    db = json.load(db_file)
-    db_file.close()
+    with open("db/catalog.json", "r") as file:
+        db = json.load(file)
+
     category = category.split("/")
 
     if category[1] == "":
@@ -1333,21 +1351,20 @@ def remove_from_db(category = "", idx = -1):
     # DELETE a device connector of a greenhouse
     if len(category) == 4:
         for user in db["users"]:
-            if user["id"] == category[0]:
+            if user["id"] == int(category[0]):
                 for greenhouse in user["greenHouses"]:
-                    if greenhouse["greenHouseID"] == category[1]:
+                    if greenhouse["greenHouseID"] == int(category[1]):
                         for index, dev_conn in enumerate(greenhouse["deviceConnectors"]):
-                            if dev_conn["ip"] == category[2] and dev_conn["port"] == category[3]:
+                            if dev_conn["ip"] == category[2] and dev_conn["port"] == int(category[3]):
                                 greenhouse["deviceConnectors"].pop(index)
 
                                 # I assume that there is just one Adaptor
                                 url_adaptor = db["thingspeak_adaptors"][0]["ip"]+":"+str(db["thingspeak_adaptors"][0]["port"])+"/"+db["thingspeak_adaptors"][0]["functions"][0]
                                 payload = {
                                     "userID": category[0],
-                                    "greenHouseID": category[1],
-                                    "sensors": dev_conn["devices"]["sensors"]
+                                    "greenHouseID": category[1]
                                 }
-                                requests.delete(url_adaptor, payload)
+                                requests.delete(url_adaptor, params=payload)
                                 break
     # DELETE a manager of the system
     elif len(category) == 2:
@@ -1356,7 +1373,8 @@ def remove_from_db(category = "", idx = -1):
     else:
         db[category[0]].pop(idx)
 
-    json.dump(db, open("db/catalog.json", "w"), indent=3)
+    with open("db/catalog.json", "w") as file:
+        json.dump(db, file, indent=3)
 
 
 def post_to_manager(strategyType = "", strat_info = {}):
@@ -1365,9 +1383,8 @@ def post_to_manager(strategyType = "", strat_info = {}):
     in order to create a new strategy.
     """
 
-    db_file = open("db/catalog.json", "r")
-    db = json.load(db_file)
-    db_file.close()
+    with open("db/catalog.json", "r") as file:
+        db = json.load(file)
 
     # We suppose that there is just one manager per type (and we take just the first of the list)
     try:
@@ -1387,9 +1404,9 @@ def post_to_manager(strategyType = "", strat_info = {}):
         }
     elif strategyType == "weather":
         for user in db["users"]:
-            if user["id"] == strat_info["userID"]:
+            if user["id"] == int(strat_info["userID"]):
                 for greenhouse in user["greenHouses"]:
-                    if greenhouse["greenHouseID"] == strat_info["greenHouseID"]:
+                    if greenhouse["greenHouseID"] == int(strat_info["greenHouseID"]):
                         payload = {
                             'userID': strat_info["userID"], 
                             'greenHouseID': strat_info["greenHouseID"],
@@ -1409,7 +1426,7 @@ def post_to_manager(strategyType = "", strat_info = {}):
         }
 
     # We suppose that the managers can have just one function (regStrategy)
-    url_manager = "http://"+manager_info["ip"]+":"+str(manager_info["port"])+"/"+manager_info["functions"][0]
+    url_manager = manager_info["ip"]+":"+str(manager_info["port"])+"/"+manager_info["functions"][0]
     requests.post(url_manager, json.dumps(payload))
 
 
@@ -1419,9 +1436,8 @@ def put_to_manager(strategyType = "", strat_info = {}):
     in order to update the activity state of a strategy.
     """
 
-    db_file = open("db/catalog.json", "r")
-    db = json.load(db_file)
-    db_file.close()
+    with open("db/catalog.json", "r") as file:
+        db = json.load(file)
 
     # We suppose that there is just one manager per type (and we take just the first of the list)
     try:
@@ -1455,7 +1471,7 @@ def put_to_manager(strategyType = "", strat_info = {}):
         }
     # We suppose that the managers can have just one function (regStrategy)
     url = manager_info["ip"]+":"+str(manager_info["port"])+"/"+manager_info["functions"][0]
-    requests.put(url, payload)
+    requests.put(url, json.dumps(payload))
 
 
 def delete_to_manager(strategyType = "", strat_info = {}):
@@ -1464,9 +1480,8 @@ def delete_to_manager(strategyType = "", strat_info = {}):
     in order to delete a strategy.
     """
     
-    db_file = open("db/catalog.json", "r")
-    db = json.load(db_file)
-    db_file.close()
+    with open("db/catalog.json", "r") as file:
+        db = json.load(file)
 
     # We suppose that there is just one manager per type (and we take just the first of the list)
     try:
@@ -1503,34 +1518,33 @@ def post_to_dev_conn(strategyType = "", strat_info = {}):
     in order to create a strategy.
     """
     
-    db_file = open("db/catalog.json", "r")
-    db = json.load(db_file)
-    db_file.close()
+    with open("db/catalog.json", "r") as file:
+        db = json.load(file)
 
     # We suppose that there is just one device connector per greenhouse (and we take just the first of the list)
     try:
         for user in db["users"]:
-            if user["id"] == strat_info["userID"]:
+            if user["id"] == int(strat_info["userID"]):
                 for greenhouse in user["greenHouses"]:
-                    if greenhouse["greenHouseID"] == strat_info["greenHouseID"]:
+                    if greenhouse["greenHouseID"] == int(strat_info["greenHouseID"]):
 
                         dev_conn_info = greenhouse["deviceConnectors"][0]
     except:
         raise Exception("No device connector present for that user and greenhouse")
-    
-    if strategyType == "irrigation":
-        payload = {
-            'strategyType': "irrigation", 
-            'stratID': strat_info["stratID"]
-        }
     else:
-        payload = {
-            'strategyType': strategyType, 
-        }
-        
-    # We suppose that the device connectors have as the first function the function to manage the strategies (regStrategy)
-    url = "http://"+dev_conn_info["ip"]+":"+str(dev_conn_info["port"])+"/"+dev_conn_info["functions"][0]
-    requests.post(url, json.dumps(payload))
+        if strategyType == "irrigation":
+            payload = {
+                'strategyType': "irrigation", 
+                'stratID': strat_info["stratID"]
+            }
+        else:
+            payload = {
+                'strategyType': strategyType, 
+            }
+            
+        # We suppose that the device connectors have as the first function the function to manage the strategies (regStrategy)
+        url = dev_conn_info["ip"]+":"+str(dev_conn_info["port"])+"/"+dev_conn_info["functions"][0]
+        requests.post(url, json.dumps(payload))
 
 
 def delete_to_dev_conn(strategyType = "", strat_info = {}):
@@ -1539,39 +1553,38 @@ def delete_to_dev_conn(strategyType = "", strat_info = {}):
     in order to delete a strategy.
     """
     
-    db_file = open("db/catalog.json", "r")
-    db = json.load(db_file)
-    db_file.close()
+    with open("db/catalog.json", "r") as file:
+        db = json.load(file)
 
     # We suppose that there is just one device connector per greenhouse (and we take just the first of the list)
     try:
         for user in db["users"]:
-            if user["id"] == strat_info["userID"]:
+            if user["id"] == int(strat_info["userID"]):
                 for greenhouse in user["greenHouses"]:
-                    if greenhouse["greenHouseID"] == strat_info["greenHouseID"]:
+                    if greenhouse["greenHouseID"] == int(strat_info["greenHouseID"]):
 
                         dev_conn_info = greenhouse["deviceConnectors"][0]
     except:
         raise Exception("No device connector present for that user and greenhouse")
-    
-    if strategyType == "irrigation":
-        try:
-            params = {
-                'strategyType': "irrigation", 
-                'stratID': strat_info["stratID"]
-            }
-        except:
-            params = {
-                'strategyType': "irrigation"
-            }
     else:
-        params = {
-            'strategyType': strategyType, 
-        }
-        
-    # We suppose that the device connectors have as the first function the function to manage the strategies (regStrategy)
-    url = dev_conn_info["ip"]+":"+str(dev_conn_info["port"])+"/"+dev_conn_info["functions"][0]
-    requests.delete(url, params=params)
+        if strategyType == "irrigation":
+            try:
+                params = {
+                    'strategyType': "irrigation", 
+                    'stratID': strat_info["stratID"]
+                }
+            except:
+                params = {
+                    'strategyType': "irrigation"
+                }
+        else:
+            params = {
+                'strategyType': strategyType, 
+            }
+            
+        # We suppose that the device connectors have as the first function the function to manage the strategies (regStrategy)
+        url = dev_conn_info["ip"]+":"+str(dev_conn_info["port"])+"/"+dev_conn_info["functions"][0]
+        requests.delete(url, params=params)
 
 
 
@@ -1601,9 +1614,8 @@ if __name__=="__main__":
     cherrypy.engine.start()
     # cherrypy.engine.block()
 
-    db_file = open("db/catalog.json", "r")
-    db = json.load(db_file)
-    db_file.close()
+    with open("db/catalog.json", "r") as file:
+        db = json.load(file)
 
     # BOOT: retrieve the BROKER ENDPOINTS from a json file
     brokerLoader()
@@ -1646,7 +1658,7 @@ if __name__=="__main__":
                                                     "dev_conn": dev_conn
                                                 })
     timeout_dev_connector = 120
-
+    update = False
     
     while True:
         timestamp = time.time()
@@ -1655,45 +1667,51 @@ if __name__=="__main__":
             for idx, adaptor in enumerate(thingspeak_adaptors):
                 if timestamp - float(adaptor["timestamp"]) >= timeout_adaptor:
                     remove_from_db("thingspeak_adaptor/", idx)
+                    update = True
         if len(webpages) > 0:
             for idx, webpage in enumerate(webpages):
                 if timestamp - float(webpage["timestamp"]) >= timeout_webpage:
                     remove_from_db("webpage/", idx)
+                    update = True
         if len(irrigation_managers) > 0:
             for idx, manager in enumerate(irrigation_managers):
                 if timestamp - float(manager["timestamp"]) >= timeout_irr_manager:
                     remove_from_db("managers/irrigation", idx)
+                    update = True
         if len(environment_managers) > 0:
             for idx, manager in enumerate(environment_managers):
                 if timestamp - float(manager["timestamp"]) >= timeout_env_manager:
                     remove_from_db("managers/environment", idx)
+                    update = True
         if len(weather_managers) > 0:
             for idx, manager in enumerate(weather_managers):
                 if timestamp - float(manager["timestamp"]) >= timeout_wea_manager:
                     remove_from_db("managers/weather", idx)
+                    update = True
         if len(device_connectors_list) > 0:
             for dev_conn in device_connectors_list:
                 if timestamp - float(dev_conn["dev_conn"]["timestamp"]) >= timeout_dev_connector:
                     remove_from_db(str(dev_conn["userID"])+"/"+str(dev_conn["greenHouseID"])+"/"+dev_conn["dev_conn"]["ip"]+"/"+str(dev_conn["dev_conn"]["port"]))
+                    update = True
             
+        if update:
+            time.sleep(0.5)
+            with open("db/catalog.json", "r") as file:
+                db = json.load(file)
 
-        # time.sleep(60)
-        db_file = open("db/catalog.json", "r")
-        db = json.load(db_file)
-        db_file.close()
-        thingspeak_adaptors = db["thingspeak_adaptors"]
-        webpages = db["webpages"]
-        irrigation_managers = db["managers"]["irrigation"]
-        environment_managers = db["managers"]["environment"]
-        weather_managers = db["managers"]["weather"]
-        
-        device_connectors_list = []
-        if len(db["users"]) > 0:
-            for user in db["users"]:
-                for greenhouse in user["greenHouses"]:
-                    for dev_conn in greenhouse["deviceConnectors"]:
-                        device_connectors_list.append({
-                                                        "userID": user["id"],
-                                                        "greenHouseID": greenhouse["greenHouseID"],
-                                                        "dev_conn": dev_conn
-                                                    })
+            thingspeak_adaptors = db["thingspeak_adaptors"]
+            webpages = db["webpages"]
+            irrigation_managers = db["managers"]["irrigation"]
+            environment_managers = db["managers"]["environment"]
+            weather_managers = db["managers"]["weather"]
+            
+            device_connectors_list = []
+            if len(db["users"]) > 0:
+                for user in db["users"]:
+                    for greenhouse in user["greenHouses"]:
+                        for dev_conn in greenhouse["deviceConnectors"]:
+                            device_connectors_list.append({
+                                                            "userID": user["id"],
+                                                            "greenHouseID": greenhouse["greenHouseID"],
+                                                            "dev_conn": dev_conn
+                                                        })
