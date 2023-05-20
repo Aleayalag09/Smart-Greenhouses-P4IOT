@@ -18,7 +18,10 @@ class regTopic(object):
         
         global database
         input = json.loads(cherrypy.request.body.read())
-        database_dict = json.load(open(database, "r"))
+
+        db_file = open(database, "r")
+        db = json.load(db_file)
+        db_file.close()
 
         try:
             # Da vedere che dati vengono inviati dal catalog e come => ogni volta che viene aggiunto un nuovo Device Connector deve essere fatto un POST qua
@@ -34,11 +37,13 @@ class regTopic(object):
             new_topic = {
                 "topic": topic
             }
-            database_dict["topics"].append(new_topic)        
+            db["topics"].append(new_topic)        
 
             MeasuresReceiver.subscribe(topic)
 
-        json.dump(database_dict, open(database, "w"), indent=3)
+        db_file = open(database, "w")
+        json.dump(db, db_file, indent=3)
+        db_file.close()
         
         result = {
             "userID": userID,
@@ -54,34 +59,37 @@ class regTopic(object):
         """
 
         global database
-        input = json.loads(cherrypy.request.body.read())
-        database_dict = json.load(open(database, "r"))
+        # input = json.loads(cherrypy.request.body.read())
+        
+        db_file = open(database, "r")
+        db = json.load(db_file)
+        db_file.close()
 
         try:
-            userID = input["userID"]
-            greenHouseID = input["greenHouseID"]
-            sensors = input["sensors"]
+            userID = queries["userID"]
+            greenHouseID = queries["greenHouseID"]
         except:
             raise cherrypy.HTTPError(400, 'Wrong input')
         
         idxs = []
-        for idx, topicdb in enumerate(database_dict["topics"]):
-            for sensorType in sensors:
+        for idx, topicdb in enumerate(db["topics"]):
 
-                topic = str(userID)+"/"+str(greenHouseID)+"/sensors/"+sensorType
-                if topic == topicdb["topic"]:
-                    idxs.append(idx)
-                    MeasuresReceiver.unsubscribe(topic)
+            split_topic = topicdb["topic"].split("/")
+            if int(userID) == int(split_topic[0]) and int(greenHouseID) == int(split_topic[1]):
+                idxs.append(idx)
+                MeasuresReceiver.unsubscribe(topicdb["topic"])
 
+        idxs.sort(reverse=True)
         for idx in idxs:
-            database_dict.pop(idx)
+            db["topics"].pop(idx)
 
-        json.dump(database_dict, open(database, "w"), indent=3)
+        db_file = open(database, "w")
+        json.dump(db, db_file, indent=3)
+        db_file.close()
         
         result = {
             "userID": userID,
             "greenHouseID": greenHouseID,
-            "sensors": sensors,
             "timestamp": time.time()
         }
         return result
@@ -155,7 +163,7 @@ def refresh():
 def getBroker():
     """
     Retrieves from the Resource Catalog the endpoints
-    (ip, port, timestamp) of the broker used in the system 
+    (ip, port, timestamp) of the broker used in the system.
     """
 
     global database
@@ -170,11 +178,18 @@ def getBroker():
     except:
         raise cherrypy.HTTPError(400, 'Wrong parameters')
 
-    database_dict = json.load(open(database, "r"))
-    database_dict["broker"]["ip"] = ip
-    database_dict["broker"]["port"] = port
-    database_dict["broker"]["timestamp"] = time.time()
-    json.dump(database_dict, open(database, "w"), indent=3)
+    # Load the database
+    db_file = open(database, "r")
+    db = json.load(db_file)
+
+    db["broker"]["ip"] = ip
+    db["broker"]["port"] = port
+    db["broker"]["timestamp"] = time.time()
+
+    db_file.close()
+    db_file = open(database, "w")
+    json.dump(db, db_file, indent=3)
+    db_file.close()
 
 
 def getTopics():
@@ -204,9 +219,15 @@ def getTopics():
                                 })
                 MeasuresReceiver.subscribe(topic)
 
-    database_dict = json.load(open(database, "r"))
-    database_dict["topics"] = topics_list
-    json.dump(database_dict, open(database, "w"), indent=3)
+    db_file = open(database, "r")
+    db = json.load(db_file)
+    db_file.close()
+
+    db["topics"] = topics_list
+    
+    db_file = open(database, "w")
+    json.dump(db, db_file, indent=3)
+    db_file.close()
 
 
 def send_to_Thingspeak(topic, measure):
@@ -220,14 +241,15 @@ def send_to_Thingspeak(topic, measure):
     db_file = open(database, "r")
     db = json.load(db_file)
     db_file.close()
+
     userID = topic.split("/")[0]
     greenHouseID = topic.split("/")[1]
     measureType = topic.split("/")[3]
 
     for user in db["users"]:
-        if user["userID"] == userID:
+        if user["userID"] == int(userID):
             for greenhouse in user["greenHouses"]:
-                if greenhouse["greenHouseID"] == greenHouseID:
+                if greenhouse["greenHouseID"] == int(greenHouseID):
 
                     thingspeak_key = user["KEY"]
                     field = greenhouse[measureType]
@@ -240,7 +262,7 @@ def send_to_Thingspeak(topic, measure):
 
 if __name__ == "__main__":
     
-    time.sleep(15)
+    time.sleep(10)
     
     conf = {
         '/': {
@@ -255,19 +277,24 @@ if __name__ == "__main__":
     cherrypy.engine.start()
     # cherrypy.engine.block()
 
-    last_refresh = time.time() 
-    # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
-    refresh()
-
     # CAN THE MQTT BROKER CHANGE THROUGH TIME? I SUPPOSE NOT IN THIS CASE
     getBroker()
-    
-    broker_dict = json.load(open(database, "r"))["broker"]
+
+    db_file = open(database, "r")
+    db = json.load(db_file)
+    broker_dict = db["broker"]
+    db_file.close()
     
     MeasuresReceiver = MQTT_subscriber(broker_dict["ip"], broker_dict["port"]) 
     MeasuresReceiver.start()
 
+    last_refresh = time.time() 
+    # WE NEED TO CONTINOUSLY REGISTER THE STRATEGIES TO THE SERVICE/RESOURCE CATALOG
+    time.sleep(0.5)
+    refresh()
+
     # BOOT FUNCTION TO RETRIEVE STARTING TOPICS
+    time.sleep(0.5)
     getTopics()
 
     refresh_freq = 60

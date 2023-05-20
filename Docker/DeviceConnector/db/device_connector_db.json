@@ -1,7 +1,7 @@
 {
-    "ip": "device_connector",
+    "ip": "http://device_connector",
     "port": 8080, 
-    "function": "regStrategy",
+    "function": "regTopic",
     
     "broker": {},
 
@@ -31,6 +31,10 @@
             "windows"
         ]
     },
+
+    "window_factor": 3600,
+    "humidifier_factor": 60,
+    "ac_factor": 60,
 
     "strategies":
     {

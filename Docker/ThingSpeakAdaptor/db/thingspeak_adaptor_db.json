@@ -1,6 +1,6 @@
 {   
     "ID": 0,
-    "ip": "thingspeak_adaptor",
+    "ip": "http://thingspeak_adaptor",
     "port": 8080, 
     "function": "addTopic",
     
