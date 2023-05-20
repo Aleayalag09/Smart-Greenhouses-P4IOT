@@ -130,7 +130,7 @@ class Environment(object):
         #     self.city_temperature, self.city_humidity = self.city_measurements()
         #     self.flag = 0
         
-        self.city_temperature, self.city_humidity = 20, 0.5
+        self.city_temperature, self.city_humidity = 20, 0.2
         time_passed = actual_time - self.last_change  
         
         window_humidity = window_intensity*((self.city_humidity - self.humidity)/self.window_factor)*time_passed + self.humidity
