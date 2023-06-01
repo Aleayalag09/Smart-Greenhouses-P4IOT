@@ -13,6 +13,32 @@
    "thingspeak": {},
    "weather_API": {},
    "broker": {},
+   "registered_users": [
+      {
+         "userID": 0,
+         "greenHouses": [
+            {
+               "greenHouseID": 0
+            }, 
+            {
+               "greenHouseID": 1
+            }
+
+         ]
+      },
+      {
+         "userID": 1,
+         "greenHouses": [
+            {
+               "greenHouseID": 0
+            }, 
+            {
+               "greenHouseID": 1
+            }
+
+         ]
+      }
+   ],
    "users": [
       {
          "userName": "Matteo_Impieri",

@@ -45,6 +45,7 @@ class User(object):
         with open("db/catalog.json", "r") as file:
             db = json.load(file)
 
+        registered_users = db["registred_users"]
         users = db["users"]
         new_user = {
             "userName": "userName",
@@ -70,13 +71,28 @@ class User(object):
         except:
             raise cherrypy.HTTPError(400, 'Wrong parameter')
         else:
-            users.append(new_user)
-            db["users"] = users
+            # Checks wheter the user with the specified user ID has already been registered 
+            registered = False
+            for user in registered_users:
+                if user["userID"] == new_user["id"]:
+                    registered = True
+
+            if registered:
+                # Checks if the user has already performed the login 
+                for user in users:
+                    if user["id"] == new_user["id"]:
+                        raise cherrypy.HTTPError(400, 'User already exists')
+                    
+                users.append(new_user)
+                db["users"] = users
+                
+                with open("db/catalog.json", "w") as file:
+                    json.dump(db, file, indent=3)
+                
+                return new_user
             
-            with open("db/catalog.json", "w") as file:
-                json.dump(db, file, indent=3)
-            
-            return new_user
+            else:
+                raise cherrypy.HTTPError(400, 'User ID not registered')
             
     def PUT(self, *path, **queries): 
         """
@@ -239,49 +255,67 @@ class GreenHouse(object):
 
         with open("db/catalog.json", "r") as file:
             db = json.load(file)
+            
+        input = json.loads(cherrypy.request.body.read())
 
+        registered_users = db["registered_users"]
         users = db["users"]
         try:
             userID = int(queries['id'])
-        
+            greenHouseID = int(input["greenHouseID"])
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
-
-        for user in users:
-            if user['id'] == int(userID):
-
-                strat_dict = {
-                    "strat": [],
-                    "active": False,
-                    "timestamp": -1
-                }
-                
-                new_greenhouse = {
-                    "greenHouseName": "greenHouseName",
-                    "greenHouseID": -1,
-                    "city": "city",
-                    "deviceConnectors": [],
-                    "strategies": {"irrigation": strat_dict, "environment": strat_dict, "weather": strat_dict}
-                }
-                
-                input = json.loads(cherrypy.request.body.read())
-                try:
-                    new_greenhouse["greenHouseName"] = input['greenHouseName']
-                    new_greenhouse["city"] = input['city']
-                    new_greenhouse["greenHouseID"] = int(input["greenHouseID"])
-                except:
-                    raise cherrypy.HTTPError(400, 'Wrong parameter')
-                else:
-                    user['greenHouses'].append(new_greenhouse)
-                    user["timestamp"] = time.time()
-                    db["users"] = users
-                    
-                    with open("db/catalog.json", "w") as file:
-                        json.dump(db, file, indent=3)
-                    
-                    return "New greenhouse for user "+str(userID)+": "+str(new_greenhouse)
         
-        raise cherrypy.HTTPError(400, 'No user found')
+        # Checks wheter the user or the greenhouse ID have been already registered
+        registered = False
+        for user in registered_users:
+            if user["userID"] == userID:
+                for greenhouse in user["greenHouses"]:
+                    if greenhouse["greenHouseID"] == greenHouseID:
+                        registered = True
+
+        if registered: 
+            for user in users:
+                if user['id'] == int(userID):
+
+                    strat_dict = {
+                        "strat": [],
+                        "active": False,
+                        "timestamp": -1
+                    }
+                    
+                    new_greenhouse = {
+                        "greenHouseName": "greenHouseName",
+                        "greenHouseID": -1,
+                        "city": "city",
+                        "deviceConnectors": [],
+                        "strategies": {"irrigation": strat_dict, "environment": strat_dict, "weather": strat_dict}
+                    }
+                    
+                    try:
+                        new_greenhouse["greenHouseName"] = input['greenHouseName']
+                        new_greenhouse["city"] = input['city']
+                        new_greenhouse["greenHouseID"] = int(input["greenHouseID"])
+                    except:
+                        raise cherrypy.HTTPError(400, 'Wrong parameter')
+                    else:
+                        # Checks wheter the greenhouse ID is already present for that specific user ID
+                        for greenhouse in user["greenHouses"]:
+                            if greenhouse["greenHouseID"] == greenHouseID:
+                                raise cherrypy.HTTPError(400, 'Greenhouse already exists')
+                            
+                        user['greenHouses'].append(new_greenhouse)
+                        user["timestamp"] = time.time()
+                        db["users"] = users
+                        
+                        with open("db/catalog.json", "w") as file:
+                            json.dump(db, file, indent=3)
+                        
+                        return "New greenhouse for user "+str(userID)+": "+str(new_greenhouse)
+            
+            raise cherrypy.HTTPError(400, 'No user found')
+        else:
+            raise cherrypy.HTTPError(400, 'User ID or greenhouse ID not registered')
             
     def PUT(self, *path, **queries): 
         """
