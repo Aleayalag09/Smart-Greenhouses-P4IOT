@@ -45,7 +45,7 @@ class User(object):
         with open("db/catalog.json", "r") as file:
             db = json.load(file)
 
-        registered_users = db["registred_users"]
+        registered_users = db["registered_users"]
         users = db["users"]
         new_user = {
             "userName": "userName",
