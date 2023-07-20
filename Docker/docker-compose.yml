@@ -1,6 +1,16 @@
 version: '3'
 
 services:
+  node-red:
+    image: nodered/node-red
+    ports:
+      - '1880:1880'
+    volumes:
+      - ./Node-Red/iot_project_v1.rar:/data/iot_project_v1.rar
+    command: bash -c "unrar x /data/iot_project_v1.rar /data/iot_project_v1 && npm start -- --userDir /data/iot_project_v1"
+    networks:
+      - smart_greenhouses
+
   resource_catalog:
     build:
       context: ./ResourceCatalog
@@ -51,3 +61,8 @@ services:
 
 networks:
   smart_greenhouses:
+    # driver: bridge
+    # ipam:
+    #  config:
+    #    - subnet: 175.25.0.1/16
+    #      gateway: 175.25.0.1
