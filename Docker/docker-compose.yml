@@ -2,12 +2,11 @@ version: '3'
 
 services:
   node-red:
-    image: nodered/node-red
+    image: nodered/node-red:latest
     ports:
       - '1880:1880'
     volumes:
-      - ./Node-Red/iot_project_v1.rar:/data/iot_project_v1.rar
-    command: bash -c "unrar x /data/iot_project_v1.rar /data/iot_project_v1 && npm start -- --userDir /data/iot_project_v1"
+      - ./Node-Red/node-red-data:/data
     networks:
       - smart_greenhouses
 
