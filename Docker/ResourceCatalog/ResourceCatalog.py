@@ -665,14 +665,16 @@ class Strategy(object):
 
                                 if strategyType == "weather":
 
-                                    with open("db/window_states.json", "r") as file:
+                                    with open("db/window_state.json", "r") as file:
                                         db_ws = json.load(file)
 
-                                    db_ws = db_ws.append({
+                                    db_ws["states"] = db_ws["states"].append({
                                         "userID": id,
                                         "greenHouseID": greenHouseID,
                                         "state": "close"
                                     })
+
+                                    mqtt_handler.subscribe("IoT_project_29/"+str(id)+"/"+str(greenHouseID)+"/weather")
                                     
                                     with open("db/window_state.json", "w") as file:
                                         json.dump(db_ws, file, indent=3)
@@ -877,13 +879,15 @@ class Strategy(object):
 
                                     if strategyType == "weather":
                                         
-                                        with open("db/window_states.json", "r") as file:
+                                        with open("db/window_state.json", "r") as file:
                                             db_ws = json.load(file)
 
-                                        for step, win_state in enumerate(db_ws):
+                                        for step, win_state in enumerate(db_ws["states"]):
                                             if win_state["userID"] == id and win_state["greenHouseID"] == greenHouseID:
-                                                del db_ws[step]
+                                                del db_ws["states"][step]
                                                 break
+
+                                        mqtt_handler.unsubscribe("IoT_project_29/"+str(id)+"/"+str(greenHouseID)+"/weather")
                                         
                                         with open("db/window_state.json", "w") as file:
                                             json.dump(db_ws, file, indent=3)
@@ -1695,7 +1699,7 @@ class MQTT_subscriber(object):
         # If the message is received from the weather manager the script must change the parameter
         # related to the window for the strategy of that user and greenhouse
         if measuretype == "weather":
-            for win_state in db_ws:
+            for win_state in db_ws["states"]:
                 if win_state["userID"] == int(topic[1]) and win_state["greenHouseID"] == int(topic[2]):
                     win_state["state"] = value
 
@@ -1721,9 +1725,11 @@ class WindowState(object):
         with open("db/window_state.json", "r") as file:
             db_ws = json.load(file)
 
-        for win_state in db_ws:
+        for win_state in db_ws["states"]:
             if win_state["userID"] == id and win_state["greenHouseID"] == greenHouseID:
                 return json.dumps(win_state, indent=3)
+            
+        return json.dumps({"state": "Error"}, indent=3)
 
 
 
@@ -1747,6 +1753,8 @@ if __name__=="__main__":
     cherrypy.tree.mount(IrrigationManager(), '/irrigation_manager', conf)
     cherrypy.tree.mount(EnvironmentManager(), '/environment_manager', conf)
     cherrypy.tree.mount(WeatherManager(), '/weather_manager', conf)
+    cherrypy.tree.mount(WindowState(), '/window_state', conf)
+    
 
     cherrypy.config.update({'server.socket_host': '0.0.0.0'})
 
@@ -1764,6 +1772,11 @@ if __name__=="__main__":
 
     # BOOT: retrieve the WEATHER API ENDPOINTS from a json file
     weatherAPILoader()
+    
+    with open("db/broker.json", "r") as file:
+        broker = json.load(file)
+    mqtt_handler = MQTT_subscriber(broker["ip"], broker["port"])
+    mqtt_handler.start()
     
     # BOOT: retrieve the THINGSPEAK ADAPTORS info from the database (catalog.json)
     thingspeak_adaptors = db["thingspeak_adaptors"]
