@@ -17822,7 +17822,8 @@
                 "314cf227ce95c194",
                 "c172a47fe858f676",
                 "197990040c1bcea9",
-                "8608905770537a7a"
+                "8608905770537a7a",
+                "a40245cde3c690df"
             ]
         ]
     },
@@ -17875,7 +17876,7 @@
         "order": 8,
         "width": 0,
         "height": 0,
-        "format": "<h3>Device associated: </h3>\n<br>\n<p>SENSORS: <span ng-bind=\"msg['payload'][0]['devices']['sensors']\"></span></p>\n<p>ACTUATORS: <span ng-bind=\"msg['payload'][0]['devices']['actuators']\"></span></p>",
+        "format": "<h3>Devices associated: </h3>\n<br>\n<p>SENSORS: <span ng-bind=\"msg['payload'][0]['devices']['sensors']\"></span></p>\n<p>ACTUATORS: <span ng-bind=\"msg['payload'][0]['devices']['actuators']\"></span></p>",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": false,
@@ -18099,7 +18100,7 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "msg['action'] = \"subscribe\"\n# da aggiungere alla fine il sensorType\n#msg['topic']= str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/environment/temperature\"\n\nmsg['topic'] = \"IoT_project/group29/greenhouse1/temperature\"\nreturn msg",
+        "func": "msg['action'] = \"subscribe\"\n# da aggiungere alla fine il sensorType\nmsg['topic']= \"IoT_project_29/\"+str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/sensors/temperature\"\n\n#msg['topic'] = \"IoT_project/group29/greenhouse1/temperature\"\nreturn msg",
         "outputs": 1,
         "x": 730,
         "y": 920,
@@ -18196,7 +18197,7 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "msg['action'] = \"subscribe\"\n# da aggiungere alla fine il sensorType\n#msg['topic']= str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/environment/humidity\"\n\nmsg['topic'] = \"IoT_project/group29/greenhouse1/humidity\"\nreturn msg",
+        "func": "msg['action'] = \"subscribe\"\n# da aggiungere alla fine il sensorType\nmsg['topic']= \"IoT_project_29/\"+str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/sensors/humidity\"\n\n#msg['topic'] = \"IoT_project/group29/greenhouse1/humidity\"\nreturn msg",
         "outputs": 1,
         "x": 730,
         "y": 740,
@@ -18507,7 +18508,7 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "query =  \"?id=\"+ str(msg['payload']['id'])\n\ndata = {\n    'userName' : msg['payload']['userName'],\n    'password' : msg['payload']['password'],\n    'id' : msg['payload']['id'],\n    'name' : msg['payload']['name'],\n    'surname' : msg['payload']['surname'],\n    'email_addresses' : msg['payload']['email_addresses'],\n    'country' : msg['payload']['country']\n}\n\nmsg = {'payload' : data, 'query' : query}\nreturn msg",
+        "func": "query =  \"?id=\"+ str(msg['payload']['id'])\n\ndata = {\n    'userName' : msg['payload']['userName'],\n    'id' : msg['payload']['id'],\n    'name' : msg['payload']['name'],\n    'surname' : msg['payload']['surname'],\n    'email_addresses' : msg['payload']['email_addresses']\n}\n\nmsg = {'payload' : data, 'query' : query}\nreturn msg",
         "outputs": 1,
         "x": 1590,
         "y": 1540,
@@ -18563,6 +18564,13 @@
         "height": 0,
         "options": [
             {
+                "label": "User ID",
+                "value": "id",
+                "type": "number",
+                "required": true,
+                "rows": null
+            },
+            {
                 "label": "Username",
                 "value": "userName",
                 "type": "text",
@@ -18592,6 +18600,7 @@
             }
         ],
         "formValue": {
+            "id": "",
             "userName": "",
             "name": "",
             "surname": "",
@@ -19299,7 +19308,8 @@
                 "7dcd4cacf1185222",
                 "d7ed7a5b1dd51b21",
                 "6721c23a5f9fd596",
-                "bcc95baad250f80d"
+                "bcc95baad250f80d",
+                "b736783f82ba9eba"
             ]
         ]
     },
@@ -19621,7 +19631,7 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "import datetime\nquery = \"?id=\"+str(msg['payload']['id'])+\"&greenHouseID=\"+ str(msg['payload']['greenHouseID'])+ \"&strategyType=irrigation\"\n\nif msg['payload']['active']:\n    active = True\nelse:\n    active = False\n\ninput_date = datetime.datetime.strptime(msg['payload']['time'], '%Y-%m-%dT%H:%M:%S.%fZ')\nnew_date = input_date.strftime('%H:%M:%S')\n\n\n\ndata = {\n    'time': new_date,\n    'water_quantity': msg['payload']['wq'],\n    'active': active\n}\n\n\nmsg = {'payload':data, 'query':query}\n\n\nreturn msg",
+        "func": "import datetime\nquery = \"?id=\"+str(msg['payload']['id'])+\"&greenHouseID=\"+ str(msg['payload']['greenHouseID'])+ \"&strategyType=irrigation\"\n\nif msg['payload']['active']:\n    active = True\nelse:\n    active = False\n\ninput_date = datetime.datetime.strptime(msg['payload']['time'], '%Y-%m-%dT%H:%M:%S.%fZ')\nnew_date = (input_date + datetime.timedelta(hours=1)).strftime('%H:%M:%S')\n\ndata = {\n    'time': new_date,\n    'water_quantity': msg['payload']['wq'],\n    'active': active\n}\n\n\nmsg = {'payload':data, 'query':query}\n\n\nreturn msg",
         "outputs": 1,
         "x": 2730,
         "y": 3720,
@@ -19826,7 +19836,7 @@
         "order": 2,
         "width": "5",
         "height": "3",
-        "format": "<h3>ENVIRONMENT STRATEGY: </h3>\n\n<p>TEMPERATURE: <span ng-bind=\"msg['payload']['strat']['temperature']\"></span></p>\n<p>HUMIDITY: <span ng-bind=\"msg['payload']['strat']['humidity']\"></span></p>\n<p>ACTIVE: <span ng-bind=\"msg['payload']['active']\"></span></p>",
+        "format": "<h3>Registered strategy: </h3>\n\n<p>TEMPERATURE: <span ng-bind=\"msg['payload']['strat']['temperature']\"></span></p>\n<p>HUMIDITY: <span ng-bind=\"msg['payload']['strat']['humidity']\"></span></p>\n<p>ACTIVE: <span ng-bind=\"msg['payload']['active']\"></span></p>",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": true,
@@ -19921,7 +19931,7 @@
         "order": 2,
         "width": "5",
         "height": "3",
-        "format": "<h3>WEATHER STRATEGY: </h3>\n\n<p>TEMPERATURE: <span ng-bind=\"msg['payload']['strat']['temperature']\"></span></p>\n<p>HUMIDITY: <span ng-bind=\"msg['payload']['strat']['humidity']\"></span></p>\n<p>ACTIVE: <span ng-bind=\"msg['payload']['active']\"></span></p>",
+        "format": "<h3>Registered strategy: </h3>\n\n<p>TEMPERATURE: <span ng-bind=\"msg['payload']['strat']['temperature']\"></span></p>\n<p>HUMIDITY: <span ng-bind=\"msg['payload']['strat']['humidity']\"></span></p>\n<p>ACTIVE: <span ng-bind=\"msg['payload']['active']\"></span></p>",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": true,
@@ -20728,7 +20738,7 @@
         "order": 4,
         "width": 0,
         "height": 0,
-        "format": "<h2><span ng-bind=\"msg['payload']['error']\"></span></h2>\n\n\n\n",
+        "format": "<h4><span ng-bind=\"msg['payload']['error']\"></span></h4>\n\n\n\n",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": false,
@@ -20749,7 +20759,7 @@
         "order": 6,
         "width": 0,
         "height": 0,
-        "format": "<h2><span ng-bind=\"msg['payload']['error']\"></span></h2>\n\n\n\n",
+        "format": "<h4><span ng-bind=\"msg['payload']['error']\"></span></h4>\n\n\n\n",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": false,
@@ -20785,7 +20795,7 @@
         "order": 14,
         "width": 0,
         "height": 0,
-        "format": "<h2><span ng-bind=\"msg['payload']['error']\"></span></h2>\n\n\n\n",
+        "format": "<h4><span ng-bind=\"msg['payload']['error']\"></span></h4>\n\n\n\n",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": false,
@@ -20874,7 +20884,7 @@
         "order": 5,
         "width": 0,
         "height": 0,
-        "format": "<h2><span ng-bind=\"msg['payload']['error']\"></span></h2>\n\n\n\n",
+        "format": "<h4><span ng-bind=\"msg['payload']['error']\"></span></h4>\n\n\n\n",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": false,
@@ -20910,7 +20920,7 @@
         "order": 6,
         "width": 0,
         "height": 0,
-        "format": "<h2><span ng-bind=\"msg['payload']['error']\"></span></h2>\n\n\n\n",
+        "format": "<h4><span ng-bind=\"msg['payload']['error']\"></span></h4>\n\n\n\n",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": false,
@@ -20996,7 +21006,7 @@
         "order": 3,
         "width": 0,
         "height": 0,
-        "format": "<h2><span ng-bind=\"msg['payload']['error']\"></span></h2>\n\n\n\n",
+        "format": "<h4><span ng-bind=\"msg['payload']['error']\"></span></h4>\n\n\n\n",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": false,
@@ -21049,7 +21059,7 @@
         "order": 4,
         "width": 0,
         "height": 0,
-        "format": "<h2><span ng-bind=\"msg['payload']['error']\"></span></h2>\n\n\n\n",
+        "format": "<h4><span ng-bind=\"msg['payload']['error']\"></span></h4>\n\n\n\n",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": false,
@@ -21219,7 +21229,7 @@
         "order": 4,
         "width": 0,
         "height": 0,
-        "format": "<h2><span ng-bind=\"msg['payload']['error']\"></span></h2>\n\n\n\n",
+        "format": "<h4><span ng-bind=\"msg['payload']['error']\"></span></h4>\n\n\n\n",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": false,
@@ -21333,7 +21343,7 @@
         "order": 2,
         "width": "6",
         "height": "4",
-        "format": "<h3>IRRIGATION STRATEGIES: </h3>\n\n<table>\n  <tr>\n    <th>id</th>\n    <th>time</th>\n    <th>water quantity</th>\n    <th>active</th>\n  </tr>\n  <tr ng-repeat=\"record in msg.payload.strat\">\n    <td>{{ record.id }}</td>\n    <td>{{ record.time }}</td>\n    <td>{{ record.water_quantity }}</td>\n    <td>{{ record.active }}</td>\n  </tr>\n</table>\n",
+        "format": "<h3>Registered strategies: </h3>\n\n<table>\n  <tr>\n    <th>ID</th>\n    <th>TIME</th>\n    <th>WATER QUANTITY</th>\n    <th>ACTIVE</th>\n  </tr>\n  <tr ng-repeat=\"record in msg.payload.strat\">\n    <td>{{ record.id }}</td>\n    <td>{{ record.time }}</td>\n    <td>{{ record.water_quantity }}</td>\n    <td>{{ record.active }}</td>\n  </tr>\n</table>\n",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": false,
@@ -21348,38 +21358,17 @@
         ]
     },
     {
-        "id": "2684db334bb85e53",
-        "type": "mqtt in",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "topic": "",
-        "qos": "2",
-        "datatype": "json",
-        "broker": "a6d151784d60722d",
-        "nl": false,
-        "rap": true,
-        "rh": 0,
-        "inputs": 1,
-        "x": 990,
-        "y": 1100,
-        "wires": [
-            [
-                "d876efb2a9f19e4c"
-            ]
-        ]
-    },
-    {
         "id": "8608905770537a7a",
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "msg['action'] = \"subscribe\"\n# da aggiungere alla fine il sensorType\n#msg['topic']= str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/environment/\"\n\nreturn msg",
+        "func": "query = \"?id=\"+str(msg['payload']['id'])+\"&greenHouseID=\"+ str(msg['payload']['greenHouseID'])\n\nmsg = {'query': query}\n\nreturn msg",
         "outputs": 1,
         "x": 730,
         "y": 1100,
         "wires": [
             [
-                "2684db334bb85e53"
+                "f8da51c0b8f869c9"
             ]
         ]
     },
@@ -21391,7 +21380,7 @@
         "property": "payload",
         "action": "",
         "pretty": false,
-        "x": 1150,
+        "x": 1170,
         "y": 1100,
         "wires": [
             [
@@ -21408,7 +21397,7 @@
         "order": 8,
         "width": 0,
         "height": 0,
-        "format": "<p><strong>Window:</strong> <span ng-bind=\"msg['payload']\"></span></p>",
+        "format": "<p><strong>Window:</strong> <span ng-bind=\"msg['payload']['state']\"></span></p>",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": false,
@@ -21714,7 +21703,8 @@
                 "a0d24bd0fd6b64dd",
                 "10e7d09a1212d8f0",
                 "a2559b1c8a9ddb1c",
-                "dbc70993a078a2e4"
+                "dbc70993a078a2e4",
+                "ec5ed5ef24c1cb8a"
             ]
         ]
     },
@@ -21870,7 +21860,7 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "msg['action'] = \"subscribe\"\n# da aggiungere alla fine il sensorType\n#msg['topic']= str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/environment/temperature\"\n\nmsg['topic'] = \"IoT_project/group29/greenhouse1/temperature\"\nreturn msg",
+        "func": "msg['action'] = \"subscribe\"\n# da aggiungere alla fine il sensorType\nmsg['topic']= \"IoT_project_29/\"+str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/sensors/temperature\"\n\n#msg['topic'] = \"IoT_project/group29/greenhouse1/temperature\"\nreturn msg",
         "outputs": 1,
         "x": 3470,
         "y": 2460,
@@ -21967,7 +21957,7 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "msg['action'] = \"subscribe\"\n# da aggiungere alla fine il sensorType\n#msg['topic']= str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/environment/humidity\"\n\nmsg['topic'] = \"IoT_project/group29/greenhouse1/humidity\"\nreturn msg",
+        "func": "msg['action'] = \"subscribe\"\n# da aggiungere alla fine il sensorType\nmsg['topic']= \"IoT_project_29/\"+str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/sensors/humidity\"\n\n#msg['topic'] = \"IoT_project/group29/greenhouse1/humidity\"\nreturn msg",
         "outputs": 1,
         "x": 3470,
         "y": 2280,
@@ -22385,6 +22375,75 @@
         "wires": [
             [
                 "f11586b9028c2148"
+            ]
+        ]
+    },
+    {
+        "id": "b736783f82ba9eba",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = {\n    'id' : msg['payload']['id'],\n    'greenHouseID': msg['payload']['greenHouseID']\n}\n\nmsg = {'payload' : data}\nreturn msg",
+        "outputs": 1,
+        "x": 770,
+        "y": 2940,
+        "wires": [
+            [
+                "3b7d5c2263e18046"
+            ]
+        ]
+    },
+    {
+        "id": "a40245cde3c690df",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = {\n    'id' : msg['payload']['id'],\n    'greenHouseID': msg['payload']['greenHouseID']\n}\n\nmsg = {'payload' : data}\nreturn msg",
+        "outputs": 1,
+        "x": 410,
+        "y": 280,
+        "wires": [
+            [
+                "6b48906497f7c05d"
+            ]
+        ]
+    },
+    {
+        "id": "ec5ed5ef24c1cb8a",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = {\n    'id' : msg['payload']['id'],\n    'greenHouseID': msg['payload']['greenHouseID']\n}\n\nmsg = {'payload' : data}\nreturn msg",
+        "outputs": 1,
+        "x": 3190,
+        "y": 2040,
+        "wires": [
+            [
+                "056172eab1fc7ea8"
+            ]
+        ]
+    },
+    {
+        "id": "f8da51c0b8f869c9",
+        "type": "http request",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://resource_catalog:8080/window_state{{{query}}}",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 970,
+        "y": 1100,
+        "wires": [
+            [
+                "d876efb2a9f19e4c"
             ]
         ]
     },
