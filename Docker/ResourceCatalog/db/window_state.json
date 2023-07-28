@@ -1,3 +1,9 @@
 {
-    "states": []
+    "states": [
+        {
+            "userID": 0,
+            "greenHouseID": 0,
+            "state": "CLOSE"
+        }
+    ]
 }

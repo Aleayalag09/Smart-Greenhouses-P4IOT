@@ -1701,8 +1701,11 @@ class MQTT_subscriber(object):
         if measuretype == "weather":
             for win_state in db_ws["states"]:
                 if win_state["userID"] == int(topic[1]) and win_state["greenHouseID"] == int(topic[2]):
-                    win_state["state"] = value
-
+                    if value == "close":
+                        win_state["state"] = "CLOSE"
+                    elif value == "open":
+                        win_state["state"] = "OPEN"
+                        
         # Write the updated database back to the file
         with open("db/window_state.json", "w") as file:
             json.dump(db_ws, file, indent=3)
@@ -1726,7 +1729,7 @@ class WindowState(object):
             db_ws = json.load(file)
 
         for win_state in db_ws["states"]:
-            if win_state["userID"] == id and win_state["greenHouseID"] == greenHouseID:
+            if win_state["userID"] == int(id) and win_state["greenHouseID"] == int(greenHouseID):
                 return json.dumps(win_state, indent=3)
             
         return json.dumps({"state": "Error"}, indent=3)
