@@ -2,6 +2,7 @@ import json
 import cherrypy
 import time
 import requests
+import paho.mqtt.client as mqtt
 
 
 class User(object):
@@ -662,6 +663,20 @@ class Strategy(object):
                                 except:
                                     pass
 
+                                if strategyType == "weather":
+
+                                    with open("db/window_states.json", "r") as file:
+                                        db_ws = json.load(file)
+
+                                    db_ws = db_ws.append({
+                                        "userID": id,
+                                        "greenHouseID": greenHouseID,
+                                        "state": "close"
+                                    })
+                                    
+                                    with open("db/window_state.json", "w") as file:
+                                        json.dump(db_ws, file, indent=3)
+
                                 return post_manager_dict
             except: 
                 raise cherrypy.HTTPError(400, 'No user or greenhouse found')            
@@ -859,6 +874,19 @@ class Strategy(object):
 
                                     delete_to_manager(strategyType, delete_manager_dict)
                                     delete_to_dev_conn(strategyType, delete_manager_dict)
+
+                                    if strategyType == "weather":
+                                        
+                                        with open("db/window_states.json", "r") as file:
+                                            db_ws = json.load(file)
+
+                                        for step, win_state in enumerate(db_ws):
+                                            if win_state["userID"] == id and win_state["greenHouseID"] == greenHouseID:
+                                                del db_ws[step]
+                                                break
+                                        
+                                        with open("db/window_state.json", "w") as file:
+                                            json.dump(db_ws, file, indent=3)
 
                                     
                                     return "Deleted all "+strategyType+" strategies for greenhouse "+str(greenHouseID)+" of user "+str(id)
@@ -1619,6 +1647,83 @@ def delete_to_dev_conn(strategyType = "", strat_info = {}):
         # We suppose that the device connectors have as the first function the function to manage the strategies (regStrategy)
         url = dev_conn_info["ip"]+":"+str(dev_conn_info["port"])+"/"+dev_conn_info["functions"][0]
         requests.delete(url, params=params)
+
+
+
+class MQTT_subscriber(object):
+    
+    def __init__(self, broker, port):
+        
+        self.client = mqtt.Client("Resource_catalog_0")
+        self.broker = broker
+        self.port = port
+        self.topic = None
+
+    def start (self):
+        self.client.connect(self.broker, self.port)
+        self.client.loop_start()
+
+    def subscribe(self, topic):
+        self.client.subscribe(topic)
+        self.client.on_message= self.on_message
+        self.topic = topic
+
+    def unsubscribe(self, topic):
+        self.client.unsubscribe(topic)
+
+    def stop (self):
+        self.client.loop_stop()
+
+    def on_message(self, client, userdata, message):
+
+        measure = json.loads(message.payload)
+        topic = message.topic.split("/")
+
+        try:
+            # Unit of measure of the measure
+            # unit = measure['unit']
+            value = measure['e']['v']
+            timestamp = measure['e']['t']
+            measuretype = measure['bn']
+        except:
+            raise cherrypy.HTTPError(400, 'Wrong parameters')
+
+        # Load the database
+        with open("db/window_state.json", "r") as file:
+            db_ws = json.load(file)
+
+        # If the message is received from the weather manager the script must change the parameter
+        # related to the window for the strategy of that user and greenhouse
+        if measuretype == "weather":
+            for win_state in db_ws:
+                if win_state["userID"] == int(topic[1]) and win_state["greenHouseID"] == int(topic[2]):
+                    win_state["state"] = value
+
+        # Write the updated database back to the file
+        with open("db/window_state.json", "w") as file:
+            json.dump(db_ws, file, indent=3)
+
+
+class WindowState(object):
+    exposed = True
+
+    def GET(self, *path, **queries):
+        """
+        Returns the state of the window (open/close).
+        """
+
+        try:
+            id = queries['id']
+            greenHouseID = queries['greenHouseID']
+        except:
+            raise cherrypy.HTTPError(400, 'Bad request')
+
+        with open("db/window_state.json", "r") as file:
+            db_ws = json.load(file)
+
+        for win_state in db_ws:
+            if win_state["userID"] == id and win_state["greenHouseID"] == greenHouseID:
+                return json.dumps(win_state, indent=3)
 
 
 
