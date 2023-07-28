@@ -34,7 +34,7 @@ class RegStrategy(object):
         except:
             raise cherrypy.HTTPError(400, 'Wrong input')
         
-        topic = str(userID)+"/"+str(greenHouseID)+"/weather"
+        topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/weather"
         
         db_file = open(database, "r")
         db = json.load(db_file)
@@ -90,7 +90,7 @@ class RegStrategy(object):
         else:
             for strat in db["strategies"]:
                 split_topic = strat["topic"].split("/")
-                if int(split_topic[0]) == int(userID) and int(split_topic[1]) == int(greenHouseID):
+                if int(split_topic[1]) == int(userID) and int(split_topic[2]) == int(greenHouseID):
                     strat["active"] = active
         
         new_strat = True
@@ -120,7 +120,7 @@ class RegStrategy(object):
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
         
-        topic = str(userID)+"/"+str(greenHouseID)+"/weather"
+        topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/weather"
         
         db_file = open(database, "r")
         db = json.load(db_file)
@@ -259,7 +259,7 @@ def getStrategies():
         except:
             raise cherrypy.HTTPError(400, 'Wrong parameters')
         else:
-            topic = str(userID)+"/"+str(greenHouseID)+"/weather"
+            topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/weather"
             strategy_list.append({
                                     "topic": topic,
                                     "temperature": temperature,
@@ -377,10 +377,14 @@ if __name__ == '__main__':
 
         if new_strat:
 
-            db_file = open(database, "r")
-            db = json.load(db_file)
-            db_file.close()
-            new_strat = False
+            try:
+                db_file = open(database, "r")
+                db = json.load(db_file)
+                db_file.close()
+            except:
+                new_strat = True
+            else:
+                new_strat = False
 
         for strat in db["strategies"]:
             

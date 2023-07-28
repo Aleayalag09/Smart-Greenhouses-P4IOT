@@ -33,7 +33,7 @@ class regTopic(object):
         
         for sensorType in sensors:
 
-            topic = str(userID)+"/"+str(greenHouseID)+"/sensors/"+sensorType
+            topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/sensors/"+sensorType
             new_topic = {
                 "topic": topic
             }
@@ -75,7 +75,7 @@ class regTopic(object):
         for idx, topicdb in enumerate(db["topics"]):
 
             split_topic = topicdb["topic"].split("/")
-            if int(userID) == int(split_topic[0]) and int(greenHouseID) == int(split_topic[1]):
+            if int(userID) == int(split_topic[1]) and int(greenHouseID) == int(split_topic[2]):
                 idxs.append(idx)
                 MeasuresReceiver.unsubscribe(topicdb["topic"])
 
@@ -213,7 +213,7 @@ def getTopics():
             raise cherrypy.HTTPError(400, 'Wrong parameters')
         else:
             for sensorType in sensors:
-                topic = str(userID)+"/"+str(greenHouseID)+"/sensors/"+sensorType
+                topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/sensors/"+sensorType
                 topics_list.append({
                                     "topic": topic
                                 })
@@ -242,9 +242,9 @@ def send_to_Thingspeak(topic, measure):
     db = json.load(db_file)
     db_file.close()
 
-    userID = topic.split("/")[0]
-    greenHouseID = topic.split("/")[1]
-    measureType = topic.split("/")[3]
+    userID = topic.split("/")[1]
+    greenHouseID = topic.split("/")[2]
+    measureType = topic.split("/")[4]
 
     for user in db["users"]:
         if user["userID"] == int(userID):
