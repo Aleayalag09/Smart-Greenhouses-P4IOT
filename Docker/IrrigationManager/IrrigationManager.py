@@ -33,7 +33,7 @@ class RegStrategy(object):
         except:
             raise cherrypy.HTTPError(400, 'Wrong input')
         
-        topic = str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
+        topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
 
         db_file = open(database, "r")
         db = json.load(db_file)
@@ -51,7 +51,7 @@ class RegStrategy(object):
         if activeIrr == False:
             for strat in db["strategies"]:
                 split_topic = strat["topic"].split("/")
-                if int(split_topic[0]) == int(userID) and int(split_topic[1]) == int(greenHouseID):
+                if int(split_topic[1]) == int(userID) and int(split_topic[2]) == int(greenHouseID):
                     strat["active"] = activeIrr
 
         new_strat = True
@@ -95,12 +95,12 @@ class RegStrategy(object):
         except:
             for strat in db["strategies"]:
                 split_topic = strat["topic"].split("/")
-                if int(split_topic[0]) == int(userID) and int(split_topic[1]) == int(greenHouseID):
+                if int(split_topic[1]) == int(userID) and int(split_topic[2]) == int(greenHouseID):
                     strat["active"] = activeIrr
         else:
             for strat in db["strategies"]:
                 split_topic = strat["topic"].split("/")
-                if int(split_topic[0]) == int(userID) and int(split_topic[1]) == int(greenHouseID) and int(split_topic[3]) == int(stratID):
+                if int(split_topic[1]) == int(userID) and int(split_topic[2]) == int(greenHouseID) and int(split_topic[4]) == int(stratID):
                     strat["active"] = activeStrat
         
         new_strat = True
@@ -144,7 +144,7 @@ class RegStrategy(object):
                 idxs = []
                 for idx, strat in enumerate(db["strategies"]):
                     split_topic = strat["topic"].split("/")
-                    if int(split_topic[0]) == int(userID) and int(split_topic[1]) == int(greenHouseID):
+                    if int(split_topic[1]) == int(userID) and int(split_topic[2]) == int(greenHouseID):
                         idxs.append(idx)
 
                 idxs.sort(reverse=True)
@@ -160,7 +160,7 @@ class RegStrategy(object):
 
             raise cherrypy.HTTPError(400, 'Bad request')
         else:
-            topic = str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
+            topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
             
             db_file = open(database, "r")
             db = json.load(db_file)
@@ -176,8 +176,8 @@ class RegStrategy(object):
 
             for strat in db["strategies"]:
                 split_topic = strat["topic"].split("/")
-                if int(split_topic[0]) == int(userID) and int(split_topic[1]) == int(greenHouseID) and int(split_topic[3]) > int(stratID):
-                    strat["topic"] = str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(int(split_topic[3])-1)
+                if int(split_topic[1]) == int(userID) and int(split_topic[2]) == int(greenHouseID) and int(split_topic[4]) > int(stratID):
+                    strat["topic"] = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(int(split_topic[4])-1)
             
             new_strat = True
             db_file = open(database, "w")
@@ -306,7 +306,7 @@ def getStrategies():
         except:
             raise cherrypy.HTTPError(400, 'Wrong parameters')
         else:
-            topic = str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
+            topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
             if active == True:
                 active = active_strat
 
@@ -385,10 +385,14 @@ if __name__=="__main__":
 
         if new_strat:
 
-            db_file = open(database, "r")
-            db = json.load(db_file)
-            db_file.close()
-            new_strat = False
+            try:
+                db_file = open(database, "r")
+                db = json.load(db_file)
+                db_file.close()
+            except:
+                new_strat = True
+            else:
+                new_strat = False
 
         for strat in strategies:
             

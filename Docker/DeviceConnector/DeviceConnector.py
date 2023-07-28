@@ -45,15 +45,15 @@ class RegTopic(object):
             except:
                 raise cherrypy.HTTPError(400, 'Missing input')
             else:
-                newStrategy_topic = str(db["userID"])+"/"+str(db["greenHouseID"])+"/irrigation/"+str(strategyID)
+                newStrategy_topic = "IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/irrigation/"+str(strategyID)
                 # Subscribe to the MQTT topics
                 mqtt_handler.subscribe(newStrategy_topic)
                 
                 db["strategies"][strategyType].append(newStrategy_topic)
 
         elif strategyType == "environment":
-            newStrategy_topic_temp = str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/temperature"
-            newStrategy_topic_hum = str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/humidity"
+            newStrategy_topic_temp = "IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/temperature"
+            newStrategy_topic_hum = "IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/humidity"
             # Subscribe to the MQTT topics
             mqtt_handler.subscribe(newStrategy_topic_temp)
             mqtt_handler.subscribe(newStrategy_topic_hum)
@@ -61,7 +61,7 @@ class RegTopic(object):
             db["strategies"][strategyType].append(newStrategy_topic_temp)
             db["strategies"][strategyType].append(newStrategy_topic_hum)
         else:
-            newStrategy_topic = str(db["userID"])+"/"+str(db["greenHouseID"])+"/"+strategyType
+            newStrategy_topic = "IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/"+strategyType
             # Subscribe to the MQTT topics
             mqtt_handler.subscribe(newStrategy_topic)
             
@@ -104,7 +104,7 @@ class RegTopic(object):
             else:
                 for step, topic in enumerate(db["strategies"]["irrigation"]):
                     split_topic = topic.split("/")
-                    if int(split_topic[3]) == int(strategyID):
+                    if int(split_topic[4]) == int(strategyID):
                         db["strategies"]["irrigation"].pop(step)
                         mqtt_handler.unsubscribe(topic)
                         break
@@ -280,7 +280,7 @@ class MQTT_subscriber_publisher(object):
         db = json.load(db_file)
         db_file.close()
 
-        topic = str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"+measureType
+        topic = "IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"+measureType
         
         find = False
         for sensor in self.controller.sensors:
@@ -385,20 +385,20 @@ def getTopics():
     
     if irr_strat["strat"] != []:
         for strat in irr_strat["strat"]:
-            topic = str(db["userID"])+"/"+str(db["greenHouseID"])+"/irrigation/"+str(strat["id"])
+            topic = "IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/irrigation/"+str(strat["id"])
             db["strategies"]["irrigation"].append(topic)
             mqtt_handler.subscribe(topic)
 
     if env_strat["strat"] != []:
-        topic_temp = str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/temperature"
-        topic_hum = str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/humidity"
+        topic_temp = "IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/temperature"
+        topic_hum = "IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/humidity"
         db["strategies"]["environment"].append(topic_temp)
         db["strategies"]["environment"].append(topic_hum)
         mqtt_handler.subscribe(topic_temp)
         mqtt_handler.subscribe(topic_hum)
 
     if wea_strat["strat"] != []:
-        topic = str(db["userID"])+"/"+str(db["greenHouseID"])+"/weather"
+        topic = "IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/weather"
         db["strategies"]["weather"].append(topic)
         mqtt_handler.subscribe(topic)
     

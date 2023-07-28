@@ -40,11 +40,10 @@ class RegStrategy(object):
         
         
         # Generate topic strings based on user and greenhouse IDs
-        topic_act_temp = str(userID)+"/"+str(greenHouseID)+"/environment/temperature"
-        topic_act_hum = str(userID)+"/"+str(greenHouseID)+"/environment/humidity"
-
-        topic_sens_temp = str(userID)+"/"+str(greenHouseID)+"/sensors/temperature"
-        topic_sens_hum = str(userID)+"/"+str(greenHouseID)+"/sensors/humidity"
+        topic_act_temp = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/environment/temperature"
+        topic_act_hum = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/environment/humidity"
+        topic_sens_temp = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/sensors/temperature"
+        topic_sens_hum = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/sensors/humidity"
         
         # Load the database JSON
         with open(database, "r") as file:
@@ -236,7 +235,7 @@ class MQTT_subscriber_publisher(object):
         # related to the window for the strategy of that user and greenhouse
         if measuretype == "weather":
             for strat in db["strategies"]:
-                if strat["userID"] == int(topic[0]) and strat["greenHouseID"] == int(topic[1]):
+                if strat["userID"] == int(topic[1]) and strat["greenHouseID"] == int(topic[2]):
                     if value == "open":
                         strat["window_open"] == True
                     elif value == "close":
@@ -245,7 +244,7 @@ class MQTT_subscriber_publisher(object):
             # Update the corresponding actual value in the database
             if len(db["actual_"+measuretype]) != 0:
                 for actualValue in db["actual_"+measuretype]:
-                    if actualValue["userID"] == int(topic[0]) and actualValue["greenHouseID"] == int(topic[1]):
+                    if actualValue["userID"] == int(topic[1]) and actualValue["greenHouseID"] == int(topic[2]):
                         actualValue[measuretype] = float(value)
                         actualValue["timestamp"] = timestamp
                         new_measures["new"] = True
@@ -253,8 +252,8 @@ class MQTT_subscriber_publisher(object):
 
             else:
                 actual_value = {
-                    "userID": int(topic[0]),
-                    "greenHouseID": int(topic[1]),
+                    "userID": int(topic[1]),
+                    "greenHouseID": int(topic[2]),
                     measuretype: float(value),
                     "timestamp": timestamp
                 }
@@ -355,11 +354,11 @@ def getStrategies():
         except:
             raise cherrypy.HTTPError(400, 'Wrong parameters')
         else:
-            topic_act_temp = str(userID)+"/"+str(greenHouseID)+"/environment/temperature"
-            topic_act_hum = str(userID)+"/"+str(greenHouseID)+"/environment/humidity"
+            topic_act_temp = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/environment/temperature"
+            topic_act_hum = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/environment/humidity"
 
-            topic_sens_temp = str(userID)+"/"+str(greenHouseID)+"/sensors/temperature"
-            topic_sens_hum = str(userID)+"/"+str(greenHouseID)+"/sensors/humidity"
+            topic_sens_temp = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/sensors/temperature"
+            topic_sens_hum = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/sensors/humidity"
 
             strategy_list.append({
                                     "userID": int(userID),
@@ -388,7 +387,7 @@ def getStrategies():
             mqtt_handler.subscribe(topic_sens_temp)
             mqtt_handler.subscribe(topic_sens_hum)
 
-            topic_weather = str(userID)+"/"+str(greenHouseID)+"/weather"
+            topic_weather = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/weather"
             mqtt_handler.subscribe(topic_weather)
     
     with open(database, "r") as file:
@@ -514,10 +513,14 @@ if __name__=="__main__":
 
         if new_strat:
             # Update the strategies if there are any changes
-            with open(database, "r") as file:
-                db = json.load(file)
 
-            new_strat = False
+            try:
+                with open(database, "r") as file:
+                    db = json.load(file)
+            except:
+                new_strat = True
+            else:
+                new_strat = False
 
         # At the beginning we don't have any measures but we could already have some strategies
         # => we cannot enter this for if we don't have any new actual measure (if we already have some actual measures
