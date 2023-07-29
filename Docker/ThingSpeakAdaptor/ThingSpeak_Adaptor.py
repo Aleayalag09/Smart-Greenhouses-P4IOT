@@ -251,7 +251,7 @@ def send_to_Thingspeak(topic, measure):
             for greenhouse in user["greenHouses"]:
                 if greenhouse["greenHouseID"] == int(greenHouseID):
 
-                    thingspeak_key = user["KEY"]
+                    thingspeak_key = user["greenHouses"]["KEY"]
                     field = greenhouse[measureType]
 
                     RequestToThingspeak = str(url_thingspeak+thingspeak_key+field).format(float(measure))
