@@ -21557,9 +21557,9 @@
         "dot": false,
         "ymin": "",
         "ymax": "",
-        "removeOlder": "100",
-        "removeOlderPoints": "10",
-        "removeOlderUnit": "604800",
+        "removeOlder": "1",
+        "removeOlderPoints": "1000",
+        "removeOlderUnit": "86400",
         "cutout": 0,
         "useOneColor": false,
         "useUTC": false,
@@ -21635,8 +21635,8 @@
         "ymin": "",
         "ymax": "",
         "removeOlder": 1,
-        "removeOlderPoints": "10",
-        "removeOlderUnit": "3600",
+        "removeOlderPoints": "1000",
+        "removeOlderUnit": "86400",
         "cutout": 0,
         "useOneColor": false,
         "useUTC": false,
@@ -21720,8 +21720,7 @@
         "y": 2160,
         "wires": [
             [
-                "579d2b04db87eff2",
-                "7b812667fb782ab8"
+                "579d2b04db87eff2"
             ]
         ]
     },
@@ -21811,8 +21810,8 @@
         "ymin": "",
         "ymax": "",
         "removeOlder": 1,
-        "removeOlderPoints": "10",
-        "removeOlderUnit": "3600",
+        "removeOlderPoints": "1000",
+        "removeOlderUnit": "86400",
         "cutout": 0,
         "useOneColor": false,
         "useUTC": false,
@@ -23014,13 +23013,14 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "if msg['statusCode'] == 400:\n\n    data = {\n        'error' : 'USER OR GREENHOUSE DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n    #url = msg['payload']['']\n\n    msg = {'url' : 'https://thingspeak.com/channels/1714663/feed.json'}\n\n    return msg\n",
+        "func": "if msg['statusCode'] == 400:\n\n    data = {\n        'error' : 'USER OR GREENHOUSE DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n    #channelID = msg['payload']['']\n    #url = 'https://thingspeak.com/'+channels+'/channelID/feed.json\n    url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n    msg = {'url' : url}\n\n    return msg\n",
         "outputs": 1,
         "x": 3950,
         "y": 2160,
         "wires": [
             [
-                "acf76c1f9c99fb40"
+                "acf76c1f9c99fb40",
+                "15987275e15e731b"
             ]
         ]
     },
@@ -23028,15 +23028,14 @@
         "id": "1682d47e1a0d1a07",
         "type": "python3-function",
         "z": "dfa5f5222d797092",
+        "d": true,
         "name": "",
         "func": "if msg['statusCode'] == 400:\n\n    data = {\n        'error' : 'USER OR GREENHOUSE DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n    return msg\n",
         "outputs": 1,
         "x": 3950,
         "y": 2040,
         "wires": [
-            [
-                "15987275e15e731b"
-            ]
+            []
         ]
     },
     {
@@ -23066,6 +23065,7 @@
         "id": "7b812667fb782ab8",
         "type": "http request",
         "z": "dfa5f5222d797092",
+        "d": true,
         "name": "",
         "method": "GET",
         "ret": "txt",
