@@ -22448,6 +22448,27 @@
         ]
     },
     {
+        "id": "7b8b5e226306f254",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "b03bb86e.990f38",
+        "name": "",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "format": "<style>\n    .template-1 p {\n        font-size: 20px;\n        color: #333;\n        text-align: center;\n        margin-bottom: 20px;\n    }\n\n    .template-2 p {\n        font-size: 20px;\n        color: #333;\n        text-align: left;\n        margin-bottom: 20px;\n    }\n        .template-2-error p {\n        font-size: 20px;\n        color: red;\n        text-align: center;\n        margin-bottom: 20px;\n    }\n    /* E altre regole specifiche per il nodo 1 */\n</style>\n\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 360,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
         "id": "1a53a8f34e77244d",
         "type": "inject",
         "z": "38de44c016649ef6",

@@ -21397,7 +21397,7 @@
         "order": 8,
         "width": 0,
         "height": 0,
-        "format": "<p><strong>Window:</strong> <span ng-bind=\"msg['payload']\"></span></p>",
+        "format": "<p><strong>Window:</strong> <span ng-bind=\"msg['payload']['state']\"></span></p>",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": false,
