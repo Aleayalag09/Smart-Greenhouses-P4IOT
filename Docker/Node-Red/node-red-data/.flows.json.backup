@@ -329,7 +329,7 @@
         "name": "Create new Greenhouse",
         "tab": "da91e2e4.019118",
         "order": 2,
-        "disp": true,
+        "disp": false,
         "width": "6",
         "collapse": false,
         "className": ""
@@ -340,7 +340,7 @@
         "name": "Create new user",
         "tab": "f0ebfb9d4cfd055e",
         "order": 1,
-        "disp": true,
+        "disp": false,
         "width": "6",
         "collapse": false,
         "className": ""
@@ -437,7 +437,7 @@
         "name": "Update User",
         "tab": "f0ebfb9d4cfd055e",
         "order": 3,
-        "disp": true,
+        "disp": false,
         "width": "6",
         "collapse": false,
         "className": ""
@@ -468,7 +468,7 @@
         "name": "Update Greenhouse",
         "tab": "da91e2e4.019118",
         "order": 3,
-        "disp": true,
+        "disp": false,
         "width": "6",
         "collapse": false,
         "className": ""
@@ -563,7 +563,7 @@
         "name": "Delete User",
         "tab": "f0ebfb9d4cfd055e",
         "order": 4,
-        "disp": true,
+        "disp": false,
         "width": "6",
         "collapse": false,
         "className": ""
@@ -574,7 +574,7 @@
         "name": "Delete Greenhouse",
         "tab": "da91e2e4.019118",
         "order": 4,
-        "disp": true,
+        "disp": false,
         "width": "6",
         "collapse": false,
         "className": ""
@@ -596,7 +596,7 @@
         "name": "Temperature",
         "tab": "e7353509ebd1d05b",
         "order": 2,
-        "disp": true,
+        "disp": false,
         "width": "6",
         "collapse": false,
         "className": ""
@@ -607,7 +607,7 @@
         "name": "Irrigation",
         "tab": "e4f2304aa464fc7e",
         "order": 5,
-        "disp": true,
+        "disp": false,
         "width": "6",
         "collapse": false,
         "className": ""
@@ -894,7 +894,7 @@
         "name": "Default",
         "tab": "e7353509ebd1d05b",
         "order": 1,
-        "disp": true,
+        "disp": false,
         "width": "6",
         "collapse": false,
         "className": ""
@@ -905,7 +905,7 @@
         "name": "Window",
         "tab": "e7353509ebd1d05b",
         "order": 4,
-        "disp": true,
+        "disp": false,
         "width": "6",
         "collapse": false,
         "className": ""
@@ -936,7 +936,7 @@
         "name": "Informations",
         "tab": "cc105ece16ae7e53",
         "order": 2,
-        "disp": true,
+        "disp": false,
         "width": "6",
         "collapse": false,
         "className": ""
@@ -947,7 +947,7 @@
         "name": "statistics",
         "tab": "cc105ece16ae7e53",
         "order": 3,
-        "disp": true,
+        "disp": false,
         "width": "6",
         "collapse": false,
         "className": ""
@@ -958,7 +958,7 @@
         "name": "Initial",
         "tab": "e4f2304aa464fc7e",
         "order": 4,
-        "disp": true,
+        "disp": false,
         "width": "6",
         "collapse": false,
         "className": ""
@@ -969,7 +969,7 @@
         "name": "Weather",
         "tab": "e4f2304aa464fc7e",
         "order": 6,
-        "disp": true,
+        "disp": false,
         "width": "6",
         "collapse": false,
         "className": ""
@@ -980,7 +980,7 @@
         "name": "Environment",
         "tab": "e4f2304aa464fc7e",
         "order": 7,
-        "disp": true,
+        "disp": false,
         "width": "6",
         "collapse": false,
         "className": ""
@@ -991,7 +991,7 @@
         "name": "Humidity",
         "tab": "e7353509ebd1d05b",
         "order": 3,
-        "disp": true,
+        "disp": false,
         "width": "6",
         "collapse": false,
         "className": ""
@@ -1958,7 +1958,7 @@
         "z": "260ad674.9fb312",
         "group": "1e1cb426.2b813c",
         "name": "",
-        "order": 8,
+        "order": 10,
         "width": "6",
         "height": "1",
         "format": "<div ng-bind-html=\"msg.payload\">The Payload is:</div>\n<div ng-bind-html=\"msg.topic\"> The topic is: </div>\n",
@@ -2083,7 +2083,7 @@
         "d": true,
         "group": "703824db.9d74a4",
         "name": "",
-        "order": 16,
+        "order": 18,
         "width": "5",
         "height": "1",
         "format": "<div ng-bind-html=\"msg.payload\"></div>",
@@ -2126,7 +2126,7 @@
         "z": "260ad674.9fb312",
         "group": "703824db.9d74a4",
         "name": "",
-        "order": 17,
+        "order": 19,
         "width": 0,
         "height": 0,
         "format": "<div>{{msg.payload}}</div>",
@@ -3928,7 +3928,7 @@
         "d": true,
         "group": "703824db.9d74a4",
         "name": "",
-        "order": 18,
+        "order": 20,
         "width": 0,
         "height": 0,
         "format": "<div class= \"main\" ></div>\n<div>\n<p ng-bind-html=\"name\"></p>\n<p>Name: <input type=\"number\" ng-model=\"id\" ></p>\n<p><button ng-click=\"send ({payload:id})\">OK</button></p>\n</div>",
@@ -3971,7 +3971,7 @@
         "name": "",
         "label": "",
         "group": "703824db.9d74a4",
-        "order": 2,
+        "order": 3,
         "width": 0,
         "height": 0,
         "options": [
@@ -4154,7 +4154,7 @@
         "name": "",
         "label": "",
         "group": "703824db.9d74a4",
-        "order": 3,
+        "order": 4,
         "width": 0,
         "height": 0,
         "options": [
@@ -4277,7 +4277,7 @@
         "name": "",
         "label": "",
         "group": "703824db.9d74a4",
-        "order": 4,
+        "order": 5,
         "width": 0,
         "height": 0,
         "options": [
@@ -4386,7 +4386,7 @@
         "name": "",
         "label": "",
         "group": "703824db.9d74a4",
-        "order": 5,
+        "order": 6,
         "width": 0,
         "height": 0,
         "options": [
@@ -4592,7 +4592,7 @@
         "name": "",
         "label": "",
         "group": "703824db.9d74a4",
-        "order": 6,
+        "order": 7,
         "width": 0,
         "height": 0,
         "options": [
@@ -4773,7 +4773,7 @@
         "name": "",
         "label": "",
         "group": "703824db.9d74a4",
-        "order": 7,
+        "order": 8,
         "width": 0,
         "height": 0,
         "options": [
@@ -4889,7 +4889,7 @@
         "name": "",
         "label": "",
         "group": "1e1cb426.2b813c",
-        "order": 1,
+        "order": 2,
         "width": 0,
         "height": 0,
         "options": [
@@ -5506,7 +5506,7 @@
         "name": "",
         "label": "",
         "group": "1e1cb426.2b813c",
-        "order": 2,
+        "order": 3,
         "width": 0,
         "height": 0,
         "options": [
@@ -5734,7 +5734,7 @@
         "name": "",
         "label": "",
         "group": "703824db.9d74a4",
-        "order": 8,
+        "order": 9,
         "width": 0,
         "height": 0,
         "options": [
@@ -6009,7 +6009,7 @@
         "name": "",
         "label": "",
         "group": "dcebba6522a7ec86",
-        "order": 1,
+        "order": 2,
         "width": 0,
         "height": 0,
         "options": [
@@ -6754,7 +6754,7 @@
         "name": "",
         "label": "",
         "group": "703824db.9d74a4",
-        "order": 9,
+        "order": 10,
         "width": 0,
         "height": 0,
         "options": [
@@ -7059,7 +7059,7 @@
         "name": "",
         "label": "",
         "group": "703824db.9d74a4",
-        "order": 10,
+        "order": 11,
         "width": 0,
         "height": 0,
         "options": [
@@ -7173,7 +7173,7 @@
         "d": true,
         "group": "1ad3bf1a8d6e4b4e",
         "name": "",
-        "order": 9,
+        "order": 11,
         "width": "5",
         "height": "2",
         "format": "<p>The name of the devices is: </p>\n<p>\"<span ng-bind=\"msg['payload']['deviceName']\"></span>\"</p>",
@@ -7197,7 +7197,7 @@
         "d": true,
         "group": "1ad3bf1a8d6e4b4e",
         "name": "",
-        "order": 10,
+        "order": 12,
         "width": "5",
         "height": "2",
         "format": "<p>The available services are:</p>\n<p>\"<span ng-bind=\"msg['payload']['availableServices']\"></span>\"</p>",
@@ -7221,7 +7221,7 @@
         "d": true,
         "group": "1ad3bf1a8d6e4b4e",
         "name": "",
-        "order": 11,
+        "order": 13,
         "width": "5",
         "height": "2",
         "format": "<p>The available measures are:</p>\n<p> \"<span ng-bind=\"msg['payload']['measureTypes']\"></span>\"</p>",
@@ -8950,7 +8950,7 @@
         "name": "",
         "label": "",
         "group": "1e1cb426.2b813c",
-        "order": 3,
+        "order": 4,
         "width": 0,
         "height": 0,
         "options": [
@@ -9186,7 +9186,7 @@
         "name": "",
         "label": "",
         "group": "703824db.9d74a4",
-        "order": 11,
+        "order": 12,
         "width": 0,
         "height": 0,
         "options": [
@@ -9336,7 +9336,7 @@
         "name": "",
         "label": "",
         "group": "1ad3bf1a8d6e4b4e",
-        "order": 2,
+        "order": 5,
         "width": 0,
         "height": 0,
         "options": [
@@ -9469,7 +9469,7 @@
         "name": "",
         "label": "",
         "group": "dcebba6522a7ec86",
-        "order": 7,
+        "order": 9,
         "width": 0,
         "height": 0,
         "options": [
@@ -9768,7 +9768,7 @@
         "name": "",
         "label": "",
         "group": "edded25c257e2620",
-        "order": 2,
+        "order": 4,
         "width": 0,
         "height": 0,
         "options": [
@@ -9842,7 +9842,7 @@
         "name": "",
         "label": "",
         "group": "3ca67b85ec7cd5f7",
-        "order": 1,
+        "order": 2,
         "width": 0,
         "height": 0,
         "options": [
@@ -10215,7 +10215,7 @@
         "z": "10b0b6531ca7c2e3",
         "name": "",
         "group": "c54cc5d01a793531",
-        "order": 5,
+        "order": 8,
         "width": 0,
         "height": 0,
         "label": "chart",
@@ -10597,7 +10597,7 @@
         "name": "",
         "label": "",
         "group": "1e1cb426.2b813c",
-        "order": 4,
+        "order": 5,
         "width": 0,
         "height": 0,
         "options": [
@@ -10702,7 +10702,7 @@
         "name": "",
         "label": "",
         "group": "703824db.9d74a4",
-        "order": 12,
+        "order": 13,
         "width": 0,
         "height": 0,
         "options": [
@@ -10844,7 +10844,7 @@
         "name": "",
         "label": "",
         "group": "1ad3bf1a8d6e4b4e",
-        "order": 6,
+        "order": 8,
         "width": 0,
         "height": 0,
         "options": [
@@ -10954,7 +10954,7 @@
         "name": "",
         "label": "",
         "group": "dcebba6522a7ec86",
-        "order": 5,
+        "order": 7,
         "width": 0,
         "height": 0,
         "options": [
@@ -11071,7 +11071,7 @@
         "name": "",
         "label": "",
         "group": "edded25c257e2620",
-        "order": 2,
+        "order": 5,
         "width": 0,
         "height": 0,
         "options": [
@@ -11145,7 +11145,7 @@
         "name": "",
         "label": "",
         "group": "3ca67b85ec7cd5f7",
-        "order": 2,
+        "order": 3,
         "width": 0,
         "height": 0,
         "options": [
@@ -11274,7 +11274,7 @@
         "name": "",
         "label": "",
         "group": "1ad3bf1a8d6e4b4e",
-        "order": 3,
+        "order": 6,
         "width": 0,
         "height": 0,
         "options": [
@@ -11396,7 +11396,7 @@
         "name": "",
         "label": "",
         "group": "dcebba6522a7ec86",
-        "order": 2,
+        "order": 3,
         "width": 0,
         "height": 0,
         "options": [
@@ -11551,7 +11551,7 @@
         "name": "",
         "label": "",
         "group": "043782d90857d581",
-        "order": 0,
+        "order": 4,
         "width": 0,
         "height": 0,
         "options": [
@@ -11605,7 +11605,7 @@
         "name": "",
         "label": "",
         "group": "64d6c8b6.5961f8",
-        "order": 5,
+        "order": 6,
         "width": 0,
         "height": 0,
         "options": [
@@ -11691,7 +11691,7 @@
         "name": "",
         "label": "",
         "group": "65fe65488352d21f",
-        "order": 5,
+        "order": 6,
         "width": 0,
         "height": 0,
         "options": [
@@ -11777,7 +11777,7 @@
         "name": "",
         "label": "",
         "group": "ce41a2620db9ea6d",
-        "order": 5,
+        "order": 6,
         "width": 0,
         "height": 0,
         "options": [
@@ -12050,7 +12050,7 @@
         "z": "ca6e52d66bf110ed",
         "group": "64d6c8b6.5961f8",
         "name": "",
-        "order": 1,
+        "order": 2,
         "width": "5",
         "height": "2",
         "format": "<p>The irrigation strategies are: </p>\n<p>\"<span ng-bind=\"msg['payload']['strat']\"></span>\"</p>",
@@ -12143,7 +12143,7 @@
         "z": "ca6e52d66bf110ed",
         "group": "65fe65488352d21f",
         "name": "",
-        "order": 1,
+        "order": 2,
         "width": "5",
         "height": "2",
         "format": "<p>The environment strategy is: </p>\n<p>\"Temperature: <span ng-bind=\"msg['payload']['strat']['temperature']\"></span>\"</p>\n<p>\"Humidity: <span ng-bind=\"msg['payload']['strat']['humidity']\"></span>\"</p>",
@@ -12236,7 +12236,7 @@
         "z": "ca6e52d66bf110ed",
         "group": "ce41a2620db9ea6d",
         "name": "",
-        "order": 1,
+        "order": 2,
         "width": "5",
         "height": "2",
         "format": "<p>The weather strategy associated is: </p>\n<p>\"Temperature: <span ng-bind=\"msg['payload']['strat']['temperature']\"></span>\"</p>\n<p>\"Humidity: <span ng-bind=\"msg['payload']['strat']['humidity']\"></span>\"</p>",
@@ -12473,7 +12473,7 @@
         "name": "",
         "label": "",
         "group": "64d6c8b6.5961f8",
-        "order": 11,
+        "order": 12,
         "width": 0,
         "height": 0,
         "options": [
@@ -12985,7 +12985,7 @@
         "tooltip": "",
         "place": "Select option",
         "group": "64d6c8b6.5961f8",
-        "order": 9,
+        "order": 10,
         "width": 0,
         "height": 0,
         "passthru": true,
@@ -13024,7 +13024,7 @@
         "z": "ca6e52d66bf110ed",
         "group": "64d6c8b6.5961f8",
         "name": "",
-        "order": 13,
+        "order": 14,
         "width": 0,
         "height": 0,
         "format": "<p>Enables or disables the strategy</p>",
@@ -13047,7 +13047,7 @@
         "z": "ca6e52d66bf110ed",
         "group": "65fe65488352d21f",
         "name": "",
-        "order": 7,
+        "order": 8,
         "width": 0,
         "height": 0,
         "format": "<p>Enables or disables the strategy</p>",
@@ -13070,7 +13070,7 @@
         "z": "ca6e52d66bf110ed",
         "group": "ce41a2620db9ea6d",
         "name": "",
-        "order": 7,
+        "order": 8,
         "width": 0,
         "height": 0,
         "format": "<p>Enables or disables the strategy</p>",
@@ -13094,7 +13094,7 @@
         "name": "",
         "label": "",
         "group": "64d6c8b6.5961f8",
-        "order": 16,
+        "order": 17,
         "width": 0,
         "height": 0,
         "options": [
@@ -13155,7 +13155,7 @@
         "name": "",
         "label": "",
         "group": "65fe65488352d21f",
-        "order": 9,
+        "order": 10,
         "width": 0,
         "height": 0,
         "options": [
@@ -13208,7 +13208,7 @@
         "name": "",
         "label": "",
         "group": "ce41a2620db9ea6d",
-        "order": 9,
+        "order": 10,
         "width": 0,
         "height": 0,
         "options": [
@@ -13422,7 +13422,7 @@
         "z": "ca6e52d66bf110ed",
         "group": "64d6c8b6.5961f8",
         "name": "",
-        "order": 3,
+        "order": 4,
         "width": 0,
         "height": 0,
         "format": "<p>Create a new irrigation strategy</p>",
@@ -13445,7 +13445,7 @@
         "z": "ca6e52d66bf110ed",
         "group": "65fe65488352d21f",
         "name": "",
-        "order": 3,
+        "order": 4,
         "width": 0,
         "height": 0,
         "format": "<p>Create a new environment strategy</p>",
@@ -13468,7 +13468,7 @@
         "z": "ca6e52d66bf110ed",
         "group": "ce41a2620db9ea6d",
         "name": "",
-        "order": 3,
+        "order": 4,
         "width": 0,
         "height": 0,
         "format": "<p>Create a new weather strategy</p>",
@@ -13491,7 +13491,7 @@
         "z": "ca6e52d66bf110ed",
         "group": "64d6c8b6.5961f8",
         "name": "",
-        "order": 7,
+        "order": 8,
         "width": 0,
         "height": 0,
         "format": "<p>Select a strategy to delete</p>",
@@ -13598,7 +13598,7 @@
         "z": "5f920548ca8e9a53",
         "name": "",
         "group": "c54cc5d01a793531",
-        "order": 1,
+        "order": 2,
         "width": 0,
         "height": 0,
         "label": "chart",
@@ -13838,7 +13838,7 @@
         "d": true,
         "name": "",
         "group": "c54cc5d01a793531",
-        "order": 3,
+        "order": 6,
         "width": 0,
         "height": 0,
         "label": "chart",
@@ -13964,7 +13964,7 @@
         "z": "5f920548ca8e9a53",
         "name": "",
         "group": "e42281d9419547e2",
-        "order": 1,
+        "order": 2,
         "width": 0,
         "height": 0,
         "label": "chart",
@@ -14136,7 +14136,7 @@
         "z": "5f920548ca8e9a53",
         "name": "",
         "group": "0301ba55f59e74c0",
-        "order": 1,
+        "order": 2,
         "width": 0,
         "height": 0,
         "label": "chart",
@@ -14216,7 +14216,7 @@
         "z": "5f920548ca8e9a53",
         "name": "",
         "group": "c54cc5d01a793531",
-        "order": 2,
+        "order": 4,
         "width": 0,
         "height": 0,
         "gtype": "donut",
@@ -14313,7 +14313,7 @@
         "z": "5f920548ca8e9a53",
         "name": "",
         "group": "e42281d9419547e2",
-        "order": 2,
+        "order": 4,
         "width": 0,
         "height": 0,
         "gtype": "donut",
@@ -14443,7 +14443,7 @@
         "type": "ui_text",
         "z": "5f920548ca8e9a53",
         "group": "0301ba55f59e74c0",
-        "order": 0,
+        "order": 5,
         "width": 0,
         "height": 0,
         "name": "",
@@ -14783,7 +14783,7 @@
         "z": "91b413e493b8fc15",
         "group": "54a9d42f1566907a",
         "name": "",
-        "order": 3,
+        "order": 4,
         "width": 0,
         "height": 0,
         "format": "<p>Greenhouse informations: </p>\n<p>Greenhouse name: \"<span ng-bind=\"msg['payload']['greenHouseName']\"></span>\"</p>\n<p>Greenhouse location: \"<span ng-bind=\"msg['payload']['city']\"></span>\"</p>\n",
@@ -15467,7 +15467,7 @@
         "name": "",
         "label": "",
         "group": "1e1cb426.2b813c",
-        "order": 5,
+        "order": 6,
         "width": 0,
         "height": 0,
         "options": [
@@ -15703,7 +15703,7 @@
         "name": "",
         "label": "",
         "group": "703824db.9d74a4",
-        "order": 13,
+        "order": 14,
         "width": 0,
         "height": 0,
         "options": [
@@ -15853,7 +15853,7 @@
         "name": "",
         "label": "",
         "group": "1ad3bf1a8d6e4b4e",
-        "order": 8,
+        "order": 10,
         "width": 0,
         "height": 0,
         "options": [
@@ -15986,7 +15986,7 @@
         "name": "",
         "label": "",
         "group": "dcebba6522a7ec86",
-        "order": 8,
+        "order": 10,
         "width": 0,
         "height": 0,
         "options": [
@@ -16285,7 +16285,7 @@
         "name": "",
         "label": "",
         "group": "edded25c257e2620",
-        "order": 2,
+        "order": 6,
         "width": 0,
         "height": 0,
         "options": [
@@ -16359,7 +16359,7 @@
         "name": "",
         "label": "",
         "group": "3ca67b85ec7cd5f7",
-        "order": 3,
+        "order": 4,
         "width": 0,
         "height": 0,
         "options": [
@@ -16732,7 +16732,7 @@
         "z": "9c4100fe204ec867",
         "name": "",
         "group": "c54cc5d01a793531",
-        "order": 4,
+        "order": 7,
         "width": 0,
         "height": 0,
         "label": "chart",
@@ -16975,7 +16975,7 @@
         "name": "",
         "label": "",
         "group": "64d6c8b6.5961f8",
-        "order": 19,
+        "order": 20,
         "width": 0,
         "height": 0,
         "options": [
@@ -17414,7 +17414,7 @@
         "z": "9c4100fe204ec867",
         "group": "64d6c8b6.5961f8",
         "name": "",
-        "order": 18,
+        "order": 19,
         "width": "5",
         "height": "2",
         "format": "<p>The environment strategy is: </p>\n<p>\"Temperature: <span ng-bind=\"msg['payload']['strat']['temperature']\"></span>\"</p>\n<p>\"Humidity: <span ng-bind=\"msg['payload']['strat']['humidity']\"></span>\"</p>",
@@ -17750,7 +17750,8 @@
         "y": 440,
         "wires": [
             [
-                "16deea545600df58"
+                "16deea545600df58",
+                "7b8b5e226306f254"
             ]
         ]
     },
@@ -17763,12 +17764,12 @@
         "order": 14,
         "width": 0,
         "height": 0,
-        "format": "<div>\n    \n    <h1>Welcome to the<br> HOME PAGE!</h1>\n    <br>\n    <p>Insert an user ID and greenhouse ID to receive information and statistics<br> about them</p>\n    \n</div>",
+        "format": "<div>\n    \n    <h1>Welcome to the HOME PAGE!</h1>\n    <br>\n    <p>Insert an <b>user ID</b> and <b>greenhouse ID</b> to receive information and statistics about them</p>\n    \n</div>",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": true,
         "templateScope": "local",
-        "className": "",
+        "className": "template-1",
         "x": 360,
         "y": 440,
         "wires": [
@@ -17819,11 +17820,11 @@
         "wires": [
             [
                 "74e0dc4bce1d1446",
-                "314cf227ce95c194",
-                "c172a47fe858f676",
                 "197990040c1bcea9",
                 "8608905770537a7a",
-                "a40245cde3c690df"
+                "a40245cde3c690df",
+                "4491add2c81d7368",
+                "fde11361ffd7fdb1"
             ]
         ]
     },
@@ -17873,15 +17874,15 @@
         "z": "dfa5f5222d797092",
         "group": "54a9d42f1566907a",
         "name": "",
-        "order": 8,
+        "order": 19,
         "width": 0,
         "height": 0,
-        "format": "<h3>Devices associated: </h3>\n<br>\n<p>SENSORS: <span ng-bind=\"msg['payload'][0]['devices']['sensors']\"></span></p>\n<p>ACTUATORS: <span ng-bind=\"msg['payload'][0]['devices']['actuators']\"></span></p>",
+        "format": "\n<h3>Devices associated:</h3>\n<br>\n<p>SENSORS:</p>\n<ul>\n    <li ng-repeat=\"sensor in msg.payload[0].devices.sensors\">{{ sensor }}</li>\n</ul>\n<p>ACTUATORS:</p>\n<ul>\n    <li ng-repeat=\"actuator in msg.payload[0].devices.actuators\">{{ actuator }}</li>\n</ul>\n",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": false,
         "templateScope": "local",
-        "className": "",
+        "className": "template-4",
         "x": 1320,
         "y": 560,
         "wires": [
@@ -17951,7 +17952,7 @@
         "z": "dfa5f5222d797092",
         "group": "54a9d42f1566907a",
         "name": "",
-        "order": 5,
+        "order": 9,
         "width": 0,
         "height": 0,
         "format": "<h3>The user attributes are: </h3>\n<br>\n<p>USERNAME: <span ng-bind=\"msg['payload']['userName']\"></span></p>\n<p>NAME: <span ng-bind=\"msg['payload']['name']\"></span></p>\n<p>SURNAME: <span ng-bind=\"msg['payload']['surname']\"></span></p>\n<p>EMAIL: <span ng-bind=\"msg['payload']['email_addresses']\"></span></p>\n\n\n\n",
@@ -17959,7 +17960,7 @@
         "fwdInMessages": true,
         "resendOnRefresh": false,
         "templateScope": "local",
-        "className": "",
+        "className": "template-2",
         "x": 1580,
         "y": 120,
         "wires": [
@@ -17980,8 +17981,8 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1770,
-        "y": 120,
+        "x": 1810,
+        "y": 180,
         "wires": []
     },
     {
@@ -18116,7 +18117,7 @@
         "z": "dfa5f5222d797092",
         "name": "",
         "group": "bb7721423ea2a939",
-        "order": 18,
+        "order": 5,
         "width": 0,
         "height": 0,
         "gtype": "donut",
@@ -18132,7 +18133,7 @@
         ],
         "seg1": "",
         "seg2": "",
-        "className": "",
+        "className": "graph-temperature",
         "x": 1350,
         "y": 920,
         "wires": []
@@ -18213,7 +18214,7 @@
         "z": "dfa5f5222d797092",
         "name": "",
         "group": "bb7721423ea2a939",
-        "order": 18,
+        "order": 6,
         "width": 0,
         "height": 0,
         "gtype": "donut",
@@ -18229,7 +18230,7 @@
         ],
         "seg1": "",
         "seg2": "",
-        "className": "",
+        "className": "graph-humidity",
         "x": 1340,
         "y": 740,
         "wires": []
@@ -18289,13 +18290,14 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 280,
+        "x": 200,
         "y": 1580,
         "wires": [
             [
-                "8b9f5b0f2df54dc0",
-                "bb9a30baa05d4d31",
-                "333c2a4f7a6537f2"
+                "0f1e9e829ab79d3f",
+                "108c9bc98d6621fb",
+                "a40a005eb19865c1",
+                "ef86d9c0ca760d07"
             ]
         ]
     },
@@ -18306,7 +18308,7 @@
         "name": "",
         "label": "",
         "group": "1e1cb426.2b813c",
-        "order": 7,
+        "order": 9,
         "width": 0,
         "height": 0,
         "options": [
@@ -18415,7 +18417,7 @@
         "name": "",
         "label": "",
         "group": "703824db.9d74a4",
-        "order": 15,
+        "order": 17,
         "width": 0,
         "height": 0,
         "options": [
@@ -18559,7 +18561,7 @@
         "name": "",
         "label": "",
         "group": "1ad3bf1a8d6e4b4e",
-        "order": 7,
+        "order": 9,
         "width": 0,
         "height": 0,
         "options": [
@@ -18653,7 +18655,7 @@
         "name": "",
         "label": "",
         "group": "dcebba6522a7ec86",
-        "order": 6,
+        "order": 8,
         "width": 0,
         "height": 0,
         "options": [
@@ -18772,7 +18774,7 @@
         "name": "",
         "label": "",
         "group": "edded25c257e2620",
-        "order": 2,
+        "order": 7,
         "width": 0,
         "height": 0,
         "options": [
@@ -18794,7 +18796,7 @@
         "topicType": "msg",
         "splitLayout": false,
         "className": "",
-        "x": 710,
+        "x": 770,
         "y": 1700,
         "wires": [
             [
@@ -18809,7 +18811,7 @@
         "name": "",
         "func": "query =  \"?id=\"+ str(msg['payload']['id'])\n\nmsg = {'query' : query}\n\nreturn msg",
         "outputs": 1,
-        "x": 930,
+        "x": 990,
         "y": 1700,
         "wires": [
             [
@@ -18833,11 +18835,11 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 1190,
+        "x": 1250,
         "y": 1700,
         "wires": [
             [
-                "39b467bc9846b265"
+                "abfb635f023cdc12"
             ]
         ]
     },
@@ -18848,7 +18850,7 @@
         "name": "",
         "label": "",
         "group": "3ca67b85ec7cd5f7",
-        "order": 5,
+        "order": 7,
         "width": 0,
         "height": 0,
         "options": [
@@ -18981,7 +18983,7 @@
         "name": "",
         "label": "",
         "group": "1ad3bf1a8d6e4b4e",
-        "order": 4,
+        "order": 7,
         "width": 0,
         "height": 0,
         "options": [
@@ -19071,8 +19073,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1950,
-        "y": 1860,
+        "x": 1970,
+        "y": 1800,
         "wires": []
     },
     {
@@ -19106,7 +19108,7 @@
         "name": "",
         "label": "",
         "group": "dcebba6522a7ec86",
-        "order": 4,
+        "order": 6,
         "width": 0,
         "height": 0,
         "options": [
@@ -19230,11 +19232,12 @@
         "topic": "",
         "payload": "",
         "payloadType": "str",
-        "x": 560,
+        "x": 360,
         "y": 3060,
         "wires": [
             [
-                "3b7d5c2263e18046"
+                "10b68e5f42a876f4",
+                "0cd853b3c5b1638f"
             ]
         ]
     },
@@ -19262,7 +19265,7 @@
         "name": "",
         "label": "",
         "group": "043782d90857d581",
-        "order": 0,
+        "order": 5,
         "width": 0,
         "height": 0,
         "options": [
@@ -19296,7 +19299,6 @@
         "y": 3060,
         "wires": [
             [
-                "83a06b5b4c7e1753",
                 "d31ab3b43e3cab38",
                 "8d6183a5d7443afa",
                 "266b11699d470f70",
@@ -19304,12 +19306,13 @@
                 "6ee89501bce28445",
                 "2c2447bf72d9531e",
                 "a861ab127e861486",
-                "719db4ac8743666c",
                 "7dcd4cacf1185222",
-                "d7ed7a5b1dd51b21",
                 "6721c23a5f9fd596",
                 "bcc95baad250f80d",
-                "b736783f82ba9eba"
+                "b736783f82ba9eba",
+                "8396bec3ea6bc019",
+                "bb04ff572e7bd735",
+                "175a296431b143d1"
             ]
         ]
     },
@@ -19320,7 +19323,7 @@
         "name": "",
         "label": "",
         "group": "64d6c8b6.5961f8",
-        "order": 6,
+        "order": 7,
         "width": 0,
         "height": 0,
         "options": [
@@ -19406,7 +19409,7 @@
         "name": "",
         "label": "",
         "group": "65fe65488352d21f",
-        "order": 6,
+        "order": 7,
         "width": 0,
         "height": 0,
         "options": [
@@ -19492,7 +19495,7 @@
         "name": "",
         "label": "",
         "group": "ce41a2620db9ea6d",
-        "order": 6,
+        "order": 7,
         "width": 0,
         "height": 0,
         "options": [
@@ -19823,7 +19826,7 @@
         "y": 2640,
         "wires": [
             [
-                "b869dd885b282a44"
+                "b72a80f96229304d"
             ]
         ]
     },
@@ -19831,9 +19834,10 @@
         "id": "b869dd885b282a44",
         "type": "ui_template",
         "z": "dfa5f5222d797092",
+        "d": true,
         "group": "65fe65488352d21f",
         "name": "",
-        "order": 2,
+        "order": 3,
         "width": "5",
         "height": "3",
         "format": "<h3>Registered strategy: </h3>\n\n<p>TEMPERATURE: <span ng-bind=\"msg['payload']['strat']['temperature']\"></span></p>\n<p>HUMIDITY: <span ng-bind=\"msg['payload']['strat']['humidity']\"></span></p>\n<p>ACTIVE: <span ng-bind=\"msg['payload']['active']\"></span></p>",
@@ -19843,11 +19847,9 @@
         "templateScope": "local",
         "className": "",
         "x": 2540,
-        "y": 2640,
+        "y": 2520,
         "wires": [
-            [
-                "37d3923b85da621a"
-            ]
+            []
         ]
     },
     {
@@ -19918,7 +19920,7 @@
         "y": 2760,
         "wires": [
             [
-                "783ff34db09326c0"
+                "49507678eee776b0"
             ]
         ]
     },
@@ -19926,9 +19928,10 @@
         "id": "783ff34db09326c0",
         "type": "ui_template",
         "z": "dfa5f5222d797092",
+        "d": true,
         "group": "ce41a2620db9ea6d",
         "name": "",
-        "order": 2,
+        "order": 3,
         "width": "5",
         "height": "3",
         "format": "<h3>Registered strategy: </h3>\n\n<p>TEMPERATURE: <span ng-bind=\"msg['payload']['strat']['temperature']\"></span></p>\n<p>HUMIDITY: <span ng-bind=\"msg['payload']['strat']['humidity']\"></span></p>\n<p>ACTIVE: <span ng-bind=\"msg['payload']['active']\"></span></p>",
@@ -19937,12 +19940,10 @@
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 2540,
-        "y": 2760,
+        "x": 2740,
+        "y": 2520,
         "wires": [
-            [
-                "fc3b2f631588cc5b"
-            ]
+            []
         ]
     },
     {
@@ -19979,7 +19980,7 @@
         "name": "",
         "label": "",
         "group": "64d6c8b6.5961f8",
-        "order": 12,
+        "order": 13,
         "width": 0,
         "height": 0,
         "options": [
@@ -20115,7 +20116,7 @@
         "tooltip": "",
         "place": "Select option",
         "group": "64d6c8b6.5961f8",
-        "order": 10,
+        "order": 11,
         "width": 0,
         "height": 0,
         "passthru": true,
@@ -20154,10 +20155,10 @@
         "z": "dfa5f5222d797092",
         "group": "64d6c8b6.5961f8",
         "name": "",
-        "order": 14,
+        "order": 15,
         "width": 0,
         "height": 0,
-        "format": "<h3>Select a strategy to enable or disable</h3>",
+        "format": "<h3>Select a strategy to enable or disable</h3>\n<p>Once selected the strategy do <b>not</b> modify the following form</p>",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": true,
@@ -20177,7 +20178,7 @@
         "z": "dfa5f5222d797092",
         "group": "65fe65488352d21f",
         "name": "",
-        "order": 8,
+        "order": 9,
         "width": 0,
         "height": 0,
         "format": "<h3>Enable or disable the environment strategy</h3>",
@@ -20200,7 +20201,7 @@
         "z": "dfa5f5222d797092",
         "group": "ce41a2620db9ea6d",
         "name": "",
-        "order": 8,
+        "order": 9,
         "width": 0,
         "height": 0,
         "format": "<h3>Enable or disable the weather strategy</h3>",
@@ -20224,7 +20225,7 @@
         "name": "",
         "label": "",
         "group": "64d6c8b6.5961f8",
-        "order": 17,
+        "order": 18,
         "width": 0,
         "height": 0,
         "options": [
@@ -20285,7 +20286,7 @@
         "name": "",
         "label": "",
         "group": "65fe65488352d21f",
-        "order": 10,
+        "order": 11,
         "width": 0,
         "height": 0,
         "options": [
@@ -20338,7 +20339,7 @@
         "name": "",
         "label": "",
         "group": "ce41a2620db9ea6d",
-        "order": 10,
+        "order": 11,
         "width": 0,
         "height": 0,
         "options": [
@@ -20558,7 +20559,7 @@
         "z": "dfa5f5222d797092",
         "group": "64d6c8b6.5961f8",
         "name": "",
-        "order": 4,
+        "order": 5,
         "width": 0,
         "height": 0,
         "format": "<h3>Create a new irrigation strategy</h3>",
@@ -20581,7 +20582,7 @@
         "z": "dfa5f5222d797092",
         "group": "65fe65488352d21f",
         "name": "",
-        "order": 4,
+        "order": 5,
         "width": 0,
         "height": 0,
         "format": "<h3>Create a new environment strategy</h3>",
@@ -20604,7 +20605,7 @@
         "z": "dfa5f5222d797092",
         "group": "ce41a2620db9ea6d",
         "name": "",
-        "order": 4,
+        "order": 5,
         "width": 0,
         "height": 0,
         "format": "<h3>Create a new weather strategy</h3>",
@@ -20627,10 +20628,10 @@
         "z": "dfa5f5222d797092",
         "group": "64d6c8b6.5961f8",
         "name": "",
-        "order": 8,
+        "order": 9,
         "width": 0,
         "height": 0,
-        "format": "<h3>Select a strategy to delete</h3>",
+        "format": "<h3>Select a strategy to delete</h3>\n<p>Once selected the strategy do <b>not</b> modify the following form</p>",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": true,
@@ -20665,7 +20666,7 @@
         "z": "dfa5f5222d797092",
         "group": "54a9d42f1566907a",
         "name": "",
-        "order": 7,
+        "order": 16,
         "width": 0,
         "height": 0,
         "format": "<h3>The greenhouse attributes are: </h3>\n<br>\n<p>GREENHOUSE NAME: <span ng-bind=\"msg['payload']['greenHouseName']\"></span></p>\n<p>CITY: <span ng-bind=\"msg['payload']['city']\"></span></p>\n\n\n\n",
@@ -20673,7 +20674,7 @@
         "fwdInMessages": true,
         "resendOnRefresh": false,
         "templateScope": "local",
-        "className": "",
+        "className": "template-3",
         "x": 1580,
         "y": 380,
         "wires": [
@@ -20735,7 +20736,7 @@
         "z": "dfa5f5222d797092",
         "group": "54a9d42f1566907a",
         "name": "",
-        "order": 4,
+        "order": 5,
         "width": 0,
         "height": 0,
         "format": "<h4><span ng-bind=\"msg['payload']['error']\"></span></h4>\n\n\n\n",
@@ -20743,11 +20744,13 @@
         "fwdInMessages": true,
         "resendOnRefresh": false,
         "templateScope": "local",
-        "className": "",
+        "className": "template-2-error",
         "x": 1740,
         "y": 20,
         "wires": [
-            []
+            [
+                "e0346bc0a202ae74"
+            ]
         ]
     },
     {
@@ -20756,7 +20759,7 @@
         "z": "dfa5f5222d797092",
         "group": "54a9d42f1566907a",
         "name": "",
-        "order": 6,
+        "order": 12,
         "width": 0,
         "height": 0,
         "format": "<h4><span ng-bind=\"msg['payload']['error']\"></span></h4>\n\n\n\n",
@@ -20764,11 +20767,13 @@
         "fwdInMessages": true,
         "resendOnRefresh": false,
         "templateScope": "local",
-        "className": "",
+        "className": "template-3-error",
         "x": 1740,
         "y": 280,
         "wires": [
-            []
+            [
+                "2c1dc48a76165ed8"
+            ]
         ]
     },
     {
@@ -20776,7 +20781,7 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "\nif msg['statusCode'] == 400:\n    data = {\n        'error' : 'USER ALREADY EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n    return msg",
+        "func": "\nif msg['statusCode'] == 400:\n    data = {\n        'error' : 'ERROR WITH THE USER ID'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n    return msg",
         "outputs": 1,
         "x": 1490,
         "y": 1300,
@@ -20792,7 +20797,7 @@
         "z": "dfa5f5222d797092",
         "group": "703824db.9d74a4",
         "name": "",
-        "order": 14,
+        "order": 15,
         "width": 0,
         "height": 0,
         "format": "<h4><span ng-bind=\"msg['payload']['error']\"></span></h4>\n\n\n\n",
@@ -20800,12 +20805,13 @@
         "fwdInMessages": true,
         "resendOnRefresh": false,
         "templateScope": "local",
-        "className": "",
+        "className": "template-new-user-error",
         "x": 1720,
         "y": 1300,
         "wires": [
             [
-                "955bbcc0b5e00449"
+                "955bbcc0b5e00449",
+                "aef87be7f695d15b"
             ]
         ]
     },
@@ -20839,8 +20845,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1450,
-        "y": 1700,
+        "x": 1890,
+        "y": 1640,
         "wires": []
     },
     {
@@ -20881,7 +20887,7 @@
         "z": "dfa5f5222d797092",
         "group": "1ad3bf1a8d6e4b4e",
         "name": "",
-        "order": 5,
+        "order": 3,
         "width": 0,
         "height": 0,
         "format": "<h4><span ng-bind=\"msg['payload']['error']\"></span></h4>\n\n\n\n",
@@ -20889,11 +20895,13 @@
         "fwdInMessages": true,
         "resendOnRefresh": false,
         "templateScope": "local",
-        "className": "",
+        "className": "template-update-user-error",
         "x": 2020,
         "y": 1420,
         "wires": [
-            []
+            [
+                "77ccdec3a088b3db"
+            ]
         ]
     },
     {
@@ -20901,7 +20909,7 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "if msg['statusCode'] == 400:\n    data = {\n        'error' : 'GREENHOUSE ALREADY EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\n\nelse:\n    \n    return msg",
+        "func": "if msg['statusCode'] == 400:\n    data = {\n        'error' : 'ERROR WITH USER OR GREENHOUSE'\n    }\n    msg = {'payload' : data}\n    return msg\n\nelse:\n    \n    return msg",
         "outputs": 1,
         "x": 1490,
         "y": 1860,
@@ -20917,20 +20925,21 @@
         "z": "dfa5f5222d797092",
         "group": "1e1cb426.2b813c",
         "name": "",
-        "order": 6,
-        "width": 0,
-        "height": 0,
+        "order": 7,
+        "width": "0",
+        "height": "0",
         "format": "<h4><span ng-bind=\"msg['payload']['error']\"></span></h4>\n\n\n\n",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": false,
         "templateScope": "local",
-        "className": "",
+        "className": "template-new-greenhouse-error",
         "x": 1740,
         "y": 1860,
         "wires": [
             [
-                "b8d19bec60564130"
+                "b8d19bec60564130",
+                "a916e34b00085af5"
             ]
         ]
     },
@@ -20959,9 +20968,10 @@
         "y": 2080,
         "wires": [
             [
-                "60a897d576a4c0ed",
-                "8da82727692fc3b1",
-                "70804627e9613264"
+                "28260553cad4aa1c",
+                "35e79ed1b1cfb1fa",
+                "26b4904d90a3825a",
+                "f0da233557a8d243"
             ]
         ]
     },
@@ -21003,19 +21013,21 @@
         "z": "dfa5f5222d797092",
         "group": "dcebba6522a7ec86",
         "name": "",
-        "order": 3,
-        "width": 0,
-        "height": 0,
+        "order": 4,
+        "width": "0",
+        "height": "0",
         "format": "<h4><span ng-bind=\"msg['payload']['error']\"></span></h4>\n\n\n\n",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": false,
         "templateScope": "local",
-        "className": "",
+        "className": "template-update-greenhouse-error",
         "x": 1940,
         "y": 2060,
         "wires": [
-            []
+            [
+                "a3cfb2efb20ba42c"
+            ]
         ]
     },
     {
@@ -21031,8 +21043,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1810,
-        "y": 2360,
+        "x": 1850,
+        "y": 2300,
         "wires": []
     },
     {
@@ -21056,20 +21068,21 @@
         "z": "dfa5f5222d797092",
         "group": "3ca67b85ec7cd5f7",
         "name": "",
-        "order": 4,
-        "width": 0,
-        "height": 0,
+        "order": 5,
+        "width": "0",
+        "height": "0",
         "format": "<h4><span ng-bind=\"msg['payload']['error']\"></span></h4>\n\n\n\n",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": false,
         "templateScope": "local",
-        "className": "",
+        "className": "template-delete-greenhouse-error",
         "x": 1620,
         "y": 2360,
         "wires": [
             [
-                "56cb30ae4fef2580"
+                "56cb30ae4fef2580",
+                "eb46be4a72808816"
             ]
         ]
     },
@@ -21124,7 +21137,7 @@
         "tooltip": "",
         "place": "Select option",
         "group": "64d6c8b6.5961f8",
-        "order": 15,
+        "order": 16,
         "width": 0,
         "height": 0,
         "passthru": true,
@@ -21226,7 +21239,7 @@
         "z": "dfa5f5222d797092",
         "group": "043782d90857d581",
         "name": "",
-        "order": 4,
+        "order": 2,
         "width": 0,
         "height": 0,
         "format": "<h4><span ng-bind=\"msg['payload']['error']\"></span></h4>\n\n\n\n",
@@ -21234,11 +21247,13 @@
         "fwdInMessages": true,
         "resendOnRefresh": false,
         "templateScope": "local",
-        "className": "",
+        "className": "template-strategy-error",
         "x": 2340,
         "y": 3260,
         "wires": [
-            []
+            [
+                "8c54400834a54059"
+            ]
         ]
     },
     {
@@ -21340,15 +21355,15 @@
         "z": "dfa5f5222d797092",
         "group": "64d6c8b6.5961f8",
         "name": "",
-        "order": 2,
+        "order": 3,
         "width": "6",
         "height": "4",
-        "format": "<h3>Registered strategies: </h3>\n\n<table>\n  <tr>\n    <th>ID</th>\n    <th>TIME</th>\n    <th>WATER QUANTITY</th>\n    <th>ACTIVE</th>\n  </tr>\n  <tr ng-repeat=\"record in msg.payload.strat\">\n    <td>{{ record.id }}</td>\n    <td>{{ record.time }}</td>\n    <td>{{ record.water_quantity }}</td>\n    <td>{{ record.active }}</td>\n  </tr>\n</table>\n",
+        "format": "<h3>Registered strategies: </h3>\n\n<table>\n  <tr>\n    <th>ID</th>\n    <th>TIME</th>\n    <th>WATER QUANTITY (l)</th>\n    <th>ACTIVE</th>\n  </tr>\n  <tr ng-repeat=\"record in msg.payload.strat\">\n    <td>{{ record.id }}</td>\n    <td>{{ record.time }}</td>\n    <td>{{ record.water_quantity }}</td>\n    <td>{{ record.active }}</td>\n  </tr>\n</table>\n",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": false,
         "templateScope": "local",
-        "className": "",
+        "className": "template-table",
         "x": 2800,
         "y": 3060,
         "wires": [
@@ -21394,7 +21409,7 @@
         "z": "dfa5f5222d797092",
         "group": "bb7721423ea2a939",
         "name": "",
-        "order": 8,
+        "order": 2,
         "width": 0,
         "height": 0,
         "format": "<p><strong>Window:</strong> <span ng-bind=\"msg['payload']['state']\"></span></p>",
@@ -21402,7 +21417,7 @@
         "fwdInMessages": true,
         "resendOnRefresh": false,
         "templateScope": "local",
-        "className": "",
+        "className": "status-window",
         "x": 1500,
         "y": 1100,
         "wires": [
@@ -21458,11 +21473,12 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 3020,
+        "x": 2820,
         "y": 2160,
         "wires": [
             [
-                "056172eab1fc7ea8"
+                "d5bd78cae0dad367",
+                "41eb7bb0527ae0d9"
             ]
         ]
     },
@@ -21479,8 +21495,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 4950,
-        "y": 2040,
+        "x": 4850,
+        "y": 1980,
         "wires": []
     },
     {
@@ -21497,8 +21513,8 @@
         "proxy": "",
         "authType": "",
         "senderr": false,
-        "x": 4410,
-        "y": 2220,
+        "x": 4310,
+        "y": 2160,
         "wires": [
             [
                 "a41aa4cb664c0971",
@@ -21514,8 +21530,8 @@
         "name": "",
         "func": "import json\nimport time\n\noutput = [{\n\"series\": [\"Tem\"],\n\"data\": [[]],\n\"labels\": [\"Tem\"]\n}]\n\nfor feed in msg['payload']['feeds']:\n    \n    date_obj = time.strptime(feed['created_at'] , \"%Y-%m-%dT%H:%M:%SZ\")\n    \n    data_t = {\"x\": time.mktime(date_obj)*1000, \"y\": feed['field1']}\n    \n    output[0]['data'][0].append(data_t)\n   \n    \nmsg['payload'] = output\nreturn msg",
         "outputs": 1,
-        "x": 4670,
-        "y": 2080,
+        "x": 4570,
+        "y": 2020,
         "wires": [
             [
                 "b68ad7b4f19ef12a",
@@ -21529,10 +21545,10 @@
         "z": "dfa5f5222d797092",
         "name": "",
         "group": "c54cc5d01a793531",
-        "order": 1,
+        "order": 3,
         "width": 0,
         "height": 0,
-        "label": "chart",
+        "label": "",
         "chartType": "line",
         "legend": "false",
         "xformat": "HH:mm:ss",
@@ -21561,25 +21577,10 @@
         "outputs": 1,
         "useDifferentColor": false,
         "className": "",
-        "x": 4950,
-        "y": 2120,
+        "x": 4850,
+        "y": 2060,
         "wires": [
             []
-        ]
-    },
-    {
-        "id": "6c72a6642b0390fa",
-        "type": "python3-function",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "func": "#url = msg['payload']['']\n\nmsg = {'url' : 'https://thingspeak.com/channels/1714663/feed.json'}\n\nreturn msg",
-        "outputs": 1,
-        "x": 3810,
-        "y": 2160,
-        "wires": [
-            [
-                "acf76c1f9c99fb40"
-            ]
         ]
     },
     {
@@ -21595,8 +21596,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 4950,
-        "y": 2180,
+        "x": 4850,
+        "y": 2120,
         "wires": []
     },
     {
@@ -21606,8 +21607,8 @@
         "name": "",
         "func": "import json\nimport time\n\n\noutput = [{\n\"series\": [\"Hum\"],\n\"data\": [[]],\n\"labels\": [\"Hum\"]\n}]\n\nfor feed in msg['payload']['feeds']:\n    \n    date_obj = time.strptime(feed['created_at'] , \"%Y-%m-%dT%H:%M:%SZ\")\n    \n    data_h = {\"x\": time.mktime(date_obj)*1000, \"y\": feed['field2']}\n    \n    output[0]['data'][0].append(data_h)\n    \nmsg['payload'] = output\nreturn msg",
         "outputs": 1,
-        "x": 4670,
-        "y": 2220,
+        "x": 4570,
+        "y": 2160,
         "wires": [
             [
                 "b21b6b14e1012145",
@@ -21621,10 +21622,10 @@
         "z": "dfa5f5222d797092",
         "name": "",
         "group": "e42281d9419547e2",
-        "order": 1,
+        "order": 3,
         "width": 0,
         "height": 0,
-        "label": "chart",
+        "label": "",
         "chartType": "line",
         "legend": "false",
         "xformat": "HH:mm:ss",
@@ -21653,8 +21654,8 @@
         "outputs": 1,
         "useDifferentColor": false,
         "className": "",
-        "x": 4950,
-        "y": 2260,
+        "x": 4850,
+        "y": 2200,
         "wires": [
             []
         ]
@@ -21700,11 +21701,11 @@
         "y": 2160,
         "wires": [
             [
-                "a0d24bd0fd6b64dd",
-                "10e7d09a1212d8f0",
-                "a2559b1c8a9ddb1c",
                 "dbc70993a078a2e4",
-                "ec5ed5ef24c1cb8a"
+                "ec5ed5ef24c1cb8a",
+                "d742f35d1256b7c5",
+                "6ec3ba1eb399cd60",
+                "2771ba2cd5068de2"
             ]
         ]
     },
@@ -21715,11 +21716,12 @@
         "name": "",
         "func": "query = \"?id=\"+msg['payload']['id']+\"&greenHouseID=\"+ msg['payload']['greenHouseID']\n\nmsg = {'query': query}\n\nreturn msg\n\n",
         "outputs": 1,
-        "x": 3390,
+        "x": 3430,
         "y": 2160,
         "wires": [
             [
-                "579d2b04db87eff2"
+                "579d2b04db87eff2",
+                "7b812667fb782ab8"
             ]
         ]
     },
@@ -21739,11 +21741,11 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 3610,
+        "x": 3730,
         "y": 2160,
         "wires": [
             [
-                "6c72a6642b0390fa"
+                "eb63fa5bfe3aeb6e"
             ]
         ]
     },
@@ -21753,7 +21755,7 @@
         "z": "dfa5f5222d797092",
         "name": "",
         "info": "Con il form prendo i valori della greenhouse e dello user; \nFaccio il get al catalog e ricevo il channel id o url\nFaccio il get con l'url di thingspeak, prendo i dati e li plotto\n",
-        "x": 3640,
+        "x": 3860,
         "y": 2220,
         "wires": []
     },
@@ -21770,8 +21772,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 4950,
-        "y": 2340,
+        "x": 4850,
+        "y": 2280,
         "wires": []
     },
     {
@@ -21781,8 +21783,8 @@
         "name": "",
         "func": "import json\nimport time\n\n\noutput = [{\n\"series\": [\"Window\"],\n\"data\": [[]],\n\"labels\": [\"Window\"]\n}]\n\nfor feed in msg['payload']['feeds']:\n    \n    date_obj = time.strptime(feed['created_at'] , \"%Y-%m-%dT%H:%M:%SZ\")\n    \n    data_w = {\"x\": time.mktime(date_obj)*1000, \"y\": feed['field3']}\n    \n    output[0]['data'][0].append(data_w)\n    \nmsg['payload'] = output\nreturn msg",
         "outputs": 1,
-        "x": 4670,
-        "y": 2380,
+        "x": 4570,
+        "y": 2320,
         "wires": [
             [
                 "5f01dd971b738fa8",
@@ -21796,10 +21798,10 @@
         "z": "dfa5f5222d797092",
         "name": "",
         "group": "0301ba55f59e74c0",
-        "order": 1,
+        "order": 3,
         "width": 0,
         "height": 0,
-        "label": "chart",
+        "label": "",
         "chartType": "line",
         "legend": "false",
         "xformat": "HH:mm:ss",
@@ -21828,8 +21830,8 @@
         "outputs": 1,
         "useDifferentColor": false,
         "className": "",
-        "x": 4950,
-        "y": 2420,
+        "x": 4850,
+        "y": 2360,
         "wires": [
             []
         ]
@@ -21862,7 +21864,7 @@
         "name": "",
         "func": "msg['action'] = \"subscribe\"\n# da aggiungere alla fine il sensorType\nmsg['topic']= \"IoT_project_29/\"+str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/sensors/temperature\"\n\n#msg['topic'] = \"IoT_project/group29/greenhouse1/temperature\"\nreturn msg",
         "outputs": 1,
-        "x": 3470,
+        "x": 3550,
         "y": 2460,
         "wires": [
             [
@@ -21876,11 +21878,11 @@
         "z": "dfa5f5222d797092",
         "name": "",
         "group": "c54cc5d01a793531",
-        "order": 2,
+        "order": 5,
         "width": 0,
         "height": 0,
         "gtype": "donut",
-        "title": "Temperature",
+        "title": "",
         "label": "°C",
         "format": "{{msg.payload}}",
         "min": "15",
@@ -21893,7 +21895,7 @@
         "seg1": "",
         "seg2": "",
         "className": "",
-        "x": 4090,
+        "x": 4070,
         "y": 2460,
         "wires": []
     },
@@ -21944,8 +21946,8 @@
         "rap": true,
         "rh": 0,
         "inputs": 1,
-        "x": 3730,
-        "y": 2280,
+        "x": 3890,
+        "y": 2320,
         "wires": [
             [
                 "831f76a2d0e49b94"
@@ -21959,8 +21961,8 @@
         "name": "",
         "func": "msg['action'] = \"subscribe\"\n# da aggiungere alla fine il sensorType\nmsg['topic']= \"IoT_project_29/\"+str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/sensors/humidity\"\n\n#msg['topic'] = \"IoT_project/group29/greenhouse1/humidity\"\nreturn msg",
         "outputs": 1,
-        "x": 3470,
-        "y": 2280,
+        "x": 3630,
+        "y": 2320,
         "wires": [
             [
                 "4ed2b83c9116b64f"
@@ -21973,11 +21975,11 @@
         "z": "dfa5f5222d797092",
         "name": "",
         "group": "e42281d9419547e2",
-        "order": 2,
+        "order": 5,
         "width": 0,
         "height": 0,
         "gtype": "donut",
-        "title": "Humidity",
+        "title": "",
         "label": "%",
         "format": "{{msg.payload}}",
         "min": "30",
@@ -21990,8 +21992,8 @@
         "seg1": "",
         "seg2": "",
         "className": "",
-        "x": 4120,
-        "y": 2280,
+        "x": 4270,
+        "y": 2320,
         "wires": []
     },
     {
@@ -22007,8 +22009,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 4090,
-        "y": 2340,
+        "x": 4250,
+        "y": 2380,
         "wires": []
     },
     {
@@ -22019,33 +22021,12 @@
         "property": "payload",
         "action": "",
         "pretty": false,
-        "x": 3890,
-        "y": 2280,
+        "x": 4050,
+        "y": 2320,
         "wires": [
             [
                 "c38e815f1659c42b",
                 "4fcf25e3cbebd058"
-            ]
-        ]
-    },
-    {
-        "id": "01a975245126b531",
-        "type": "mqtt in",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "topic": "",
-        "qos": "2",
-        "datatype": "json",
-        "broker": "a6d151784d60722d",
-        "nl": false,
-        "rap": true,
-        "rh": 0,
-        "inputs": 1,
-        "x": 3730,
-        "y": 2640,
-        "wires": [
-            [
-                "48b45838f5331c1e"
             ]
         ]
     },
@@ -22056,77 +22037,11 @@
         "name": "",
         "func": "msg['action'] = \"subscribe\"\n# da capire il topic giusto\n#msg['topic']= str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/environment/window\"\n\nreturn msg",
         "outputs": 1,
-        "x": 3470,
+        "x": 3550,
         "y": 2640,
         "wires": [
             [
-                "01a975245126b531"
-            ]
-        ]
-    },
-    {
-        "id": "1a55a17a0d92eb15",
-        "type": "debug",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 4090,
-        "y": 2700,
-        "wires": []
-    },
-    {
-        "id": "48b45838f5331c1e",
-        "type": "json",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "property": "payload",
-        "action": "",
-        "pretty": false,
-        "x": 3890,
-        "y": 2640,
-        "wires": [
-            [
-                "1a55a17a0d92eb15",
-                "6f7319217c09ba8a"
-            ]
-        ]
-    },
-    {
-        "id": "921b77eeb1664749",
-        "type": "ui_text",
-        "z": "dfa5f5222d797092",
-        "group": "0301ba55f59e74c0",
-        "order": 0,
-        "width": 0,
-        "height": 0,
-        "name": "",
-        "label": "text",
-        "format": "{{msg.payload}}",
-        "layout": "row-spread",
-        "className": "",
-        "x": 4310,
-        "y": 2640,
-        "wires": []
-    },
-    {
-        "id": "6f7319217c09ba8a",
-        "type": "python3-function",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "func": "\nreturn msg",
-        "outputs": 1,
-        "x": 4110,
-        "y": 2640,
-        "wires": [
-            [
-                "921b77eeb1664749"
+                "f4c22cce9b4b7bac"
             ]
         ]
     },
@@ -22136,7 +22051,7 @@
         "z": "dfa5f5222d797092",
         "group": "ce41a2620db9ea6d",
         "name": "",
-        "order": 11,
+        "order": 12,
         "width": 0,
         "height": 0,
         "format": "<h3>Delete the weather strategy</h3>",
@@ -22159,7 +22074,7 @@
         "z": "dfa5f5222d797092",
         "group": "65fe65488352d21f",
         "name": "",
-        "order": 11,
+        "order": 12,
         "width": 0,
         "height": 0,
         "format": "<h3>Delete the environment strategy</h3>",
@@ -22183,7 +22098,7 @@
         "name": "",
         "label": "",
         "group": "ce41a2620db9ea6d",
-        "order": 12,
+        "order": 13,
         "width": 0,
         "height": 0,
         "options": [
@@ -22228,7 +22143,7 @@
         "name": "",
         "label": "",
         "group": "65fe65488352d21f",
-        "order": 12,
+        "order": 13,
         "width": 0,
         "height": 0,
         "options": [
@@ -22448,6 +22363,1160 @@
         ]
     },
     {
+        "id": "7b8b5e226306f254",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "0e274ee81497bf82",
+        "name": "",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "format": "<style>\n    .template-1 p {\n        font-size: 16px;\n        color: red;\n        text-align: left;\n        margin-bottom: 5px;\n    }\n    \n    .template-1 h1 {\n        font-size: 20px;\n        color: #333;\n        text-align: center;\n        margin-bottom: 10px;\n    }\n    \n    .b {\n        font-weight: bold;\n    }\n    \n    .template-2 p {\n        font-size: 16px;\n        color: #333;\n        text-align: left;\n        margin-bottom: 7px;\n    }\n    \n    .template-2 h1 {\n        font-size: 18px;\n        color: #333;\n        text-align: center;\n        margin-bottom: 7px;\n    }\n    \n    .template-2-error h4 {\n        font-size: 18px;\n        color: red;\n        text-align: center;\n        margin-bottom: 20px;\n        text-decoration: underline;\n    }\n    .template-3 p {\n        font-size: 16px;\n        color: #333;\n        text-align: left;\n        margin-bottom: 7px;\n    }\n    .template-3-error h4 {\n        font-size: 18px;\n        color: red;\n        text-align: center;\n        margin-bottom: 20px;\n        text-decoration: underline;\n    }\n    .template-4 p {\n        font-size: 16px;\n        color: #333;\n        text-align: left;\n        margin-bottom: 7px;\n    }\n    .template-4 h1 {\n        font-size: 18px;\n        color: #333;\n        text-align: center;\n        margin-bottom: 7px;\n    }\n    .graph-humidity p {\n        font-size: 20px;\n        color: #333;\n        text-align: right;\n        margin-bottom: 20px;\n    }\n    \n    .graph-temperature p {\n        font-size: 20px;\n        color: #333;\n        text-align: left;\n        margin-bottom: 20px;\n    }\n    \n    .status-window  p {\n        font-size: 16px;\n        color: #333;\n        text-align: left;\n        margin-bottom: 7px;\n    }\n    \n    .button-template {\n        \n        background-color: blue; \n        color: #fff; \n        font-size: 20px;\n        padding: 5px 15px; \n        border: none; \n        border-radius: 15px; \n        cursor: pointer;\n        transition: background-color 0.3s; \n    }\n    \n    \n    .button-template:hover {\n    background-color: #0099CC; \n    color: #0066FF;\n        }\n\n    \n</style>\n\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 360,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4491add2c81d7368",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "54a9d42f1566907a",
+        "name": "",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "format": "<h1>INFORMATION </h1>\n\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "template-2",
+        "x": 620,
+        "y": 180,
+        "wires": [
+            [
+                "314cf227ce95c194"
+            ]
+        ]
+    },
+    {
+        "id": "fde11361ffd7fdb1",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "bb7721423ea2a939",
+        "name": "",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "format": "<h1>STATISTICS </h1>\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "template-4",
+        "x": 600,
+        "y": 580,
+        "wires": [
+            [
+                "c172a47fe858f676"
+            ]
+        ]
+    },
+    {
+        "id": "0f1e9e829ab79d3f",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "703824db.9d74a4",
+        "name": "",
+        "order": 2,
+        "width": "6",
+        "height": "3",
+        "format": "<h1>CREATE NEW USER </h1>\n<p>Enter your <b>personal ID</b> and fill in the fields with your master data</p>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "template-new-user",
+        "x": 580,
+        "y": 1300,
+        "wires": [
+            [
+                "8b9f5b0f2df54dc0"
+            ]
+        ]
+    },
+    {
+        "id": "108c9bc98d6621fb",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "1ad3bf1a8d6e4b4e",
+        "name": "",
+        "order": 2,
+        "width": "6",
+        "height": "3",
+        "format": "<h1>UPDATE USER </h1>\n<p>Enter the <b>personal ID</b> and change your personal information</p>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "template-update-user",
+        "x": 580,
+        "y": 1420,
+        "wires": [
+            [
+                "333c2a4f7a6537f2"
+            ]
+        ]
+    },
+    {
+        "id": "a40a005eb19865c1",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "edded25c257e2620",
+        "name": "",
+        "order": 1,
+        "width": "6",
+        "height": "3",
+        "format": "<h1>DELETE USER </h1>\n<p>Enter the <b>personal ID</b> to delete all the user information</p>\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "template-delete-user",
+        "x": 580,
+        "y": 1700,
+        "wires": [
+            [
+                "bb9a30baa05d4d31"
+            ]
+        ]
+    },
+    {
+        "id": "ef86d9c0ca760d07",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "703824db.9d74a4",
+        "name": "",
+        "order": 21,
+        "width": 0,
+        "height": 0,
+        "format": "<style>\n  \n    .template-new-user p {\n        font-size: 16px;\n        color: #333;\n        text-align: left;\n        margin-bottom: 7px;\n    }\n    \n        \n    .template-update-user p {\n        font-size: 16px;\n        color: #333;\n        text-align: left;\n        margin-bottom: 7px;\n    }\n    \n    .template-delete-user p {\n        font-size: 16px;\n        color: #333;\n        text-align: left;\n        margin-bottom: 7px;\n    }\n    \n    .template-new-user h1 {\n        font-size: 20px;\n        color: #333;\n        text-align: center;\n        margin-bottom: 10px;\n    }\n    \n    .template-update-user h1 {\n        font-size: 20px;\n        color: #333;\n        text-align: center;\n        margin-bottom: 10px;\n    }\n    \n    .template-delete-user h1 {\n        font-size: 20px;\n        color: #333;\n        text-align: center;\n        margin-bottom: 10px;\n    }\n    \n    .b {\n        font-weight: bold;\n    }\n    \n    .template-new-user-error h4 {\n        font-size: 18px;\n        color: red;\n        text-align: center;\n        margin-bottom: 20px;\n        text-decoration: underline;\n    }\n    \n    .template-delete-user-error h4 {\n        font-size: 18px;\n        color: red;\n        text-align: center;\n        margin-bottom: 20px;\n        text-decoration: underline;\n    }\n    \n    .template-update-user-error h4 {\n        font-size: 18px;\n        color: red;\n        text-align: center;\n        margin-bottom: 20px;\n        text-decoration: underline;\n    }\n    \n    .button-template {\n        \n        background-color: blue; \n        color: #fff; \n        font-size: 20px;\n        padding: 5px 15px; \n        border: none; \n        border-radius: 15px; \n        cursor: pointer;\n        transition: background-color 0.3s; \n    }\n    \n    \n    .button-template:hover {\n    background-color: #0099CC; \n    color: #0066FF;\n        }\n\n</style>\n\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 580,
+        "y": 1560,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "158e5c42d33d467e",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "edded25c257e2620",
+        "name": "",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "format": "<h4><span ng-bind=\"msg['payload']['error']\"></span></h4>\n\n\n\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "template-delete-user-error",
+        "x": 1680,
+        "y": 1700,
+        "wires": [
+            [
+                "39b467bc9846b265",
+                "53f5419d12413089"
+            ]
+        ]
+    },
+    {
+        "id": "abfb635f023cdc12",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "if msg['statusCode'] == 400:\n    data = {\n    'error' : 'USER DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\n    \nelse:\n    \n    return msg",
+        "outputs": 1,
+        "x": 1470,
+        "y": 1700,
+        "wires": [
+            [
+                "158e5c42d33d467e"
+            ]
+        ]
+    },
+    {
+        "id": "28260553cad4aa1c",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "3ca67b85ec7cd5f7",
+        "name": "",
+        "order": 1,
+        "width": "6",
+        "height": "3",
+        "format": "<h1>DELETE GREENHOUSE </h1>\n<p>Enter the <b>personal ID</b> and <b>greenhouse ID</b> to delete greenhouse information</p>\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "template-delete-greenhouse",
+        "x": 560,
+        "y": 2360,
+        "wires": [
+            [
+                "70804627e9613264"
+            ]
+        ]
+    },
+    {
+        "id": "f0da233557a8d243",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "1e1cb426.2b813c",
+        "name": "",
+        "order": 11,
+        "width": 0,
+        "height": 0,
+        "format": "<style>\n  \n    .template-new-greenhouse p {\n        font-size: 16px;\n        color: #333;\n        text-align: left;\n        margin-bottom: 1px;\n    }\n    \n        \n    .template-update-greenhouse p {\n        font-size: 16px;\n        color: #333;\n        text-align: left;\n        margin-bottom: 1px;\n    }\n    \n    .template-delete-greenhouse p {\n        font-size: 16px;\n        color: #333;\n        text-align: left;\n        margin-bottom: 1px;\n    }\n    \n    .template-new-greenhouse h1 {\n        font-size: 20px;\n        color: #333;\n        text-align: center;\n        margin-bottom: 10px;\n    }\n    \n    .template-update-greenhouse h1 {\n        font-size: 20px;\n        color: #333;\n        text-align: center;\n        margin-bottom: 10px;\n    }\n    \n    .template-delete-greenhouse h1 {\n        font-size: 20px;\n        color: #333;\n        text-align: center;\n        margin-bottom: 10px;\n    }\n    \n    .b {\n        font-weight: bold;\n    }\n    \n    .template-new-greenhouse-error h4 {\n        font-size: 18px;\n        color: red;\n        text-align: center;\n        margin-bottom: 1px;\n        text-decoration: underline;\n    }\n    \n    .template-delete-greenhouse-error h4 {\n        font-size: 18px;\n        color: red;\n        text-align: center;\n        margin-bottom: 1px;\n        text-decoration: underline;\n    }\n    \n    .template-update-greenhouse-error h4 {\n        font-size: 18px;\n        color: red;\n        text-align: center;\n        margin-bottom: 1px;\n        text-decoration: underline;\n    }\n    \n    \n    .button-template {\n        \n        background-color: blue; \n        color: #fff; \n        font-size: 20px;\n        padding: 5px 15px; \n        border: none; \n        border-radius: 15px; \n        cursor: pointer;\n        transition: background-color 0.3s; \n    }\n    \n    \n    .button-template:hover {\n    background-color: #0099CC; \n    color: #0066FF;\n        }\n\n</style>\n\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 560,
+        "y": 2160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "35e79ed1b1cfb1fa",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "dcebba6522a7ec86",
+        "name": "",
+        "order": 1,
+        "width": "6",
+        "height": "2",
+        "format": "<h1>UPDATE GREENHOUSE </h1>\n<p>Enter the <b>personal ID</b> and <b>Greenhouse ID</b> and change greenhouse information</p>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "template-update-greenhouse",
+        "x": 560,
+        "y": 2060,
+        "wires": [
+            [
+                "8da82727692fc3b1"
+            ]
+        ]
+    },
+    {
+        "id": "26b4904d90a3825a",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "1e1cb426.2b813c",
+        "name": "",
+        "order": 1,
+        "width": "6",
+        "height": "3",
+        "format": "<h1>CREATE NEW GREENHOUSE </h1>\n<p>Enter your <b>personal ID</b> and <b>greenhouse ID</b> and fill in the fields with your greenhouse information</p>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "template-new-greenhouse",
+        "x": 560,
+        "y": 1860,
+        "wires": [
+            [
+                "60a897d576a4c0ed"
+            ]
+        ]
+    },
+    {
+        "id": "175a296431b143d1",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "64d6c8b6.5961f8",
+        "name": "",
+        "order": 1,
+        "width": "6",
+        "height": "3",
+        "format": "<h1>IRRIGATION </h1>\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "template-irrigation",
+        "x": 1440,
+        "y": 2960,
+        "wires": [
+            [
+                "83a06b5b4c7e1753"
+            ]
+        ]
+    },
+    {
+        "id": "0cd853b3c5b1638f",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "043782d90857d581",
+        "name": "",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "format": "<style>\n    \n    .button-template {\n        \n        background-color: blue; \n        color: #fff; \n        font-size: 20px;\n        padding: 5px 15px; \n        border: none; \n        border-radius: 15px; \n        cursor: pointer;\n        transition: background-color 0.3s; \n    }\n    \n    \n    .button-template:hover {\n    background-color: #0099CC; \n    color: #0066FF;\n        }\n\n    .template-environment h1 {\n        font-size: 20px;\n        color: #333;\n        text-align: center;\n        margin-bottom: 10px;\n    }\n    \n    .template-weather h1 {\n        font-size: 20px;\n        color: #333;\n        text-align: center;\n        margin-bottom: 10px;\n    }\n    \n    .template-irrigation h1 {\n        font-size: 20px;\n        color: #333;\n        text-align: center;\n        margin-bottom: 10px;\n    }\n    \n    .b {\n        font-weight: bold;\n    }\n \n    \n    .template-strategy-error h4 {\n        font-size: 18px;\n        color: red;\n        text-align: center;\n        margin-bottom: 20px;\n        text-decoration: underline;\n    }\n    \n\n    .template-table table {\n      border-collapse: collapse;\n      width: 100%;\n      margin-bottom: 20px;\n    }\n\n    .template-table th {\n      background-color: #87cefa;\n      color: black;\n      font-weight: bold;\n      padding: 8px;\n      text-align: left;\n      font-size: 16px;\n    }\n    \n    .template-table td {\n      border: 1px solid #ccc;\n      padding: 8px;\n      text-align: left;\n    }\n    \n    .template-table tr:nth-child(odd) {\n      background-color: #f2f2f2;\n    }\n    \n    \n    .template-table tr:hover {\n      background-color: #ddd;\n    }\n\n    h3 {\n        font-size: 18px;\n        color: #333;\n        text-align: center;\n    }\n</style>\n\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 580,
+        "y": 3160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "bb04ff572e7bd735",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "ce41a2620db9ea6d",
+        "name": "",
+        "order": 1,
+        "width": "6",
+        "height": "3",
+        "format": "<h1>WEATHER</h1>\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "template-weather",
+        "x": 1460,
+        "y": 2800,
+        "wires": [
+            [
+                "719db4ac8743666c"
+            ]
+        ]
+    },
+    {
+        "id": "8396bec3ea6bc019",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "65fe65488352d21f",
+        "name": "",
+        "order": 1,
+        "width": "6",
+        "height": "3",
+        "format": "<h1>ENVIRONMENT </h1>\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "template-environment",
+        "x": 1460,
+        "y": 2700,
+        "wires": [
+            [
+                "d7ed7a5b1dd51b21"
+            ]
+        ]
+    },
+    {
+        "id": "10b68e5f42a876f4",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "043782d90857d581",
+        "name": "",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "format": "<div>\n    <p>Enter your <b>personal ID</b> and the <b>greenhouse ID</b> to visualize the current strategies</p>\n    <br>\n    <p>To change user or greenhouse use this form. <b>Never</b> modify <b>User ID</b> and <b>Greenhouse ID</b> in the other form</p>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "template-initial-strategy",
+        "x": 580,
+        "y": 3060,
+        "wires": [
+            [
+                "3b7d5c2263e18046"
+            ]
+        ]
+    },
+    {
+        "id": "b72a80f96229304d",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "65fe65488352d21f",
+        "name": "",
+        "order": 3,
+        "width": "6",
+        "height": "4",
+        "format": "<h3>Registered strategies: </h3>\n\n<table>\n  <tr>\n    <th>TEMPERATURE (°C)</th>\n    <th>HUMIDITY (%)</th>\n    <th>ACTIVE</th>\n  </tr>\n  \n  <tr>\n    <td>{{ msg.payload.strat.temperature }}</td>\n    <td>{{ msg.payload.strat.humidity }}</td>\n\n    <td>{{ msg.payload.active }}</td>\n  </tr>\n</table>\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "template-table",
+        "x": 2540,
+        "y": 2640,
+        "wires": [
+            [
+                "37d3923b85da621a"
+            ]
+        ]
+    },
+    {
+        "id": "49507678eee776b0",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "ce41a2620db9ea6d",
+        "name": "",
+        "order": 3,
+        "width": "6",
+        "height": "4",
+        "format": "<h3>Registered strategies: </h3>\n\n<table>\n  <tr>\n    <th>TEMPERATURE (°C)</th>\n    <th>HUMIDITY (%)</th>\n    <th>ACTIVE</th>\n  </tr>\n  \n  <tr>\n    <td>{{ msg.payload.strat.temperature }}</td>\n    <td>{{ msg.payload.strat.humidity }}</td>\n\n    <td>{{ msg.payload.active }}</td>\n  </tr>\n</table>\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "template-table",
+        "x": 2560,
+        "y": 2760,
+        "wires": [
+            [
+                "fc3b2f631588cc5b"
+            ]
+        ]
+    },
+    {
+        "id": "d5bd78cae0dad367",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "5265b699c4c5e667",
+        "name": "",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "format": "<div>\n    <p>Enter your <b>personal ID</b> and the <b>greenhouse ID</b> to visualize measurements plots</p>\n   \n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "template-initial-plots",
+        "x": 3000,
+        "y": 2160,
+        "wires": [
+            [
+                "056172eab1fc7ea8"
+            ]
+        ]
+    },
+    {
+        "id": "a6ed6c2f1f33d3ef",
+        "type": "json",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 3990,
+        "y": 2640,
+        "wires": [
+            [
+                "fb67db7845167187"
+            ]
+        ]
+    },
+    {
+        "id": "fb67db7845167187",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "0301ba55f59e74c0",
+        "name": "",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "format": "<p><strong>Window status:</strong> <span ng-bind=\"msg['payload']['state']\"></span></p>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "status-window",
+        "x": 4320,
+        "y": 2640,
+        "wires": [
+            [
+                "eff8c841f3bf00e9"
+            ]
+        ]
+    },
+    {
+        "id": "eff8c841f3bf00e9",
+        "type": "debug",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 4510,
+        "y": 2640,
+        "wires": []
+    },
+    {
+        "id": "b97891a602a1fb4d",
+        "type": "comment",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "info": "Trasformare il valore in On/Off",
+        "x": 4140,
+        "y": 2620,
+        "wires": []
+    },
+    {
+        "id": "f4c22cce9b4b7bac",
+        "type": "http request",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://resource_catalog:8080/window_state{{{query}}}",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 3790,
+        "y": 2640,
+        "wires": [
+            [
+                "a6ed6c2f1f33d3ef"
+            ]
+        ]
+    },
+    {
+        "id": "d742f35d1256b7c5",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "c54cc5d01a793531",
+        "name": "",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "format": "<h3>Temperature</h3>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "template-initial-plots",
+        "x": 3360,
+        "y": 2460,
+        "wires": [
+            [
+                "a0d24bd0fd6b64dd"
+            ]
+        ]
+    },
+    {
+        "id": "41eb7bb0527ae0d9",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "5265b699c4c5e667",
+        "name": "",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "format": "<style>\n \n    \n    .b {\n        font-weight: bold;\n    }\n    \n    .template-plot-error h4 {\n        font-size: 18px;\n        color: red;\n        text-align: center;\n        margin-bottom: 20px;\n        text-decoration: underline;\n    }\n    \n    .template-initial-plots h3 {\n        font-size: 18px;\n        color: #333;\n        text-align: center;\n    }\n    \n    \n    .button-template {\n        \n        background-color: blue; \n        color: #fff; \n        font-size: 20px;\n        padding: 5px 15px; \n        border: none; \n        border-radius: 15px; \n        cursor: pointer;\n        transition: background-color 0.3s; \n    }\n    \n    \n    .button-template:hover {\n    background-color: #0099CC; \n    color: #0066FF;\n        }\n\n    \n</style>\n\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 3000,
+        "y": 2240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6ec3ba1eb399cd60",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "e42281d9419547e2",
+        "name": "",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "format": "<h3>Humidity</h3>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "template-initial-plots",
+        "x": 3400,
+        "y": 2320,
+        "wires": [
+            [
+                "10e7d09a1212d8f0"
+            ]
+        ]
+    },
+    {
+        "id": "2771ba2cd5068de2",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "0301ba55f59e74c0",
+        "name": "",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "format": "<h3>Window</h3>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "template-initial-plots",
+        "x": 3340,
+        "y": 2640,
+        "wires": [
+            [
+                "a2559b1c8a9ddb1c"
+            ]
+        ]
+    },
+    {
+        "id": "eb63fa5bfe3aeb6e",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "if msg['statusCode'] == 400:\n\n    data = {\n        'error' : 'USER OR GREENHOUSE DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n    #url = msg['payload']['']\n\n    msg = {'url' : 'https://thingspeak.com/channels/1714663/feed.json'}\n\n    return msg\n",
+        "outputs": 1,
+        "x": 3950,
+        "y": 2160,
+        "wires": [
+            [
+                "acf76c1f9c99fb40"
+            ]
+        ]
+    },
+    {
+        "id": "1682d47e1a0d1a07",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "if msg['statusCode'] == 400:\n\n    data = {\n        'error' : 'USER OR GREENHOUSE DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n    return msg\n",
+        "outputs": 1,
+        "x": 3950,
+        "y": 2040,
+        "wires": [
+            [
+                "15987275e15e731b"
+            ]
+        ]
+    },
+    {
+        "id": "15987275e15e731b",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "5265b699c4c5e667",
+        "name": "",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "format": "<h4><span ng-bind=\"msg['payload']['error']\"></span></h4>\n\n\n\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "template-plot-error",
+        "x": 4180,
+        "y": 2000,
+        "wires": [
+            [
+                "8c89b4ee0f2c7b7d"
+            ]
+        ]
+    },
+    {
+        "id": "7b812667fb782ab8",
+        "type": "http request",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://resource_catalog:8080/greenhouse{{{query}}}",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 3730,
+        "y": 2040,
+        "wires": [
+            [
+                "1682d47e1a0d1a07"
+            ]
+        ]
+    },
+    {
+        "id": "8c89b4ee0f2c7b7d",
+        "type": "ui_button",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "group": "5265b699c4c5e667",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "OK",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "button-template",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 4330,
+        "y": 2000,
+        "wires": [
+            [
+                "0811c0e5a9215e25"
+            ]
+        ]
+    },
+    {
+        "id": "0811c0e5a9215e25",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = {\n        'error' : ''\n    }\nmsg = {'payload' : data}\nreturn msg\n",
+        "outputs": 1,
+        "x": 4210,
+        "y": 1920,
+        "wires": [
+            [
+                "15987275e15e731b"
+            ]
+        ]
+    },
+    {
+        "id": "8c54400834a54059",
+        "type": "ui_button",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "group": "043782d90857d581",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "OK",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "button-template",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 2490,
+        "y": 3260,
+        "wires": [
+            [
+                "d94759ea1f00f306"
+            ]
+        ]
+    },
+    {
+        "id": "d94759ea1f00f306",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = {\n        'error' : ''\n    }\nmsg = {'payload' : data}\nreturn msg\n",
+        "outputs": 1,
+        "x": 2410,
+        "y": 3320,
+        "wires": [
+            [
+                "ce7604f3d15b71ad"
+            ]
+        ]
+    },
+    {
+        "id": "eb46be4a72808816",
+        "type": "ui_button",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "group": "3ca67b85ec7cd5f7",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "OK",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "button-template",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 1830,
+        "y": 2360,
+        "wires": [
+            [
+                "1533d3613bc73880"
+            ]
+        ]
+    },
+    {
+        "id": "1533d3613bc73880",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = {\n        'error' : ''\n    }\nmsg = {'payload' : data}\nreturn msg\n",
+        "outputs": 1,
+        "x": 1710,
+        "y": 2460,
+        "wires": [
+            [
+                "35d9b699dffc333d"
+            ]
+        ]
+    },
+    {
+        "id": "a3cfb2efb20ba42c",
+        "type": "ui_button",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "group": "dcebba6522a7ec86",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "OK",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "button-template",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 2110,
+        "y": 2060,
+        "wires": [
+            [
+                "f882a780645dcd3b"
+            ]
+        ]
+    },
+    {
+        "id": "f882a780645dcd3b",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = {\n        'error' : ''\n    }\nmsg = {'payload' : data}\nreturn msg\n",
+        "outputs": 1,
+        "x": 1990,
+        "y": 2180,
+        "wires": [
+            [
+                "56c6f8bcad12b9b2"
+            ]
+        ]
+    },
+    {
+        "id": "8c4204456f9acc55",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = {\n        'error' : ''\n    }\nmsg = {'payload' : data}\nreturn msg\n",
+        "outputs": 1,
+        "x": 1810,
+        "y": 1960,
+        "wires": [
+            [
+                "c95f74b1b678bb24"
+            ]
+        ]
+    },
+    {
+        "id": "a916e34b00085af5",
+        "type": "ui_button",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "group": "1e1cb426.2b813c",
+        "order": 8,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "OK",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "button-template",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 1950,
+        "y": 1860,
+        "wires": [
+            [
+                "8c4204456f9acc55"
+            ]
+        ]
+    },
+    {
+        "id": "3d27f7fc6ed197c1",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = {\n        'error' : ''\n    }\nmsg = {'payload' : data}\nreturn msg\n",
+        "outputs": 1,
+        "x": 1770,
+        "y": 1780,
+        "wires": [
+            [
+                "158e5c42d33d467e"
+            ]
+        ]
+    },
+    {
+        "id": "53f5419d12413089",
+        "type": "ui_button",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "group": "edded25c257e2620",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "OK",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "button-template",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 1870,
+        "y": 1700,
+        "wires": [
+            [
+                "3d27f7fc6ed197c1"
+            ]
+        ]
+    },
+    {
+        "id": "475e866abb88245b",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = {\n        'error' : ''\n    }\nmsg = {'payload' : data}\nreturn msg\n",
+        "outputs": 1,
+        "x": 2090,
+        "y": 1480,
+        "wires": [
+            [
+                "303508492d465b23"
+            ]
+        ]
+    },
+    {
+        "id": "77ccdec3a088b3db",
+        "type": "ui_button",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "group": "1ad3bf1a8d6e4b4e",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "OK",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "button-template",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 2210,
+        "y": 1420,
+        "wires": [
+            [
+                "475e866abb88245b"
+            ]
+        ]
+    },
+    {
+        "id": "7aafb67aa10c2123",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = {\n        'error' : ''\n    }\nmsg = {'payload' : data}\nreturn msg\n",
+        "outputs": 1,
+        "x": 1670,
+        "y": 1240,
+        "wires": [
+            [
+                "acf07cc5b57363b2"
+            ]
+        ]
+    },
+    {
+        "id": "aef87be7f695d15b",
+        "type": "ui_button",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "group": "703824db.9d74a4",
+        "order": 16,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "OK",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "button-template",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 1870,
+        "y": 1200,
+        "wires": [
+            [
+                "7aafb67aa10c2123"
+            ]
+        ]
+    },
+    {
+        "id": "ca73d07bd37408c6",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = {\n        'error' : ''\n    }\nmsg = {'payload' : data}\nreturn msg\n",
+        "outputs": 1,
+        "x": 1850,
+        "y": 100,
+        "wires": [
+            [
+                "7ce9d330cf19a9ec"
+            ]
+        ]
+    },
+    {
+        "id": "e0346bc0a202ae74",
+        "type": "ui_button",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "group": "54a9d42f1566907a",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "OK",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "button-template",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 1910,
+        "y": 20,
+        "wires": [
+            [
+                "ca73d07bd37408c6"
+            ]
+        ]
+    },
+    {
+        "id": "2c1dc48a76165ed8",
+        "type": "ui_button",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "group": "54a9d42f1566907a",
+        "order": 13,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "OK",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "button-template",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 1990,
+        "y": 240,
+        "wires": [
+            [
+                "37654ee0e5f51bc9"
+            ]
+        ]
+    },
+    {
+        "id": "37654ee0e5f51bc9",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = {\n        'error' : ''\n    }\nmsg = {'payload' : data}\nreturn msg\n",
+        "outputs": 1,
+        "x": 1930,
+        "y": 320,
+        "wires": [
+            [
+                "2455a89baf539add"
+            ]
+        ]
+    },
+    {
         "id": "1a53a8f34e77244d",
         "type": "inject",
         "z": "38de44c016649ef6",
@@ -22592,7 +23661,7 @@
         "z": "38de44c016649ef6",
         "group": "54a9d42f1566907a",
         "name": "",
-        "order": 8,
+        "order": 20,
         "width": 0,
         "height": 0,
         "format": "<p>Device associated: </p>\n<p>\"<span ng-bind=\"msg['payload']\"></span>\"</p>",
@@ -22668,7 +23737,7 @@
         "z": "38de44c016649ef6",
         "group": "54a9d42f1566907a",
         "name": "",
-        "order": 5,
+        "order": 10,
         "width": 0,
         "height": 0,
         "format": "<p>The user attributes are: </p>\n<p>Username: \"<span ng-bind=\"msg['payload']['userName']\"></span>\"</p>\n<p>Name: \"<span ng-bind=\"msg['payload']['name']\"></span>\"</p>\n<p>Surname: \"<span ng-bind=\"msg['payload']['surname']\"></span>\"</p>\n<p>Email: \"<span ng-bind=\"msg['payload']['email_addresses']\"></span>\"</p>\n\n\n\n",
@@ -22831,7 +23900,7 @@
         "z": "38de44c016649ef6",
         "name": "",
         "group": "bb7721423ea2a939",
-        "order": 18,
+        "order": 7,
         "width": 0,
         "height": 0,
         "gtype": "donut",
@@ -22928,7 +23997,7 @@
         "z": "38de44c016649ef6",
         "name": "",
         "group": "bb7721423ea2a939",
-        "order": 18,
+        "order": 8,
         "width": 0,
         "height": 0,
         "gtype": "donut",
@@ -23004,7 +24073,7 @@
         "z": "38de44c016649ef6",
         "group": "54a9d42f1566907a",
         "name": "",
-        "order": 7,
+        "order": 17,
         "width": 0,
         "height": 0,
         "format": "<p>The user attributes are: </p>\n<p>GreenHouse Name: \"<span ng-bind=\"msg['payload']['greenHouseName']\"></span>\"</p>\n<p>City: \"<span ng-bind=\"msg['payload']['city']\"></span>\"</p>\n\n\n\n",
@@ -23074,7 +24143,7 @@
         "z": "38de44c016649ef6",
         "group": "54a9d42f1566907a",
         "name": "",
-        "order": 4,
+        "order": 7,
         "width": 0,
         "height": 0,
         "format": "<p><span ng-bind=\"msg['payload']['error']\"></span></p>\n\n\n\n",
@@ -23095,7 +24164,7 @@
         "z": "38de44c016649ef6",
         "group": "54a9d42f1566907a",
         "name": "",
-        "order": 6,
+        "order": 14,
         "width": 0,
         "height": 0,
         "format": "<p><span ng-bind=\"msg['payload']['error']\"></span></p>\n\n\n\n",
@@ -23168,7 +24237,7 @@
         "z": "38de44c016649ef6",
         "group": "bb7721423ea2a939",
         "name": "",
-        "order": 8,
+        "order": 3,
         "width": 0,
         "height": 0,
         "format": "<p>The window is: \"<span ng-bind=\"msg['payload']\"></span>\"</p>",
@@ -23358,7 +24427,7 @@
         "z": "5bef06aa09334957",
         "group": "54a9d42f1566907a",
         "name": "",
-        "order": 8,
+        "order": 21,
         "width": 0,
         "height": 0,
         "format": "<p>Device associated: </p>\n<p>\"<span ng-bind=\"msg['payload']\"></span>\"</p>",
@@ -23436,7 +24505,7 @@
         "z": "5bef06aa09334957",
         "group": "54a9d42f1566907a",
         "name": "",
-        "order": 5,
+        "order": 11,
         "width": 0,
         "height": 0,
         "format": "<p>The user attributes are: </p>\n<p>Username: \"<span ng-bind=\"msg['payload']['userName']\"></span>\"</p>\n<p>Name: \"<span ng-bind=\"msg['payload']['name']\"></span>\"</p>\n<p>Surname: \"<span ng-bind=\"msg['payload']['surname']\"></span>\"</p>\n<p>Email: \"<span ng-bind=\"msg['payload']['email_addresses']\"></span>\"</p>\n\n\n\n",
@@ -23601,7 +24670,7 @@
         "z": "5bef06aa09334957",
         "name": "",
         "group": "bb7721423ea2a939",
-        "order": 18,
+        "order": 9,
         "width": 0,
         "height": 0,
         "gtype": "donut",
@@ -23698,7 +24767,7 @@
         "z": "5bef06aa09334957",
         "name": "",
         "group": "bb7721423ea2a939",
-        "order": 18,
+        "order": 10,
         "width": 0,
         "height": 0,
         "gtype": "donut",
@@ -23774,7 +24843,7 @@
         "z": "5bef06aa09334957",
         "group": "54a9d42f1566907a",
         "name": "",
-        "order": 7,
+        "order": 18,
         "width": 0,
         "height": 0,
         "format": "<p>The user attributes are: </p>\n<p>GreenHouse Name: \"<span ng-bind=\"msg['payload']['greenHouseName']\"></span>\"</p>\n<p>City: \"<span ng-bind=\"msg['payload']['city']\"></span>\"</p>\n\n\n\n",
@@ -23844,7 +24913,7 @@
         "z": "5bef06aa09334957",
         "group": "54a9d42f1566907a",
         "name": "",
-        "order": 4,
+        "order": 8,
         "width": 0,
         "height": 0,
         "format": "<p><span ng-bind=\"msg['payload']['error']\"></span></p>\n\n\n\n",
@@ -23865,7 +24934,7 @@
         "z": "5bef06aa09334957",
         "group": "54a9d42f1566907a",
         "name": "",
-        "order": 6,
+        "order": 15,
         "width": 0,
         "height": 0,
         "format": "<p><span ng-bind=\"msg['payload']['error']\"></span></p>\n\n\n\n",
@@ -23938,7 +25007,7 @@
         "z": "5bef06aa09334957",
         "group": "bb7721423ea2a939",
         "name": "",
-        "order": 8,
+        "order": 4,
         "width": 0,
         "height": 0,
         "format": "<p>The window is: \"<span ng-bind=\"msg['payload']\"></span>\"</p>",
