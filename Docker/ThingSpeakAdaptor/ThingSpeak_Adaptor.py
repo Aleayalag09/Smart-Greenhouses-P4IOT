@@ -8,36 +8,6 @@ database = "db/thingspeak_adaptor_db.json"
 resCatEndpoints = "http://resource_catalog:8080"
 url_thingspeak = "https://api.thingspeak.com/update?api_key=YOUR_API_KEY
 
-class tsChannel(object):
-    
-    exposed = True
-    
-    def GET(self, *path, **queries):
-        
-        """
-        Get the channel ID
-        """
-        with open("db/thingspeak_adaptor_db.json", "r") as file:
-            db = json.load(file)
-    
-        users = db["users"]
-        try:
-            id = queries['id']
-            greenHouseID = queries['greenHouseID']
-        except:
-            raise cherrypy.HTTPError(400, 'Bad request')
-            
-        else:
-            try:
-                for user in users:
-                    if user['userID'] == int(id):
-                        for greenhouse in user['greenHouses']:
-                            if greenhouse['greenHouseID'] == int(greenHouseID):
-                                return json.dumps(greenhouse, indent=3)
-            except:
-                raise cherrypy.HTTPError(400, 'No user or greenhouse found')
-            
-        raise cherrypy.HTTPError(400, 'No user or greenhouse found')
 
 class regTopic(object):
     exposed = True
@@ -302,7 +272,6 @@ if __name__ == "__main__":
         }
     }
     cherrypy.tree.mount(regTopic(), '/addTopic', conf)
-    cherrypy.tree.mount(tsChannel(), '/tschannel', conf)
 
     cherrypy.config.update({'server.socket_host': '0.0.0.0'})
 

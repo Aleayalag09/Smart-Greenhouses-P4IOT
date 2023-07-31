@@ -12474,7 +12474,7 @@
         "name": "",
         "label": "",
         "group": "64d6c8b6.5961f8",
-        "order": 11,
+        "order": 10,
         "width": 0,
         "height": 0,
         "options": [
@@ -13025,7 +13025,7 @@
         "z": "ca6e52d66bf110ed",
         "group": "64d6c8b6.5961f8",
         "name": "",
-        "order": 12,
+        "order": 11,
         "width": 0,
         "height": 0,
         "format": "<p>Enables or disables the strategy</p>",
@@ -13095,7 +13095,7 @@
         "name": "",
         "label": "",
         "group": "64d6c8b6.5961f8",
-        "order": 15,
+        "order": 14,
         "width": 0,
         "height": 0,
         "options": [
@@ -16976,7 +16976,7 @@
         "name": "",
         "label": "",
         "group": "64d6c8b6.5961f8",
-        "order": 18,
+        "order": 17,
         "width": 0,
         "height": 0,
         "options": [
@@ -17415,7 +17415,7 @@
         "z": "9c4100fe204ec867",
         "group": "64d6c8b6.5961f8",
         "name": "",
-        "order": 17,
+        "order": 16,
         "width": "5",
         "height": "2",
         "format": "<p>The environment strategy is: </p>\n<p>\"Temperature: <span ng-bind=\"msg['payload']['strat']['temperature']\"></span>\"</p>\n<p>\"Humidity: <span ng-bind=\"msg['payload']['strat']['humidity']\"></span>\"</p>",
@@ -20124,7 +20124,7 @@
         "tooltip": "",
         "place": "Select option",
         "group": "64d6c8b6.5961f8",
-        "order": 10,
+        "order": 19,
         "width": 0,
         "height": 0,
         "passthru": true,
@@ -20163,7 +20163,7 @@
         "z": "dfa5f5222d797092",
         "group": "64d6c8b6.5961f8",
         "name": "",
-        "order": 13,
+        "order": 12,
         "width": 0,
         "height": 0,
         "format": "<h3>Select a strategy to enable or disable</h3>\n<p>Once selected the strategy do <b>not</b> modify the following form</p>",
@@ -20233,7 +20233,7 @@
         "name": "",
         "label": "",
         "group": "64d6c8b6.5961f8",
-        "order": 16,
+        "order": 15,
         "width": 0,
         "height": 0,
         "options": [
@@ -20639,7 +20639,7 @@
         "z": "dfa5f5222d797092",
         "group": "64d6c8b6.5961f8",
         "name": "",
-        "order": 19,
+        "order": 18,
         "width": 0,
         "height": 0,
         "format": "<h3>Select a strategy to delete</h3>\n<p>Once selected the strategy do <b>not</b> modify the following form</p>",
@@ -21148,7 +21148,7 @@
         "tooltip": "",
         "place": "Select option",
         "group": "64d6c8b6.5961f8",
-        "order": 14,
+        "order": 13,
         "width": 0,
         "height": 0,
         "passthru": true,
@@ -21522,8 +21522,10 @@
         "tls": "",
         "persist": false,
         "proxy": "",
+        "insecureHTTPParser": false,
         "authType": "",
         "senderr": false,
+        "headers": [],
         "x": 4370,
         "y": 1900,
         "wires": [
@@ -21712,13 +21714,13 @@
         "y": 2160,
         "wires": [
             [
-                "dbc70993a078a2e4",
                 "ec5ed5ef24c1cb8a",
                 "d742f35d1256b7c5",
                 "2771ba2cd5068de2",
                 "6ec3ba1eb399cd60",
                 "628128275bd54f54",
-                "eb22d19182fd2b64"
+                "eb22d19182fd2b64",
+                "eb63fa5bfe3aeb6e"
             ]
         ]
     },
@@ -21730,7 +21732,7 @@
         "func": "query = \"?id=\"+str(msg['payload']['id'])+\"&greenHouseID=\"+ str(msg['payload']['greenHouseID'])\n\nmsg = {'query': query}\n\nreturn msg\n",
         "outputs": 1,
         "x": 3490,
-        "y": 1900,
+        "y": 1700,
         "wires": [
             [
                 "579d2b04db87eff2",
@@ -21755,10 +21757,9 @@
         "senderr": false,
         "headers": [],
         "x": 3790,
-        "y": 1900,
+        "y": 1700,
         "wires": [
             [
-                "eb63fa5bfe3aeb6e",
                 "580cd6e2b03c04dc"
             ]
         ]
@@ -22023,8 +22024,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 4290,
-        "y": 2340,
+        "x": 4310,
+        "y": 2360,
         "wires": []
     },
     {
@@ -22374,6 +22375,7 @@
         "y": 1140,
         "wires": [
             [
+                "d7b02bac38610136",
                 "d876efb2a9f19e4c"
             ]
         ]
@@ -23030,13 +23032,14 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "if msg['statusCode'] == 400:\n\n    data = {\n        'error' : 'USER OR GREENHOUSE DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n    #channelID = msg['payload']['']\n    #url = 'https://thingspeak.com/'+channels+'/channelID/feed.json\n    url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n    msg = {'url' : url}\n\n    return msg\n",
+        "func": "if str(msg['payload']['id']) == '0':\n    if str(msg['payload']['id']) == '0':\n        url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n    \n    elif str(msg['payload']['id']) == '1':\n        url = 'https://api.thingspeak.com/channels/2229831/feeds.json'\n    else:\n        data = {\n        'error' : 'GREENHOUSE DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\n    msg = {'url' : url}\nelse:\n    data = {\n        'error' : 'USER  DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\n\n\"\"\"\n/*\nthe other 2 channel id are \n1690401\n2230652\n*/\n\nelif str(msg['payload']['id']) == '1':\n    \n    if str(msg['payload']['id']) == '0':\n        url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n    elif str(msg['payload']['id']) == '1':\n    \n        url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n        \n    msg = {'url' : url}\n    return msg\n    \nelif str(msg['payload']['id']) == '2':\n\n    url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n    msg = {'url' : url}\n    return msg\n\"\"\"",
         "outputs": 1,
         "x": 4010,
         "y": 1900,
         "wires": [
             [
-                "15987275e15e731b"
+                "15987275e15e731b",
+                "acf76c1f9c99fb40"
             ]
         ]
     },
@@ -23690,7 +23693,7 @@
         "name": "",
         "func": "data = {\n    'id' : msg['payload']['id'],\n    'greenHouseID': msg['payload']['greenHouseID']\n}\n\nmsg = {'payload' : data}\nreturn msg",
         "outputs": 1,
-        "x": 3650,
+        "x": 3690,
         "y": 2060,
         "wires": [
             [
@@ -23725,8 +23728,8 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 3920,
-        "y": 2040,
+        "x": 3960,
+        "y": 1700,
         "wires": []
     },
     {
@@ -23850,6 +23853,22 @@
                 "ce7604f3d15b71ad"
             ]
         ]
+    },
+    {
+        "id": "d7b02bac38610136",
+        "type": "debug",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1251.6666259765625,
+        "y": 1088.333251953125,
+        "wires": []
     },
     {
         "id": "1a53a8f34e77244d",
