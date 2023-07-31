@@ -21734,10 +21734,10 @@
         "type": "http request",
         "z": "dfa5f5222d797092",
         "name": "",
-        "method": "PUT",
+        "method": "GET",
         "ret": "txt",
         "paytoqs": "ignore",
-        "url": "http://thingspeak_adaptor:8080/tsChannel{{{query}}}",
+        "url": "http://thingspeak_adaptor:8080/tschannel{{{query}}}",
         "tls": "",
         "persist": false,
         "proxy": "",
@@ -21760,8 +21760,8 @@
         "z": "dfa5f5222d797092",
         "name": "",
         "info": "Con il form prendo i valori della greenhouse e dello user; \nFaccio il get al catalog e ricevo il channel id o url\nFaccio il get con l'url di thingspeak, prendo i dati e li plotto\n",
-        "x": 3920,
-        "y": 1960,
+        "x": 3980,
+        "y": 1980,
         "wires": []
     },
     {
