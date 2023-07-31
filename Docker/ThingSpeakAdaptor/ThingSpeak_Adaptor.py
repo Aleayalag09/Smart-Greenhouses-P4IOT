@@ -17,10 +17,10 @@ class tsChannel(object):
         """
         Get the channel ID
         """
-        
-        global database
-        
-        users = database["users"]
+        with open("db/thingspeak_adaptor_db.json", "r") as file:
+            db = json.load(file)
+    
+        users = db["users"]
         try:
             id = queries['id']
             greenHouseID = queries['greenHouseID']

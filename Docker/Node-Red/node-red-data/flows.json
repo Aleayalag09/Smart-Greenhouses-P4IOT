@@ -18542,7 +18542,8 @@
         "y": 1540,
         "wires": [
             [
-                "4c77b1c5c88a5d75"
+                "4c77b1c5c88a5d75",
+                "22c92e9aa466afef"
             ]
         ]
     },
@@ -18765,8 +18766,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 2130,
-        "y": 1540,
+        "x": 2170,
+        "y": 1620,
         "wires": []
     },
     {
@@ -20898,7 +20899,7 @@
         "resendOnRefresh": false,
         "templateScope": "local",
         "className": "template-update-user-error",
-        "x": 2020,
+        "x": 2240,
         "y": 1420,
         "wires": [
             [
@@ -21718,7 +21719,7 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "query = \"?id=\"+msg['payload']['id']+\"&greenHouseID=\"+ msg['payload']['greenHouseID']\n\nmsg = {'query': query}\n\nreturn msg\n\n",
+        "func": "query = \"?id=\"+str(msg['payload']['id'])+\"&greenHouseID=\"+ str(msg['payload']['greenHouseID'])\n\nmsg = {'query': query}\n\nreturn msg\n",
         "outputs": 1,
         "x": 3490,
         "y": 1900,
@@ -23356,7 +23357,7 @@
         "name": "",
         "func": "data = {\n        'error' : ''\n    }\nmsg = {'payload' : data}\nreturn msg\n",
         "outputs": 1,
-        "x": 2090,
+        "x": 2450,
         "y": 1480,
         "wires": [
             [
@@ -23384,7 +23385,7 @@
         "payloadType": "str",
         "topic": "topic",
         "topicType": "msg",
-        "x": 2210,
+        "x": 2410,
         "y": 1420,
         "wires": [
             [
@@ -23762,6 +23763,21 @@
                 "1940d3aee50fa044",
                 "29ae8612d318481f",
                 "4963a8752fb69d27"
+            ]
+        ]
+    },
+    {
+        "id": "22c92e9aa466afef",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "if msg['statusCode'] == 400:\n    data = {\n    'error' : 'USER DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\n    \nelse:\n    \n    return msg",
+        "outputs": 1,
+        "x": 2170,
+        "y": 1540,
+        "wires": [
+            [
+                "303508492d465b23"
             ]
         ]
     },
