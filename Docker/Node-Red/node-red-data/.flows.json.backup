@@ -12474,7 +12474,7 @@
         "name": "",
         "label": "",
         "group": "64d6c8b6.5961f8",
-        "order": 12,
+        "order": 11,
         "width": 0,
         "height": 0,
         "options": [
@@ -12986,7 +12986,7 @@
         "tooltip": "",
         "place": "Select option",
         "group": "64d6c8b6.5961f8",
-        "order": 10,
+        "order": 9,
         "width": 0,
         "height": 0,
         "passthru": true,
@@ -13025,7 +13025,7 @@
         "z": "ca6e52d66bf110ed",
         "group": "64d6c8b6.5961f8",
         "name": "",
-        "order": 14,
+        "order": 12,
         "width": 0,
         "height": 0,
         "format": "<p>Enables or disables the strategy</p>",
@@ -13095,7 +13095,7 @@
         "name": "",
         "label": "",
         "group": "64d6c8b6.5961f8",
-        "order": 17,
+        "order": 15,
         "width": 0,
         "height": 0,
         "options": [
@@ -16976,7 +16976,7 @@
         "name": "",
         "label": "",
         "group": "64d6c8b6.5961f8",
-        "order": 20,
+        "order": 18,
         "width": 0,
         "height": 0,
         "options": [
@@ -17415,7 +17415,7 @@
         "z": "9c4100fe204ec867",
         "group": "64d6c8b6.5961f8",
         "name": "",
-        "order": 19,
+        "order": 17,
         "width": "5",
         "height": "2",
         "format": "<p>The environment strategy is: </p>\n<p>\"Temperature: <span ng-bind=\"msg['payload']['strat']['temperature']\"></span>\"</p>\n<p>\"Humidity: <span ng-bind=\"msg['payload']['strat']['humidity']\"></span>\"</p>",
@@ -18724,7 +18724,8 @@
         "y": 2240,
         "wires": [
             [
-                "930b5eeaa07f5146"
+                "930b5eeaa07f5146",
+                "f111f7d0464ab216"
             ]
         ]
     },
@@ -19210,7 +19211,7 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1710,
+        "x": 1950,
         "y": 2240,
         "wires": []
     },
@@ -19257,7 +19258,7 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 3150,
+        "x": 3390,
         "y": 3720,
         "wires": []
     },
@@ -19580,7 +19581,8 @@
         "y": 3720,
         "wires": [
             [
-                "76a4682a5b905a17"
+                "76a4682a5b905a17",
+                "880ed201bf8f0b37"
             ]
         ]
     },
@@ -19604,7 +19606,8 @@
         "y": 3840,
         "wires": [
             [
-                "8f2e5bb8d04fc968"
+                "8f2e5bb8d04fc968",
+                "880ed201bf8f0b37"
             ]
         ]
     },
@@ -19628,7 +19631,8 @@
         "y": 3960,
         "wires": [
             [
-                "9e8549d3d3b0169b"
+                "9e8549d3d3b0169b",
+                "880ed201bf8f0b37"
             ]
         ]
     },
@@ -19983,7 +19987,7 @@
         "name": "",
         "label": "",
         "group": "64d6c8b6.5961f8",
-        "order": 13,
+        "order": 20,
         "width": 0,
         "height": 0,
         "options": [
@@ -20049,7 +20053,8 @@
         "y": 3380,
         "wires": [
             [
-                "48fa6b2ed3446a6e"
+                "48fa6b2ed3446a6e",
+                "9ef7c99ce7974f4e"
             ]
         ]
     },
@@ -20119,7 +20124,7 @@
         "tooltip": "",
         "place": "Select option",
         "group": "64d6c8b6.5961f8",
-        "order": 11,
+        "order": 10,
         "width": 0,
         "height": 0,
         "passthru": true,
@@ -20158,7 +20163,7 @@
         "z": "dfa5f5222d797092",
         "group": "64d6c8b6.5961f8",
         "name": "",
-        "order": 15,
+        "order": 13,
         "width": 0,
         "height": 0,
         "format": "<h3>Select a strategy to enable or disable</h3>\n<p>Once selected the strategy do <b>not</b> modify the following form</p>",
@@ -20228,7 +20233,7 @@
         "name": "",
         "label": "",
         "group": "64d6c8b6.5961f8",
-        "order": 18,
+        "order": 16,
         "width": 0,
         "height": 0,
         "options": [
@@ -20470,7 +20475,8 @@
         "y": 4400,
         "wires": [
             [
-                "2b8d0348d42bede6"
+                "2b8d0348d42bede6",
+                "cbbb3ac214d97262"
             ]
         ]
     },
@@ -20511,7 +20517,8 @@
         "y": 4520,
         "wires": [
             [
-                "6c2bdd157134657b"
+                "6c2bdd157134657b",
+                "cbbb3ac214d97262"
             ]
         ]
     },
@@ -20552,7 +20559,8 @@
         "y": 4460,
         "wires": [
             [
-                "d3870ad51773a588"
+                "d3870ad51773a588",
+                "cbbb3ac214d97262"
             ]
         ]
     },
@@ -20631,7 +20639,7 @@
         "z": "dfa5f5222d797092",
         "group": "64d6c8b6.5961f8",
         "name": "",
-        "order": 9,
+        "order": 19,
         "width": 0,
         "height": 0,
         "format": "<h3>Select a strategy to delete</h3>\n<p>Once selected the strategy do <b>not</b> modify the following form</p>",
@@ -21140,7 +21148,7 @@
         "tooltip": "",
         "place": "Select option",
         "group": "64d6c8b6.5961f8",
-        "order": 16,
+        "order": 14,
         "width": 0,
         "height": 0,
         "passthru": true,
@@ -21738,7 +21746,7 @@
         "method": "GET",
         "ret": "txt",
         "paytoqs": "ignore",
-        "url": "http://thingspeak_adaptor:8085/tschannel{{{query}}}",
+        "url": "http://thingspeak_adaptor:8080/tschannel{{{query}}}",
         "tls": "",
         "persist": false,
         "proxy": "",
@@ -22224,7 +22232,8 @@
         "y": 3460,
         "wires": [
             [
-                "e2f82242fe81586c"
+                "e2f82242fe81586c",
+                "9ef7c99ce7974f4e"
             ]
         ]
     },
@@ -22280,7 +22289,8 @@
         "y": 3540,
         "wires": [
             [
-                "dcdd079e9abe3fed"
+                "dcdd079e9abe3fed",
+                "9ef7c99ce7974f4e"
             ]
         ]
     },
@@ -23778,6 +23788,66 @@
         "wires": [
             [
                 "303508492d465b23"
+            ]
+        ]
+    },
+    {
+        "id": "f111f7d0464ab216",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "if msg['statusCode'] == 400:\n    data = {\n    'error' : 'USER OR GREENHOUSE DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n    \n    return msg",
+        "outputs": 1,
+        "x": 1690,
+        "y": 2160,
+        "wires": [
+            [
+                "56c6f8bcad12b9b2"
+            ]
+        ]
+    },
+    {
+        "id": "880ed201bf8f0b37",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "if msg['statusCode'] == 400:\n\n    data = {\n        'error' : 'ERROR WITH USER OR GREENHOUSE'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n    return msg\n",
+        "outputs": 1,
+        "x": 3170,
+        "y": 3680,
+        "wires": [
+            [
+                "ce7604f3d15b71ad"
+            ]
+        ]
+    },
+    {
+        "id": "cbbb3ac214d97262",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "if msg['statusCode'] == 400:\n\n    data = {\n        'error' : 'USER OR GREENHOUSE DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n    return msg\n",
+        "outputs": 1,
+        "x": 3070,
+        "y": 4320,
+        "wires": [
+            [
+                "ce7604f3d15b71ad"
+            ]
+        ]
+    },
+    {
+        "id": "9ef7c99ce7974f4e",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "if msg['statusCode'] == 400:\n\n    data = {\n        'error' : 'ERROR WITH USER OR GREENHOUSE'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n    return msg\n",
+        "outputs": 1,
+        "x": 3050,
+        "y": 3280,
+        "wires": [
+            [
+                "ce7604f3d15b71ad"
             ]
         ]
     },
