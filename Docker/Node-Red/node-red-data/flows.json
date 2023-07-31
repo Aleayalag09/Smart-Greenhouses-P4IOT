@@ -14010,7 +14010,7 @@
         "name": "",
         "label": "",
         "group": "5265b699c4c5e667",
-        "order": 0,
+        "order": 7,
         "width": 0,
         "height": 0,
         "options": [
@@ -21669,7 +21669,7 @@
         "name": "",
         "label": "",
         "group": "5265b699c4c5e667",
-        "order": 0,
+        "order": 4,
         "width": 0,
         "height": 0,
         "options": [
@@ -21706,8 +21706,9 @@
                 "dbc70993a078a2e4",
                 "ec5ed5ef24c1cb8a",
                 "d742f35d1256b7c5",
-                "6ec3ba1eb399cd60",
                 "2771ba2cd5068de2",
+                "6ec3ba1eb399cd60",
+                "628128275bd54f54",
                 "eb22d19182fd2b64"
             ]
         ]
@@ -21723,7 +21724,8 @@
         "y": 1900,
         "wires": [
             [
-                "579d2b04db87eff2"
+                "579d2b04db87eff2",
+                "7b812667fb782ab8"
             ]
         ]
     },
@@ -21732,10 +21734,10 @@
         "type": "http request",
         "z": "dfa5f5222d797092",
         "name": "",
-        "method": "GET",
+        "method": "PUT",
         "ret": "txt",
         "paytoqs": "ignore",
-        "url": "http://resource_catalog:8080/thingspeak{{{query}}}",
+        "url": "http://thingspeak_adaptor:8080/abc{{{query}}}",
         "tls": "",
         "persist": false,
         "proxy": "",
@@ -21747,7 +21749,8 @@
         "y": 1900,
         "wires": [
             [
-                "eb63fa5bfe3aeb6e"
+                "eb63fa5bfe3aeb6e",
+                "580cd6e2b03c04dc"
             ]
         ]
     },
@@ -22950,7 +22953,7 @@
         "z": "dfa5f5222d797092",
         "group": "5265b699c4c5e667",
         "name": "",
-        "order": 0,
+        "order": 8,
         "width": 0,
         "height": 0,
         "format": "<style>\n \n    \n    .b {\n        font-weight: bold;\n    }\n    \n    .template-plot-error h4 {\n        font-size: 18px;\n        color: red;\n        text-align: center;\n        margin-bottom: 20px;\n        text-decoration: underline;\n    }\n    \n    .template-initial-plots h3 {\n        font-size: 18px;\n        color: #333;\n        text-align: center;\n    }\n    \n    \n    .button-template {\n        \n        background-color: blue; \n        color: #fff; \n        font-size: 20px;\n        padding: 5px 15px; \n        border: none; \n        border-radius: 15px; \n        cursor: pointer;\n        transition: background-color 0.3s; \n    }\n    \n    \n    .button-template:hover {\n    background-color: #0099CC; \n    color: #0066FF;\n        }\n\n    \n</style>\n\n",
@@ -22980,7 +22983,7 @@
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "template-initial-plots",
-        "x": 3440,
+        "x": 3420,
         "y": 2280,
         "wires": [
             [
@@ -23022,7 +23025,6 @@
         "y": 1900,
         "wires": [
             [
-                "acf76c1f9c99fb40",
                 "15987275e15e731b"
             ]
         ]
@@ -23095,7 +23097,7 @@
         "z": "dfa5f5222d797092",
         "name": "",
         "group": "5265b699c4c5e667",
-        "order": 5,
+        "order": 3,
         "width": 0,
         "height": 0,
         "passthru": false,
@@ -23640,7 +23642,7 @@
         "z": "dfa5f5222d797092",
         "group": "5265b699c4c5e667",
         "name": "",
-        "order": 7,
+        "order": 5,
         "width": 0,
         "height": 0,
         "format": "<div>\n    <p>Before enter a new user or greenhouse ID, <b>unsubscribe</b> from the previous topic</p>\n    <p>Do <b>not</b> modify the following form</p>\n</div>",
@@ -23650,58 +23652,9 @@
         "templateScope": "local",
         "className": "template-initial-plots",
         "x": 3440,
-        "y": 2160,
+        "y": 2200,
         "wires": [
-            [
-                "8a346086fcfc5ebe"
-            ]
-        ]
-    },
-    {
-        "id": "8a346086fcfc5ebe",
-        "type": "ui_form",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "label": "",
-        "group": "5265b699c4c5e667",
-        "order": 8,
-        "width": 0,
-        "height": 0,
-        "options": [
-            {
-                "label": "User ID",
-                "value": "id",
-                "type": "number",
-                "required": true,
-                "rows": null
-            },
-            {
-                "label": "Greenhouse ID",
-                "value": "greenHouseID",
-                "type": "number",
-                "required": true,
-                "rows": null
-            }
-        ],
-        "formValue": {
-            "id": "",
-            "greenHouseID": ""
-        },
-        "payload": "",
-        "submit": "unsubscribe",
-        "cancel": "cancel",
-        "topic": "topic",
-        "topicType": "msg",
-        "splitLayout": "",
-        "className": "",
-        "x": 3650,
-        "y": 2160,
-        "wires": [
-            [
-                "29ae8612d318481f",
-                "4963a8752fb69d27",
-                "1940d3aee50fa044"
-            ]
+            []
         ]
     },
     {
@@ -23730,7 +23683,7 @@
         "y": 2060,
         "wires": [
             [
-                "8a346086fcfc5ebe"
+                "628128275bd54f54"
             ]
         ]
     },
@@ -23746,6 +23699,69 @@
         "wires": [
             [
                 "7a68a5610671c945"
+            ]
+        ]
+    },
+    {
+        "id": "580cd6e2b03c04dc",
+        "type": "debug",
+        "z": "dfa5f5222d797092",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 3920,
+        "y": 2040,
+        "wires": []
+    },
+    {
+        "id": "628128275bd54f54",
+        "type": "ui_form",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "label": "",
+        "group": "5265b699c4c5e667",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "options": [
+            {
+                "label": "User ID",
+                "value": "id",
+                "type": "text",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Greenhouse ID",
+                "value": "greenHouseID",
+                "type": "text",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "id": "",
+            "greenHouseID": ""
+        },
+        "payload": "",
+        "submit": "submit",
+        "cancel": "cancel",
+        "topic": "",
+        "topicType": "str",
+        "splitLayout": false,
+        "className": "",
+        "x": 3530,
+        "y": 2160,
+        "wires": [
+            [
+                "1940d3aee50fa044",
+                "29ae8612d318481f",
+                "4963a8752fb69d27"
             ]
         ]
     },
