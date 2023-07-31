@@ -18,7 +18,7 @@
                     "KEY": "J50M27K8VSFLULLK",
                     "temperature": "&field1={}",
                     "humidity": "&field2={}",
-                    "window": $field3={}
+                    "window": "$field3={}"
                 },
 
                 {
@@ -27,7 +27,7 @@
                     "KEY": "3Y4VD8DM3HWS67HU",
                     "temperature": "&field3={}",
                     "humidity": "&field4={}",
-                    "window": $field3={}
+                    "window": "$field3={}"
                 }
             ]
         }
