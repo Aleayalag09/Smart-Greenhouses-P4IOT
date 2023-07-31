@@ -302,6 +302,7 @@ if __name__ == "__main__":
         }
     }
     cherrypy.tree.mount(regTopic(), '/addTopic', conf)
+    cherrypy.tree.mount(tsChannel(), '/tschannel', conf)
 
     cherrypy.config.update({'server.socket_host': '0.0.0.0'})
 
