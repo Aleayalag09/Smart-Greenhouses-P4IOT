@@ -29,9 +29,11 @@
                     "humidity": "&field4={}",
                     "window": "$field3={}"
                 }
+
             ]
         }
     ],
 
     "topics": []
 }
+            
