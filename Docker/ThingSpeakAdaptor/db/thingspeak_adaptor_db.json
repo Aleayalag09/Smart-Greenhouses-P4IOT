@@ -29,16 +29,11 @@
                     "humidity": "&field4={}",
                     "window": "$field3={}"
                 }
+
             ]
         }
     ],
 
     "topics": []
 }
-            /* 
-            THE OTHER 2 CHANNEL 
-
-            channelid: 1690401 - Key: 8P881N7X80Q6W2SK
-            channelid: 2230652 - Key: AU5DJKJR61HJO1DM
-
-            */
+            
