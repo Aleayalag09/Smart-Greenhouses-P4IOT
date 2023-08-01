@@ -17825,8 +17825,8 @@
                 "8608905770537a7a",
                 "a40245cde3c690df",
                 "4491add2c81d7368",
-                "fde11361ffd7fdb1",
-                "a765284c1eb0d4ef"
+                "a765284c1eb0d4ef",
+                "c172a47fe858f676"
             ]
         ]
     },
@@ -18191,7 +18191,8 @@
         "y": 780,
         "wires": [
             [
-                "a22473f0c5804e5d"
+                "b7c48c4638d64641",
+                "c7c687f2ce435ace"
             ]
         ]
     },
@@ -18200,7 +18201,7 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "msg['action'] = \"subscribe\"\n# da aggiungere alla fine il sensorType\nmsg['topic']= \"IoT_project_29/\"+str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/sensors/humidity\"\n\n#msg['topic'] = \"IoT_project/group29/greenhouse1/humidity\"\nreturn msg",
+        "func": "msg['action'] = \"subscribe\"\n# da aggiungere alla fine il sensorType\nmsg['topic']= \"IoT_project_29/\"+str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/sensors/humidity\"\n\nreturn msg",
         "outputs": 1,
         "x": 830,
         "y": 780,
@@ -18233,7 +18234,7 @@
         "seg1": "",
         "seg2": "",
         "className": "graph-humidity",
-        "x": 1440,
+        "x": 1580,
         "y": 780,
         "wires": []
     },
@@ -18253,23 +18254,6 @@
         "x": 1450,
         "y": 840,
         "wires": []
-    },
-    {
-        "id": "a22473f0c5804e5d",
-        "type": "json",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "property": "payload",
-        "action": "",
-        "pretty": false,
-        "x": 1250,
-        "y": 780,
-        "wires": [
-            [
-                "c7c687f2ce435ace",
-                "148f517f821a8373"
-            ]
-        ]
     },
     {
         "id": "986f6910a8576ea3",
@@ -23032,7 +23016,7 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "if str(msg['payload']['id']) == '0':\n    if str(msg['payload']['id']) == '0':\n        url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n    \n    elif str(msg['payload']['id']) == '1':\n        url = 'https://api.thingspeak.com/channels/2229831/feeds.json'\n    else:\n        data = {\n        'error' : 'GREENHOUSE DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\n    msg = {'url' : url}\nelse:\n    data = {\n        'error' : 'USER  DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\n\n\"\"\"\n/*\nthe other 2 channel id are \n1690401\n2230652\n*/\n\nelif str(msg['payload']['id']) == '1':\n    \n    if str(msg['payload']['id']) == '0':\n        url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n    elif str(msg['payload']['id']) == '1':\n    \n        url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n        \n    msg = {'url' : url}\n    return msg\n    \nelif str(msg['payload']['id']) == '2':\n\n    url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n    msg = {'url' : url}\n    return msg\n\"\"\"",
+        "func": "if str(msg['payload']['id']) == '0':\n    if str(msg['payload']['id']) == '0':\n        url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n    \n    elif str(msg['payload']['id']) == '1':\n        url = 'https://api.thingspeak.com/channels/2229831/feeds.json'\n    else:\n        data = {\n        'error' : 'GREENHOUSE DOES NOT EXISTS'\n        }\n        msg = {'payload' : data}\n        return msg\n        \n    msg = {'url' : url}\n    return msg\nelse:\n    data = {\n        'error' : 'USER  DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\n\n\"\"\"\n/*\nthe other 2 channel id are \n1690401\n2230652\n*/\n\nelif str(msg['payload']['id']) == '1':\n    \n    if str(msg['payload']['id']) == '0':\n        url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n    elif str(msg['payload']['id']) == '1':\n    \n        url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n        \n    msg = {'url' : url}\n    return msg\n    \nelif str(msg['payload']['id']) == '2':\n\n    url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n    msg = {'url' : url}\n    return msg\n\"\"\"",
         "outputs": 1,
         "x": 4010,
         "y": 1900,
@@ -23869,6 +23853,25 @@
         "x": 1251.6666259765625,
         "y": 1088.333251953125,
         "wires": []
+    },
+    {
+        "id": "b7c48c4638d64641",
+        "type": "function",
+        "z": "dfa5f5222d797092",
+        "name": "function 1",
+        "func": "data = msg['payloa']['bn']['v']\nmsg = {'payload' : data}\nreturn msg\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1420,
+        "y": 780,
+        "wires": [
+            [
+                "148f517f821a8373"
+            ]
+        ]
     },
     {
         "id": "1a53a8f34e77244d",
