@@ -17825,8 +17825,8 @@
                 "8608905770537a7a",
                 "a40245cde3c690df",
                 "4491add2c81d7368",
-                "fde11361ffd7fdb1",
-                "a765284c1eb0d4ef"
+                "a765284c1eb0d4ef",
+                "c172a47fe858f676"
             ]
         ]
     },
@@ -18094,7 +18094,7 @@
         "y": 960,
         "wires": [
             [
-                "dcdf9bda79494cce"
+                "d1d7802f3b5f042a"
             ]
         ]
     },
@@ -18136,7 +18136,7 @@
         "seg1": "",
         "seg2": "",
         "className": "graph-temperature",
-        "x": 1450,
+        "x": 1570,
         "y": 960,
         "wires": []
     },
@@ -18158,23 +18158,6 @@
         "wires": []
     },
     {
-        "id": "dcdf9bda79494cce",
-        "type": "json",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "property": "payload",
-        "action": "",
-        "pretty": false,
-        "x": 1250,
-        "y": 960,
-        "wires": [
-            [
-                "40434672e9959c1e",
-                "e34ee081ad0b1faf"
-            ]
-        ]
-    },
-    {
         "id": "cc978f42f967bbd9",
         "type": "mqtt in",
         "z": "dfa5f5222d797092",
@@ -18191,7 +18174,7 @@
         "y": 780,
         "wires": [
             [
-                "a22473f0c5804e5d"
+                "1017c561b051c3b6"
             ]
         ]
     },
@@ -18200,7 +18183,7 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "msg['action'] = \"subscribe\"\n# da aggiungere alla fine il sensorType\nmsg['topic']= \"IoT_project_29/\"+str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/sensors/humidity\"\n\n#msg['topic'] = \"IoT_project/group29/greenhouse1/humidity\"\nreturn msg",
+        "func": "msg['action'] = \"subscribe\"\n# da aggiungere alla fine il sensorType\nmsg['topic']= \"IoT_project_29/\"+str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/sensors/humidity\"\n\nreturn msg",
         "outputs": 1,
         "x": 830,
         "y": 780,
@@ -18233,7 +18216,7 @@
         "seg1": "",
         "seg2": "",
         "className": "graph-humidity",
-        "x": 1440,
+        "x": 1580,
         "y": 780,
         "wires": []
     },
@@ -18253,23 +18236,6 @@
         "x": 1450,
         "y": 840,
         "wires": []
-    },
-    {
-        "id": "a22473f0c5804e5d",
-        "type": "json",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "property": "payload",
-        "action": "",
-        "pretty": false,
-        "x": 1250,
-        "y": 780,
-        "wires": [
-            [
-                "c7c687f2ce435ace",
-                "148f517f821a8373"
-            ]
-        ]
     },
     {
         "id": "986f6910a8576ea3",
@@ -21868,7 +21834,7 @@
         "y": 2460,
         "wires": [
             [
-                "11c32fc2e881783b"
+                "a89313309950da04"
             ]
         ]
     },
@@ -21910,7 +21876,7 @@
         "seg1": "",
         "seg2": "",
         "className": "",
-        "x": 4070,
+        "x": 4170,
         "y": 2460,
         "wires": []
     },
@@ -21927,26 +21893,9 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 4090,
+        "x": 4170,
         "y": 2520,
         "wires": []
-    },
-    {
-        "id": "11c32fc2e881783b",
-        "type": "json",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "property": "payload",
-        "action": "",
-        "pretty": false,
-        "x": 3890,
-        "y": 2460,
-        "wires": [
-            [
-                "3bb465c8e8852f0d",
-                "79bcffc3c3f4d807"
-            ]
-        ]
     },
     {
         "id": "4ed2b83c9116b64f",
@@ -21965,7 +21914,7 @@
         "y": 2280,
         "wires": [
             [
-                "831f76a2d0e49b94"
+                "6703cb203533ed13"
             ]
         ]
     },
@@ -22027,23 +21976,6 @@
         "x": 4310,
         "y": 2360,
         "wires": []
-    },
-    {
-        "id": "831f76a2d0e49b94",
-        "type": "json",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "property": "payload",
-        "action": "",
-        "pretty": false,
-        "x": 4090,
-        "y": 2280,
-        "wires": [
-            [
-                "c38e815f1659c42b",
-                "4fcf25e3cbebd058"
-            ]
-        ]
     },
     {
         "id": "a2559b1c8a9ddb1c",
@@ -23869,6 +23801,70 @@
         "x": 1251.6666259765625,
         "y": 1088.333251953125,
         "wires": []
+    },
+    {
+        "id": "1017c561b051c3b6",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = msg['payload']['e']['v']\nmsg = {'payload' : data}\nreturn msg\n",
+        "outputs": 1,
+        "x": 1330,
+        "y": 780,
+        "wires": [
+            [
+                "148f517f821a8373",
+                "c7c687f2ce435ace"
+            ]
+        ]
+    },
+    {
+        "id": "d1d7802f3b5f042a",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = msg['payload']['e']['v']\nmsg = {'payload' : data}\nreturn msg\n",
+        "outputs": 1,
+        "x": 1330,
+        "y": 960,
+        "wires": [
+            [
+                "e34ee081ad0b1faf",
+                "40434672e9959c1e"
+            ]
+        ]
+    },
+    {
+        "id": "6703cb203533ed13",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = msg['payload']['e']['v']\nmsg = {'payload' : data}\nreturn msg\n",
+        "outputs": 1,
+        "x": 4110,
+        "y": 2280,
+        "wires": [
+            [
+                "4fcf25e3cbebd058",
+                "c38e815f1659c42b"
+            ]
+        ]
+    },
+    {
+        "id": "a89313309950da04",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = msg['payload']['e']['v']\nmsg = {'payload' : data}\nreturn msg\n",
+        "outputs": 1,
+        "x": 3910,
+        "y": 2460,
+        "wires": [
+            [
+                "79bcffc3c3f4d807",
+                "3bb465c8e8852f0d"
+            ]
+        ]
     },
     {
         "id": "1a53a8f34e77244d",
