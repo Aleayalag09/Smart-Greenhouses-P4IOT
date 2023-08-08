@@ -1055,6 +1055,17 @@
         "hidden": false
     },
     {
+        "id": "74f46a3280ccbb23",
+        "type": "ui_group",
+        "name": "Devices",
+        "tab": "d5be29f8.437d68",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
         "id": "eabf404e758227c8",
         "type": "inject",
         "z": "74c1dd29ef8e2a61",
@@ -17841,8 +17852,8 @@
         "y": 380,
         "wires": [
             [
-                "fb5cb5e1290bcdf1",
-                "96ce07f6973c09d2"
+                "96ce07f6973c09d2",
+                "fb5cb5e1290bcdf1"
             ]
         ]
     },
@@ -17863,10 +17874,10 @@
         "senderr": false,
         "headers": [],
         "x": 970,
-        "y": 560,
+        "y": 500,
         "wires": [
             [
-                "2244a2278cf16a30"
+                "1613f5a1cd33fc26"
             ]
         ]
     },
@@ -17879,14 +17890,14 @@
         "order": 19,
         "width": 0,
         "height": 0,
-        "format": "\n<h3>Devices associated:</h3>\n<br>\n<p>SENSORS:</p>\n<ul>\n    <li ng-repeat=\"sensor in msg.payload[0].devices.sensors\">{{ sensor }}</li>\n</ul>\n<p>ACTUATORS:</p>\n<ul>\n    <li ng-repeat=\"actuator in msg.payload[0].devices.actuators\">{{ actuator }}</li>\n</ul>\n",
+        "format": "<h3>Devices associated:</h3>\n<br>\n<p>SENSORS:</p>\n<ul>\n    <li ng-repeat=\"sensor in msg.payload[0].devices.sensors\">{{ sensor }}</li>\n</ul>\n<p>ACTUATORS:</p>\n<ul>\n    <li ng-repeat=\"actuator in msg.payload[0].devices.actuators\">{{ actuator }}</li>\n</ul>\n",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": false,
         "templateScope": "local",
         "className": "template-4",
-        "x": 1320,
-        "y": 560,
+        "x": 1580,
+        "y": 500,
         "wires": [
             [
                 "6c593910232cacfb"
@@ -17905,8 +17916,8 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1510,
-        "y": 560,
+        "x": 1770,
+        "y": 500,
         "wires": []
     },
     {
@@ -17983,8 +17994,8 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1810,
-        "y": 180,
+        "x": 1790,
+        "y": 120,
         "wires": []
     },
     {
@@ -18012,8 +18023,8 @@
         "property": "payload",
         "action": "",
         "pretty": false,
-        "x": 1150,
-        "y": 560,
+        "x": 1390,
+        "y": 500,
         "wires": [
             [
                 "466352cfe6944085"
@@ -18037,7 +18048,7 @@
         "senderr": false,
         "headers": [],
         "x": 970,
-        "y": 380,
+        "y": 320,
         "wires": [
             [
                 "496999e9d36d4e9d"
@@ -18057,7 +18068,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 1770,
-        "y": 380,
+        "y": 320,
         "wires": []
     },
     {
@@ -18069,7 +18080,7 @@
         "action": "",
         "pretty": false,
         "x": 1390,
-        "y": 380,
+        "y": 320,
         "wires": [
             [
                 "690cc002ee0499aa",
@@ -18091,10 +18102,10 @@
         "rh": 0,
         "inputs": 1,
         "x": 1090,
-        "y": 960,
+        "y": 980,
         "wires": [
             [
-                "dcdf9bda79494cce"
+                "d1d7802f3b5f042a"
             ]
         ]
     },
@@ -18106,7 +18117,7 @@
         "func": "msg['action'] = \"subscribe\"\n# da aggiungere alla fine il sensorType\nmsg['topic']= \"IoT_project_29/\"+str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/sensors/temperature\"\n\n#msg['topic'] = \"IoT_project/group29/greenhouse1/temperature\"\nreturn msg",
         "outputs": 1,
         "x": 830,
-        "y": 960,
+        "y": 980,
         "wires": [
             [
                 "47891cc460d6088e"
@@ -18136,8 +18147,8 @@
         "seg1": "",
         "seg2": "",
         "className": "graph-temperature",
-        "x": 1450,
-        "y": 960,
+        "x": 1570,
+        "y": 980,
         "wires": []
     },
     {
@@ -18154,25 +18165,8 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 1450,
-        "y": 1020,
+        "y": 1040,
         "wires": []
-    },
-    {
-        "id": "dcdf9bda79494cce",
-        "type": "json",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "property": "payload",
-        "action": "",
-        "pretty": false,
-        "x": 1250,
-        "y": 960,
-        "wires": [
-            [
-                "40434672e9959c1e",
-                "e34ee081ad0b1faf"
-            ]
-        ]
     },
     {
         "id": "cc978f42f967bbd9",
@@ -18188,11 +18182,10 @@
         "rh": 0,
         "inputs": 1,
         "x": 1090,
-        "y": 780,
+        "y": 800,
         "wires": [
             [
-                "b7c48c4638d64641",
-                "c7c687f2ce435ace"
+                "1017c561b051c3b6"
             ]
         ]
     },
@@ -18204,7 +18197,7 @@
         "func": "msg['action'] = \"subscribe\"\n# da aggiungere alla fine il sensorType\nmsg['topic']= \"IoT_project_29/\"+str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/sensors/humidity\"\n\nreturn msg",
         "outputs": 1,
         "x": 830,
-        "y": 780,
+        "y": 800,
         "wires": [
             [
                 "cc978f42f967bbd9"
@@ -18224,8 +18217,8 @@
         "title": "Humidity",
         "label": "%",
         "format": "{{msg.payload}}",
-        "min": "30",
-        "max": "80",
+        "min": "0",
+        "max": "1",
         "colors": [
             "#0044b3",
             "#26e600",
@@ -18235,7 +18228,7 @@
         "seg2": "",
         "className": "graph-humidity",
         "x": 1580,
-        "y": 780,
+        "y": 800,
         "wires": []
     },
     {
@@ -18252,7 +18245,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 1450,
-        "y": 840,
+        "y": 860,
         "wires": []
     },
     {
@@ -20664,14 +20657,14 @@
         "order": 16,
         "width": 0,
         "height": 0,
-        "format": "<h3>The greenhouse attributes are: </h3>\n<br>\n<p>GREENHOUSE NAME: <span ng-bind=\"msg['payload']['greenHouseName']\"></span></p>\n<p>CITY: <span ng-bind=\"msg['payload']['city']\"></span></p>\n\n\n\n",
+        "format": "<h3>The greenhouse attributes are: </h3>\n<br>\n<p>GREENHOUSE NAME: <span ng-bind=\"msg['payload']['greenHouseName']\"></span></p>\n<p>CITY: <span ng-bind=\"msg['payload']['city']\"></span></p>",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": false,
         "templateScope": "local",
         "className": "template-3",
         "x": 1580,
-        "y": 380,
+        "y": 320,
         "wires": [
             [
                 "112b8f49e109c0cd"
@@ -20702,7 +20695,7 @@
         "func": "\nif msg['statusCode'] == 400:\n    data = {\n        'greenHouseName' : \"\",\n        'city' : \"\",\n        'error' : 'GREENHOUSE NOT FOUND'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n    return msg",
         "outputs": 1,
         "x": 1190,
-        "y": 380,
+        "y": 320,
         "wires": [
             [
                 "44a799ba54fc21aa"
@@ -20718,7 +20711,7 @@
         "action": "",
         "pretty": false,
         "x": 1570,
-        "y": 280,
+        "y": 220,
         "wires": [
             [
                 "2455a89baf539add"
@@ -20743,9 +20736,7 @@
         "x": 1740,
         "y": 20,
         "wires": [
-            [
-                "e0346bc0a202ae74"
-            ]
+            []
         ]
     },
     {
@@ -20764,11 +20755,9 @@
         "templateScope": "local",
         "className": "template-3-error",
         "x": 1740,
-        "y": 280,
+        "y": 220,
         "wires": [
-            [
-                "2c1dc48a76165ed8"
-            ]
+            []
         ]
     },
     {
@@ -21375,7 +21364,7 @@
         "func": "query = \"?id=\"+str(msg['payload']['id'])+\"&greenHouseID=\"+ str(msg['payload']['greenHouseID'])\n\nmsg = {'query': query}\n\nreturn msg",
         "outputs": 1,
         "x": 830,
-        "y": 1140,
+        "y": 1160,
         "wires": [
             [
                 "f8da51c0b8f869c9"
@@ -21391,7 +21380,7 @@
         "action": "",
         "pretty": false,
         "x": 1270,
-        "y": 1140,
+        "y": 1160,
         "wires": [
             [
                 "8462fce415534226"
@@ -21414,7 +21403,7 @@
         "templateScope": "local",
         "className": "status-window",
         "x": 1600,
-        "y": 1140,
+        "y": 1160,
         "wires": [
             [
                 "4940cebc65e1232a"
@@ -21434,7 +21423,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 1790,
-        "y": 1140,
+        "y": 1160,
         "wires": []
     },
     {
@@ -21444,7 +21433,7 @@
         "name": "",
         "info": "Trasformare il valore in On/Off",
         "x": 1420,
-        "y": 1120,
+        "y": 1140,
         "wires": []
     },
     {
@@ -21852,7 +21841,7 @@
         "y": 2460,
         "wires": [
             [
-                "11c32fc2e881783b"
+                "a89313309950da04"
             ]
         ]
     },
@@ -21894,7 +21883,7 @@
         "seg1": "",
         "seg2": "",
         "className": "",
-        "x": 4070,
+        "x": 4170,
         "y": 2460,
         "wires": []
     },
@@ -21911,26 +21900,9 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 4090,
+        "x": 4170,
         "y": 2520,
         "wires": []
-    },
-    {
-        "id": "11c32fc2e881783b",
-        "type": "json",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "property": "payload",
-        "action": "",
-        "pretty": false,
-        "x": 3890,
-        "y": 2460,
-        "wires": [
-            [
-                "3bb465c8e8852f0d",
-                "79bcffc3c3f4d807"
-            ]
-        ]
     },
     {
         "id": "4ed2b83c9116b64f",
@@ -21949,7 +21921,7 @@
         "y": 2280,
         "wires": [
             [
-                "831f76a2d0e49b94"
+                "6703cb203533ed13"
             ]
         ]
     },
@@ -22011,23 +21983,6 @@
         "x": 4310,
         "y": 2360,
         "wires": []
-    },
-    {
-        "id": "831f76a2d0e49b94",
-        "type": "json",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "property": "payload",
-        "action": "",
-        "pretty": false,
-        "x": 4090,
-        "y": 2280,
-        "wires": [
-            [
-                "c38e815f1659c42b",
-                "4fcf25e3cbebd058"
-            ]
-        ]
     },
     {
         "id": "a2559b1c8a9ddb1c",
@@ -22356,7 +22311,7 @@
         "senderr": false,
         "headers": [],
         "x": 1070,
-        "y": 1140,
+        "y": 1160,
         "wires": [
             [
                 "d7b02bac38610136",
@@ -22373,7 +22328,7 @@
         "order": 11,
         "width": 0,
         "height": 0,
-        "format": "<style>\n    .template-1 p {\n        font-size: 16px;\n        color: red;\n        text-align: left;\n        margin-bottom: 5px;\n    }\n    \n    .template-1 h1 {\n        font-size: 20px;\n        color: #333;\n        text-align: center;\n        margin-bottom: 10px;\n    }\n    \n    .b {\n        font-weight: bold;\n    }\n    \n    .template-2 p {\n        font-size: 16px;\n        color: #333;\n        text-align: left;\n        margin-bottom: 7px;\n    }\n    \n    .template-2 h1 {\n        font-size: 18px;\n        color: #333;\n        text-align: center;\n        margin-bottom: 7px;\n    }\n    \n    .template-2-error h4 {\n        font-size: 18px;\n        color: red;\n        text-align: center;\n        margin-bottom: 20px;\n        text-decoration: underline;\n    }\n    .template-3 p {\n        font-size: 16px;\n        color: #333;\n        text-align: left;\n        margin-bottom: 7px;\n    }\n    .template-3-error h4 {\n        font-size: 18px;\n        color: red;\n        text-align: center;\n        margin-bottom: 20px;\n        text-decoration: underline;\n    }\n    .template-4 p {\n        font-size: 16px;\n        color: #333;\n        text-align: left;\n        margin-bottom: 7px;\n    }\n    .template-4 h1 {\n        font-size: 18px;\n        color: #333;\n        text-align: center;\n        margin-bottom: 7px;\n    }\n    .graph-humidity p {\n        font-size: 20px;\n        color: #333;\n        text-align: right;\n        margin-bottom: 20px;\n    }\n    \n    .graph-temperature p {\n        font-size: 20px;\n        color: #333;\n        text-align: left;\n        margin-bottom: 20px;\n    }\n    \n    .status-window  p {\n        font-size: 16px;\n        color: #333;\n        text-align: left;\n        margin-bottom: 7px;\n    }\n    \n    .button-template {\n        \n        background-color: blue; \n        color: #fff; \n        font-size: 20px;\n        padding: 5px 15px; \n        border: none; \n        border-radius: 15px; \n        cursor: pointer;\n        transition: background-color 0.3s; \n    }\n    \n    \n    .button-template:hover {\n    background-color: #0099CC; \n    color: #0066FF;\n        }\n\n    \n</style>\n\n",
+        "format": "<style>\n    .template-1 p {\n        font-size: 16px;\n        color: red;\n        text-align: left;\n        margin-bottom: 5px;\n    }\n    \n    .template-1 h1 {\n        font-size: 20px;\n        color: #333;\n        text-align: center;\n        margin-bottom: 10px;\n    }\n    \n    .b {\n        font-weight: bold;\n    }\n    \n    .template-2 p {\n        font-size: 16px;\n        color: #333;\n        text-align: left;\n        margin-bottom: 7px;\n    }\n    \n    .template-2 h1 {\n        font-size: 18px;\n        color: #333;\n        text-align: center;\n        margin-bottom: 7px;\n    }\n    \n    .template-2-error h4 {\n        font-size: 18px;\n        color: red;\n        text-align: center;\n        margin-bottom: 20px;\n        text-decoration: underline;\n    }\n    .template-3 p {\n        font-size: 16px;\n        color: #333;\n        text-align: left;\n        margin-bottom: 7px;\n    }\n    .template-3-error h4 {\n        font-size: 18px;\n        color: red;\n        text-align: center;\n        margin-bottom: 20px;\n        text-decoration: underline;\n    }\n    .template-4 p {\n        font-size: 16px;\n        color: #333;\n        text-align: left;\n        margin-bottom: 7px;\n    }\n    .template-4 h1 {\n        font-size: 18px;\n        color: #333;\n        text-align: center;\n        margin-bottom: 7px;\n    }\n    .template-4-error h4 {\n        font-size: 18px;\n        color: red;\n        text-align: center;\n        margin-bottom: 20px;\n        text-decoration: underline;\n    }\n    .graph-humidity p {\n        font-size: 20px;\n        color: #333;\n        text-align: right;\n        margin-bottom: 20px;\n    }\n    \n    .graph-temperature p {\n        font-size: 20px;\n        color: #333;\n        text-align: left;\n        margin-bottom: 20px;\n    }\n    \n    .status-window  p {\n        font-size: 16px;\n        color: #333;\n        text-align: left;\n        margin-bottom: 7px;\n    }\n    \n    .button-template {\n        \n        background-color: blue; \n        color: #fff; \n        font-size: 20px;\n        padding: 5px 15px; \n        border: none; \n        border-radius: 15px; \n        cursor: pointer;\n        transition: background-color 0.3s; \n    }\n    \n    \n    .button-template:hover {\n    background-color: #0099CC; \n    color: #0066FF;\n        }\n\n    \n</style>\n\n",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": true,
@@ -22463,7 +22418,7 @@
         "order": 2,
         "width": "6",
         "height": "3",
-        "format": "<h1>UPDATE USER </h1>\n<p>Enter the <b>personal ID</b> and change your personal information</p>",
+        "format": "<h1>UPDATE USER </h1>\n<p>Enter the <b>personal ID</b> and change your personal information.</p>",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": false,
@@ -22486,7 +22441,7 @@
         "order": 1,
         "width": "6",
         "height": "3",
-        "format": "<h1>DELETE USER </h1>\n<p>Enter the <b>personal ID</b> to delete all the user information</p>\n",
+        "format": "<h1>DELETE USER </h1>\n<p>Enter the <b>personal ID</b> to delete all the user information.</p>\n",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": false,
@@ -22569,7 +22524,7 @@
         "order": 1,
         "width": "6",
         "height": "3",
-        "format": "<h1>DELETE GREENHOUSE </h1>\n<p>Enter the <b>personal ID</b> and <b>greenhouse ID</b> to delete greenhouse information</p>\n",
+        "format": "<h1>DELETE GREENHOUSE </h1>\n<p>Enter the <b>personal ID</b> and <b>greenhouse ID</b> to delete greenhouse information.</p>\n",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": false,
@@ -22613,7 +22568,7 @@
         "order": 1,
         "width": "6",
         "height": "2",
-        "format": "<h1>UPDATE GREENHOUSE </h1>\n<p>Enter the <b>personal ID</b> and <b>Greenhouse ID</b> and change greenhouse information</p>",
+        "format": "<h1>UPDATE GREENHOUSE </h1>\n<p>Enter the <b>personal ID</b> and <b>Greenhouse ID</b> and change greenhouse information.</p>",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": false,
@@ -22636,7 +22591,7 @@
         "order": 1,
         "width": "6",
         "height": "3",
-        "format": "<h1>CREATE NEW GREENHOUSE </h1>\n<p>Enter your <b>personal ID</b> and <b>greenhouse ID</b> and fill in the fields with your greenhouse information</p>",
+        "format": "<h1>CREATE NEW GREENHOUSE </h1>\n<p>Enter your <b>personal ID</b> and <b>greenhouse ID</b> and fill in the fields with your greenhouse information.</p>",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": false,
@@ -22749,7 +22704,7 @@
         "order": 1,
         "width": 0,
         "height": 0,
-        "format": "<div>\n    <p>Enter your <b>personal ID</b> and the <b>greenhouse ID</b> to visualize the current strategies</p>\n    <br>\n    <p>To change user or greenhouse use this form. <b>Never</b> modify <b>User ID</b> and <b>Greenhouse ID</b> in the other form</p>\n</div>",
+        "format": "<div>\n    <p>Enter your <b>personal ID</b> and the <b>greenhouse ID</b> to visualize the current strategies.</p>\n    <br>\n    <p>To change user or greenhouse use this form. <b>Never</b> modify <b>User ID</b> and <b>Greenhouse ID</b> in the other forms.</p>\n</div>",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": true,
@@ -22818,7 +22773,7 @@
         "order": 1,
         "width": 0,
         "height": 0,
-        "format": "<div>\n    <p>Enter your <b>personal ID</b> and the <b>greenhouse ID</b> to visualize measurements plots</p>\n   \n</div>",
+        "format": "<div>\n    <p>Enter your <b>personal ID</b> and the <b>greenhouse ID</b> to visualize measurements plots.</p>\n   \n</div>",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": true,
@@ -23434,92 +23389,6 @@
         ]
     },
     {
-        "id": "ca73d07bd37408c6",
-        "type": "python3-function",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "func": "data = {\n        'error' : ''\n    }\nmsg = {'payload' : data}\nreturn msg\n",
-        "outputs": 1,
-        "x": 1850,
-        "y": 100,
-        "wires": [
-            [
-                "7ce9d330cf19a9ec"
-            ]
-        ]
-    },
-    {
-        "id": "e0346bc0a202ae74",
-        "type": "ui_button",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "group": "54a9d42f1566907a",
-        "order": 6,
-        "width": 0,
-        "height": 0,
-        "passthru": false,
-        "label": "OK",
-        "tooltip": "",
-        "color": "",
-        "bgcolor": "",
-        "className": "button-template",
-        "icon": "",
-        "payload": "",
-        "payloadType": "str",
-        "topic": "topic",
-        "topicType": "msg",
-        "x": 1910,
-        "y": 20,
-        "wires": [
-            [
-                "ca73d07bd37408c6"
-            ]
-        ]
-    },
-    {
-        "id": "2c1dc48a76165ed8",
-        "type": "ui_button",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "group": "54a9d42f1566907a",
-        "order": 13,
-        "width": 0,
-        "height": 0,
-        "passthru": false,
-        "label": "OK",
-        "tooltip": "",
-        "color": "",
-        "bgcolor": "",
-        "className": "button-template",
-        "icon": "",
-        "payload": "",
-        "payloadType": "str",
-        "topic": "topic",
-        "topicType": "msg",
-        "x": 1990,
-        "y": 240,
-        "wires": [
-            [
-                "37654ee0e5f51bc9"
-            ]
-        ]
-    },
-    {
-        "id": "37654ee0e5f51bc9",
-        "type": "python3-function",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "func": "data = {\n        'error' : ''\n    }\nmsg = {'payload' : data}\nreturn msg\n",
-        "outputs": 1,
-        "x": 1930,
-        "y": 320,
-        "wires": [
-            [
-                "2455a89baf539add"
-            ]
-        ]
-    },
-    {
         "id": "109399fa8936c736",
         "type": "ui_form",
         "z": "dfa5f5222d797092",
@@ -23557,12 +23426,13 @@
         "splitLayout": "",
         "className": "",
         "x": 810,
-        "y": 700,
+        "y": 720,
         "wires": [
             [
                 "82af757ed4e75c1e",
                 "b77bc72f78c2613b",
-                "22088ad3bc05983d"
+                "22088ad3bc05983d",
+                "8661dc6fbaa9996e"
             ]
         ]
     },
@@ -23574,7 +23444,7 @@
         "func": "data = {\n    'id' : msg['payload']['id'],\n    'greenHouseID': msg['payload']['greenHouseID']\n}\n\nmsg = {'payload' : data}\nreturn msg",
         "outputs": 1,
         "x": 1050,
-        "y": 620,
+        "y": 640,
         "wires": [
             [
                 "109399fa8936c736"
@@ -23589,7 +23459,7 @@
         "func": "msg['action'] = \"unsubscribe\"\n# da aggiungere alla fine il sensorType\nmsg['topic']= \"IoT_project_29/\"+str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/sensors/humidity\"\n\n#msg['topic'] = \"IoT_project/group29/greenhouse1/humidity\"\nreturn msg",
         "outputs": 1,
         "x": 1050,
-        "y": 700,
+        "y": 720,
         "wires": [
             [
                 "cc978f42f967bbd9"
@@ -23604,7 +23474,7 @@
         "func": "msg['action'] = \"unsubscribe\"\n# da aggiungere alla fine il sensorType\nmsg['topic']= \"IoT_project_29/\"+str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/sensors/temperature\"\n\n#msg['topic'] = \"IoT_project/group29/greenhouse1/humidity\"\nreturn msg",
         "outputs": 1,
         "x": 1050,
-        "y": 900,
+        "y": 920,
         "wires": [
             [
                 "47891cc460d6088e"
@@ -23620,7 +23490,7 @@
         "order": 7,
         "width": 0,
         "height": 0,
-        "format": "<div>\n    <p>Before enter a new user or greenhouse ID, <b>unsubscribe</b> from the previous topic</p>\n    <p>Do <b>not</b> modify the following form</p>\n</div>",
+        "format": "<div>\n    <p>Before entering a new user or greenhouse ID, <b>unsubscribe</b> from the previous topic</p>\n    <p>(DO <b>NOT</b> MODIFY THIS FORM)</p>\n</div>",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": true,
@@ -23851,26 +23721,152 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 1251.6666259765625,
-        "y": 1088.333251953125,
+        "y": 1108.333251953125,
         "wires": []
     },
     {
-        "id": "b7c48c4638d64641",
-        "type": "function",
+        "id": "1017c561b051c3b6",
+        "type": "python3-function",
         "z": "dfa5f5222d797092",
-        "name": "function 1",
-        "func": "data = msg['payloa']['bn']['v']\nmsg = {'payload' : data}\nreturn msg\n",
+        "name": "",
+        "func": "data = msg['payload']['e']['v']\nmsg = {'payload' : data}\nreturn msg\n",
         "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 1420,
-        "y": 780,
+        "x": 1330,
+        "y": 800,
         "wires": [
             [
-                "148f517f821a8373"
+                "148f517f821a8373",
+                "c7c687f2ce435ace"
             ]
+        ]
+    },
+    {
+        "id": "d1d7802f3b5f042a",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = msg['payload']['e']['v']\nmsg = {'payload' : data}\nreturn msg\n",
+        "outputs": 1,
+        "x": 1330,
+        "y": 980,
+        "wires": [
+            [
+                "e34ee081ad0b1faf",
+                "40434672e9959c1e"
+            ]
+        ]
+    },
+    {
+        "id": "6703cb203533ed13",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = msg['payload']['e']['v']\nmsg = {'payload' : data}\nreturn msg\n",
+        "outputs": 1,
+        "x": 4110,
+        "y": 2280,
+        "wires": [
+            [
+                "4fcf25e3cbebd058",
+                "c38e815f1659c42b"
+            ]
+        ]
+    },
+    {
+        "id": "a89313309950da04",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = msg['payload']['e']['v']\nmsg = {'payload' : data}\nreturn msg\n",
+        "outputs": 1,
+        "x": 3910,
+        "y": 2460,
+        "wires": [
+            [
+                "79bcffc3c3f4d807",
+                "3bb465c8e8852f0d"
+            ]
+        ]
+    },
+    {
+        "id": "1613f5a1cd33fc26",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "\nif msg['statusCode'] == 400:\n    data = {\n        'error' : 'DEVICES NOT FOUND'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n    return msg",
+        "outputs": 1,
+        "x": 1190,
+        "y": 500,
+        "wires": [
+            [
+                "2244a2278cf16a30"
+            ]
+        ]
+    },
+    {
+        "id": "2ec4fe9ba852c631",
+        "type": "comment",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "info": "COME STRA PORCO DIO SI FA A METTERE LA SEZIONE DI ERRORE TRA GREENHOUSE ATTRIBUTES E DEVICES INVECE CHE DIRETTAMENTE SOTTO LA SEZIONE DI ERRORE DI GREENHOUSES?",
+        "x": 1400,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "8661dc6fbaa9996e",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = \"\"\nmsg = {'payload' : data}\nreturn msg",
+        "outputs": 1,
+        "x": 1050,
+        "y": 580,
+        "wires": [
+            [
+                "148f517f821a8373",
+                "e34ee081ad0b1faf",
+                "6983386f02f85a7b",
+                "690cc002ee0499aa",
+                "466352cfe6944085"
+            ]
+        ]
+    },
+    {
+        "id": "c99f94609f0c4ce2",
+        "type": "json",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 1570,
+        "y": 580,
+        "wires": [
+            [
+                "fa1742345a7962b5"
+            ]
+        ]
+    },
+    {
+        "id": "fa1742345a7962b5",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "54a9d42f1566907a",
+        "name": "",
+        "order": 12,
+        "width": "0",
+        "height": "0",
+        "format": "<h4><span ng-bind=\"msg['payload']['error']\"></span></h4>\n\n\n\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "template-4-error",
+        "x": 1740,
+        "y": 580,
+        "wires": [
+            []
         ]
     },
     {
