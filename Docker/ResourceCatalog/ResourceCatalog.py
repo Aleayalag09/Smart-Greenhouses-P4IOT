@@ -1415,13 +1415,13 @@ def remove_from_db(category = "", idx = -1):
         category = [category[0]]
     
     # DELETE a device connector of a greenhouse
-    if len(category) == 4:
+    if len(category) > 4:
         for user in db["users"]:
             if user["id"] == int(category[0]):
                 for greenhouse in user["greenHouses"]:
                     if greenhouse["greenHouseID"] == int(category[1]):
                         for index, dev_conn in enumerate(greenhouse["deviceConnectors"]):
-                            if dev_conn["ip"] == category[2] and dev_conn["port"] == int(category[3]):
+                            if dev_conn["ip"] == (category[2]+"//"+category[4]) and dev_conn["port"] == int(category[5]):
                                 greenhouse["deviceConnectors"].pop(index)
 
                                 # I assume that there is just one Adaptor
@@ -1821,7 +1821,7 @@ if __name__=="__main__":
         if len(thingspeak_adaptors) > 0:
             for idx, adaptor in enumerate(thingspeak_adaptors):
                 if timestamp - float(adaptor["timestamp"]) >= timeout_adaptor:
-                    remove_from_db("thingspeak_adaptor/", idx)
+                    remove_from_db("thingspeak_adaptors/", idx)
                     update = True
         if len(webpages) > 0:
             for idx, webpage in enumerate(webpages):
