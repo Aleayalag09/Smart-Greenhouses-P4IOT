@@ -21809,7 +21809,7 @@
         "type": "ui_chart",
         "z": "dfa5f5222d797092",
         "name": "",
-        "group": "0301ba55f59e74c0",
+        "group": "4030566d0fe92597",
         "order": 3,
         "width": 0,
         "height": 0,
@@ -22905,7 +22905,7 @@
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "template-initial-plots",
-        "x": 3360,
+        "x": 3340,
         "y": 2460,
         "wires": [
             [
@@ -23631,7 +23631,7 @@
             "greenHouseID": ""
         },
         "payload": "",
-        "submit": "submit",
+        "submit": "unsubscribe",
         "cancel": "cancel",
         "topic": "",
         "topicType": "str",
@@ -23643,7 +23643,8 @@
             [
                 "1940d3aee50fa044",
                 "29ae8612d318481f",
-                "4963a8752fb69d27"
+                "4963a8752fb69d27",
+                "5e74bf960214efee"
             ]
         ]
     },
@@ -23899,7 +23900,135 @@
         "templateScope": "local",
         "className": "template-initial-plots",
         "x": 3340,
-        "y": 2740,
+        "y": 2800,
+        "wires": [
+            [
+                "77f95c0ece769d59"
+            ]
+        ]
+    },
+    {
+        "id": "77f95c0ece769d59",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "msg['action'] = \"subscribe\"\n\nmsg['topic']= \"IoT_project_29/\"+str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/irrigation/#\"\n\nreturn msg",
+        "outputs": 1,
+        "x": 3550,
+        "y": 2800,
+        "wires": [
+            [
+                "14e3e0a4d2a2c6a9"
+            ]
+        ]
+    },
+    {
+        "id": "14e3e0a4d2a2c6a9",
+        "type": "mqtt in",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "topic": "",
+        "qos": "2",
+        "datatype": "json",
+        "broker": "a6d151784d60722d",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 1,
+        "x": 3750,
+        "y": 2800,
+        "wires": [
+            [
+                "54c853905a8d0ffb"
+            ]
+        ]
+    },
+    {
+        "id": "54c853905a8d0ffb",
+        "type": "debug",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 3970,
+        "y": 2880,
+        "wires": []
+    },
+    {
+        "id": "5e74bf960214efee",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "msg['action'] = \"unsubscribe\"\n\nmsg['topic']= \"IoT_project_29/\"+str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/irrigation/#\"\n\nreturn msg",
+        "outputs": 1,
+        "x": 3750,
+        "y": 2720,
+        "wires": [
+            [
+                "14e3e0a4d2a2c6a9"
+            ]
+        ]
+    },
+    {
+        "id": "f52c23079f181acb",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "\nreturn msg",
+        "outputs": 1,
+        "x": 3990,
+        "y": 2800,
+        "wires": [
+            [
+                "eaec0424ec250072"
+            ]
+        ]
+    },
+    {
+        "id": "eaec0424ec250072",
+        "type": "ui_chart",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "group": "0301ba55f59e74c0",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "label": "",
+        "chartType": "bar",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 4170,
+        "y": 2800,
         "wires": [
             []
         ]
