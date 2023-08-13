@@ -21722,46 +21722,6 @@
         ]
     },
     {
-        "id": "dbc70993a078a2e4",
-        "type": "python3-function",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "func": "query = \"?id=\"+str(msg['payload']['id'])+\"&greenHouseID=\"+ str(msg['payload']['greenHouseID'])\n\nmsg = {'query': query}\n\nreturn msg\n",
-        "outputs": 1,
-        "x": 3490,
-        "y": 1700,
-        "wires": [
-            [
-                "579d2b04db87eff2",
-                "7b812667fb782ab8"
-            ]
-        ]
-    },
-    {
-        "id": "579d2b04db87eff2",
-        "type": "http request",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "method": "GET",
-        "ret": "txt",
-        "paytoqs": "ignore",
-        "url": "http://thingspeak_adaptor:8080/tschannel{{{query}}}",
-        "tls": "",
-        "persist": false,
-        "proxy": "",
-        "insecureHTTPParser": false,
-        "authType": "",
-        "senderr": false,
-        "headers": [],
-        "x": 3790,
-        "y": 1700,
-        "wires": [
-            [
-                "580cd6e2b03c04dc"
-            ]
-        ]
-    },
-    {
         "id": "9423417cf0b202eb",
         "type": "comment",
         "z": "dfa5f5222d797092",
@@ -21861,8 +21821,8 @@
         "rap": true,
         "rh": 0,
         "inputs": 1,
-        "x": 3730,
-        "y": 2460,
+        "x": 3810,
+        "y": 2480,
         "wires": [
             [
                 "a89313309950da04"
@@ -21876,8 +21836,8 @@
         "name": "",
         "func": "msg['action'] = \"subscribe\"\n# da aggiungere alla fine il sensorType\nmsg['topic']= \"IoT_project_29/\"+str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/sensors/temperature\"\n\n#msg['topic'] = \"IoT_project/group29/greenhouse1/temperature\"\nreturn msg",
         "outputs": 1,
-        "x": 3550,
-        "y": 2460,
+        "x": 3630,
+        "y": 2480,
         "wires": [
             [
                 "7a68a5610671c945"
@@ -21907,8 +21867,8 @@
         "seg1": "",
         "seg2": "",
         "className": "",
-        "x": 4170,
-        "y": 2460,
+        "x": 4250,
+        "y": 2480,
         "wires": []
     },
     {
@@ -21924,8 +21884,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 4170,
-        "y": 2520,
+        "x": 4250,
+        "y": 2540,
         "wires": []
     },
     {
@@ -22004,8 +21964,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 4310,
-        "y": 2360,
+        "x": 4330,
+        "y": 2340,
         "wires": []
     },
     {
@@ -22015,7 +21975,7 @@
         "name": "",
         "func": "query = \"?id=\"+str(msg['payload']['id'])+\"&greenHouseID=\"+ str(msg['payload']['greenHouseID'])\n\nmsg = {'query': query}\n\nreturn msg",
         "outputs": 1,
-        "x": 3550,
+        "x": 3630,
         "y": 2640,
         "wires": [
             [
@@ -22819,7 +22779,7 @@
         "property": "payload",
         "action": "",
         "pretty": false,
-        "x": 3990,
+        "x": 4070,
         "y": 2640,
         "wires": [
             [
@@ -22842,7 +22802,7 @@
         "resendOnRefresh": false,
         "templateScope": "local",
         "className": "status-window",
-        "x": 4180,
+        "x": 4260,
         "y": 2640,
         "wires": [
             [
@@ -22862,7 +22822,7 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 4390,
+        "x": 4470,
         "y": 2640,
         "wires": []
     },
@@ -22882,7 +22842,7 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 3790,
+        "x": 3870,
         "y": 2640,
         "wires": [
             [
@@ -22895,7 +22855,7 @@
         "type": "ui_template",
         "z": "dfa5f5222d797092",
         "group": "c54cc5d01a793531",
-        "name": "",
+        "name": "temperature stat",
         "order": 1,
         "width": 0,
         "height": 0,
@@ -22905,8 +22865,8 @@
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "template-initial-plots",
-        "x": 3360,
-        "y": 2460,
+        "x": 3440,
+        "y": 2480,
         "wires": [
             [
                 "a0d24bd0fd6b64dd"
@@ -22939,7 +22899,7 @@
         "type": "ui_template",
         "z": "dfa5f5222d797092",
         "group": "e42281d9419547e2",
-        "name": "",
+        "name": "humidity stat",
         "order": 1,
         "width": 0,
         "height": 0,
@@ -22949,7 +22909,7 @@
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "template-initial-plots",
-        "x": 3420,
+        "x": 3430,
         "y": 2280,
         "wires": [
             [
@@ -22962,7 +22922,7 @@
         "type": "ui_template",
         "z": "dfa5f5222d797092",
         "group": "4030566d0fe92597",
-        "name": "",
+        "name": "window stat",
         "order": 1,
         "width": 0,
         "height": 0,
@@ -22972,7 +22932,7 @@
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "template-initial-plots",
-        "x": 3340,
+        "x": 3430,
         "y": 2640,
         "wires": [
             [
@@ -22997,20 +22957,6 @@
         ]
     },
     {
-        "id": "1682d47e1a0d1a07",
-        "type": "python3-function",
-        "z": "dfa5f5222d797092",
-        "d": true,
-        "name": "",
-        "func": "if msg['statusCode'] == 400:\n\n    data = {\n        'error' : 'USER OR GREENHOUSE DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n    return msg\n",
-        "outputs": 1,
-        "x": 4010,
-        "y": 1780,
-        "wires": [
-            []
-        ]
-    },
-    {
         "id": "15987275e15e731b",
         "type": "ui_template",
         "z": "dfa5f5222d797092",
@@ -23030,31 +22976,6 @@
         "wires": [
             [
                 "8c89b4ee0f2c7b7d"
-            ]
-        ]
-    },
-    {
-        "id": "7b812667fb782ab8",
-        "type": "http request",
-        "z": "dfa5f5222d797092",
-        "d": true,
-        "name": "",
-        "method": "GET",
-        "ret": "txt",
-        "paytoqs": "ignore",
-        "url": "http://resource_catalog:8080/greenhouse{{{query}}}",
-        "tls": "",
-        "persist": false,
-        "proxy": "",
-        "insecureHTTPParser": false,
-        "authType": "",
-        "senderr": false,
-        "headers": [],
-        "x": 3790,
-        "y": 1780,
-        "wires": [
-            [
-                "1682d47e1a0d1a07"
             ]
         ]
     },
@@ -23585,22 +23506,6 @@
         ]
     },
     {
-        "id": "580cd6e2b03c04dc",
-        "type": "debug",
-        "z": "dfa5f5222d797092",
-        "name": "debug 1",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 3960,
-        "y": 1700,
-        "wires": []
-    },
-    {
         "id": "628128275bd54f54",
         "type": "ui_form",
         "z": "dfa5f5222d797092",
@@ -23631,7 +23536,7 @@
             "greenHouseID": ""
         },
         "payload": "",
-        "submit": "submit",
+        "submit": "unsubscribe",
         "cancel": "cancel",
         "topic": "",
         "topicType": "str",
@@ -23643,7 +23548,8 @@
             [
                 "1940d3aee50fa044",
                 "29ae8612d318481f",
-                "4963a8752fb69d27"
+                "4963a8752fb69d27",
+                "5e74bf960214efee"
             ]
         ]
     },
@@ -23793,8 +23699,8 @@
         "name": "",
         "func": "data = msg['payload']['e']['v']\nmsg = {'payload' : data}\nreturn msg\n",
         "outputs": 1,
-        "x": 3910,
-        "y": 2460,
+        "x": 3990,
+        "y": 2480,
         "wires": [
             [
                 "79bcffc3c3f4d807",
@@ -23888,7 +23794,7 @@
         "type": "ui_template",
         "z": "dfa5f5222d797092",
         "group": "0301ba55f59e74c0",
-        "name": "",
+        "name": "Irrigation stat",
         "order": 1,
         "width": 0,
         "height": 0,
@@ -23898,8 +23804,136 @@
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "template-initial-plots",
-        "x": 3340,
+        "x": 3430,
+        "y": 2820,
+        "wires": [
+            [
+                "77f95c0ece769d59"
+            ]
+        ]
+    },
+    {
+        "id": "77f95c0ece769d59",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "msg['action'] = \"subscribe\"\n\nmsg['topic']= \"IoT_project_29/\"+str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/irrigation/#\"\n\nreturn msg",
+        "outputs": 1,
+        "x": 3630,
+        "y": 2820,
+        "wires": [
+            [
+                "14e3e0a4d2a2c6a9"
+            ]
+        ]
+    },
+    {
+        "id": "14e3e0a4d2a2c6a9",
+        "type": "mqtt in",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "topic": "",
+        "qos": "2",
+        "datatype": "json",
+        "broker": "a6d151784d60722d",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 1,
+        "x": 3830,
+        "y": 2820,
+        "wires": [
+            [
+                "54c853905a8d0ffb"
+            ]
+        ]
+    },
+    {
+        "id": "54c853905a8d0ffb",
+        "type": "debug",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 4050,
+        "y": 2900,
+        "wires": []
+    },
+    {
+        "id": "5e74bf960214efee",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "msg['action'] = \"unsubscribe\"\n\nmsg['topic']= \"IoT_project_29/\"+str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/irrigation/#\"\n\nreturn msg",
+        "outputs": 1,
+        "x": 3830,
         "y": 2740,
+        "wires": [
+            [
+                "14e3e0a4d2a2c6a9"
+            ]
+        ]
+    },
+    {
+        "id": "f52c23079f181acb",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "\nreturn msg",
+        "outputs": 1,
+        "x": 4070,
+        "y": 2820,
+        "wires": [
+            [
+                "eaec0424ec250072"
+            ]
+        ]
+    },
+    {
+        "id": "eaec0424ec250072",
+        "type": "ui_chart",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "group": "0301ba55f59e74c0",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "label": "",
+        "chartType": "bar",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 4250,
+        "y": 2820,
         "wires": [
             []
         ]
