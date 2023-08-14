@@ -361,12 +361,13 @@ if __name__=="__main__":
     getStrategies()
 
     refresh_freq = 60
+    cooldown = 80
+    water_released = 0
     
     db_file = open(database, "r")
     db = json.load(db_file)
     
     broker_dict = db["broker"]
-    strategies = db["strategies"]
     
     publisher = MQTT_publisher(broker_dict["ip"], broker_dict["port"])
     publisher.start()
@@ -375,8 +376,8 @@ if __name__=="__main__":
 
     while True:
         timestamp = time.time()
-        time_start = datetime.fromtimestamp(timestamp)
-        time_start = time_start.strftime("%H:%M:%S")
+        time_start = datetime.fromtimestamp(timestamp+7200)
+        time_start = time_start.strftime("%H:%M")
 
         if timestamp-last_refresh >= refresh_freq:
 
@@ -394,8 +395,11 @@ if __name__=="__main__":
             else:
                 new_strat = False
 
-        for strat in strategies:
+        for strat in db["strategies"]:
             
-            # AGGIUNGERE UN RANGE DI CONTROLLO IN MODO DA NON RISCHIARE DI PERDERE IL COMANDO PER QUESTIONE DI SECONDI
-            if strat["time"] == time_start and strat["active"] == True:
+            strat_time = datetime.strptime(strat["time"], "%H:%M:%S")
+            strat_time = strat_time.strftime("%H:%M")
+
+            if str(strat_time) == str(time_start) and strat["active"] == True and timestamp > water_released+cooldown:
                 publisher.publish(strat["topic"], strat["water_quantity"])
+                water_released = time.time()

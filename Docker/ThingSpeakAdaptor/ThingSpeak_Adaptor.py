@@ -41,6 +41,15 @@ class regTopic(object):
             db["topics"].append(new_topic)        
 
             MeasuresReceiver.subscribe(topic)
+        
+        # ADD THE IRRIGATION AS "SENSOR" TO TRACK THE WATER QUANTITY PUMPED
+        topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/#"
+        new_topic = {
+            "topic": topic
+        }
+        db["topics"].append(new_topic)   
+        
+        MeasuresReceiver.subscribe(topic)
 
         db_file = open(database, "w")
         json.dump(db, db_file, indent=3)
@@ -220,6 +229,13 @@ def getTopics():
                                 })
                 MeasuresReceiver.subscribe(topic)
 
+            # ADD THE IRRIGATION AS "SENSOR" TO TRACK THE WATER QUANTITY PUMPED
+            topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/#"
+            topics_list.append({
+                                "topic": topic
+                            })
+            MeasuresReceiver.subscribe(topic)
+
     db_file = open(database, "r")
     db = json.load(db_file)
     db_file.close()
@@ -245,7 +261,11 @@ def send_to_Thingspeak(topic, measure):
 
     userID = topic.split("/")[1]
     greenHouseID = topic.split("/")[2]
-    measureType = topic.split("/")[4]
+
+    if topic.split("/")[3] == "irrigation":
+        measureType = "irrigation"
+    else:   
+        measureType = topic.split("/")[4]
 
     for user in db["users"]:
         if user["userID"] == int(userID):

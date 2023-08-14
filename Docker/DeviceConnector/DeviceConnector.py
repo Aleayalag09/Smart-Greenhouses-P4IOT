@@ -251,13 +251,13 @@ class MQTT_subscriber_publisher(object):
                 
         elif actuatorType == "irrigation":
             if isinstance(value, (float, int)):
-                result = self.controller.set_value(pump_ID, value)     
+                result = self.controller.set_value(pump_ID, value)    
             else:
                 print("Invalid Value")
 
         # If the command was successfull it should be seen from the UTILITY TOPIC of the actuator
         # THE UTILITY TOPIC SHOULD BE ACCESSED TO SEE IF THE STRATEGIES' COMMAND WERE SUCCESSFULL
-        mqtt_handler.publish(str(db["userID"])+"/"+str(db["greenHouseID"])+"/utility/"+actuatorType, result, "utility")
+        mqtt_handler.publish("IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/utility/"+actuatorType, result, "utility")
 
     def publish(self, topic, value, measureType):
         self.client.loop_stop()
