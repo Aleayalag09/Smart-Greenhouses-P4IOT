@@ -640,6 +640,31 @@ class Strategy(object):
                                         "humidity" : humidity
                                     }
 
+                                    if greenhouse['strategies'][strategyType]["strat"] != {}:
+                                        
+                                        delete_manager_dict = {
+                                            'userID': id, 
+                                            'greenHouseID': greenHouseID
+                                        }
+
+                                        delete_to_manager(strategyType, delete_manager_dict)
+                                        delete_to_dev_conn(strategyType, delete_manager_dict)
+
+                                        if strategyType == "weather":
+                                        
+                                            with open("db/window_state.json", "r") as file:
+                                                db_ws = json.load(file)
+
+                                            for step, win_state in enumerate(db_ws["states"]):
+                                                if win_state["userID"] == id and win_state["greenHouseID"] == greenHouseID:
+                                                    del db_ws["states"][step]
+                                                    break
+
+                                            mqtt_handler.unsubscribe("IoT_project_29/"+str(id)+"/"+str(greenHouseID)+"/weather")
+                                            
+                                            with open("db/window_state.json", "w") as file:
+                                                json.dump(db_ws, file, indent=3)
+
                                     greenhouse['strategies'][strategyType]["strat"] = new_strat
                                     greenhouse['strategies'][strategyType]['active'] = active
                                     greenhouse['strategies'][strategyType]['timestamp'] = time.time()
@@ -891,7 +916,6 @@ class Strategy(object):
                                         
                                         with open("db/window_state.json", "w") as file:
                                             json.dump(db_ws, file, indent=3)
-
                                     
                                     return "Deleted all "+strategyType+" strategies for greenhouse "+str(greenHouseID)+" of user "+str(id)
         except:
@@ -1803,15 +1827,15 @@ if __name__=="__main__":
 
     # BOOT: retrieve all the DEVICE CONNECTORS info from the database (catalog.json)
     device_connectors_list = []
-    if len(db["users"]) > 0:
-        for user in db["users"]:
-            for greenhouse in user["greenHouses"]:
-                for dev_conn in greenhouse["deviceConnectors"]:
-                    device_connectors_list.append({
-                                                    "userID": user["id"],
-                                                    "greenHouseID": greenhouse["greenHouseID"],
-                                                    "dev_conn": dev_conn
-                                                })
+    # if len(db["users"]) > 0:
+    #     for user in db["users"]:
+    #         for greenhouse in user["greenHouses"]:
+    #             for dev_conn in greenhouse["deviceConnectors"]:
+    #                 device_connectors_list.append({
+    #                                                 "userID": user["id"],
+    #                                                 "greenHouseID": greenhouse["greenHouseID"],
+    #                                                 "dev_conn": dev_conn
+    #                                             })
     timeout_dev_connector = 120
     update = False
     
