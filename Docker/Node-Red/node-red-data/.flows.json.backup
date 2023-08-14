@@ -20788,7 +20788,7 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "\nif msg['statusCode'] == 400:\n    data = {\n        'error' : 'ERROR WITH THE USER ID'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n    return msg",
+        "func": "\nif msg['statusCode'] == 400:\n    data = {\n        'error' : 'ERROR WITH THE USER ID'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n    data = {\n        'error' : 'USER REGISTERED'\n    }\n    msg = {'payload' : data}\n    return msg",
         "outputs": 1,
         "x": 1490,
         "y": 1300,
@@ -20916,7 +20916,7 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "if msg['statusCode'] == 400:\n    data = {\n        'error' : 'ERROR WITH USER OR GREENHOUSE'\n    }\n    msg = {'payload' : data}\n    return msg\n\nelse:\n    \n    return msg",
+        "func": "if msg['statusCode'] == 400:\n    data = {\n        'error' : 'ERROR WITH USER OR GREENHOUSE'\n    }\n    msg = {'payload' : data}\n    return msg\n\nelse:\n    data = {\n        'error' : 'GREENHOUSE REGISTERED'\n    }\n    msg = {'payload' : data}\n    return msg",
         "outputs": 1,
         "x": 1490,
         "y": 1860,
@@ -21059,7 +21059,7 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "if msg['statusCode'] == 400:\n    data = {\n    'error' : 'USER OR GREENHOUSE DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n    data = {\n    'error' : 'GREENHOUSE CORRECTLY DELETED'\n    }\n    msg = {'payload' : data}\n    return msg",
+        "func": "if msg['statusCode'] == 400:\n    data = {\n    'error' : 'USER OR GREENHOUSE DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n    data = {\n    'error' : 'GREENHOUSE DELETED'\n    }\n    msg = {'payload' : data}\n    return msg",
         "outputs": 1,
         "x": 1410,
         "y": 2360,
@@ -21683,14 +21683,14 @@
             {
                 "label": "User ID",
                 "value": "id",
-                "type": "text",
+                "type": "number",
                 "required": true,
                 "rows": null
             },
             {
                 "label": "Greenhouse ID",
                 "value": "greenHouseID",
-                "type": "text",
+                "type": "number",
                 "required": true,
                 "rows": null
             }
@@ -22489,7 +22489,7 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "if msg['statusCode'] == 400:\n    data = {\n    'error' : 'USER DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\n    \nelse:\n    \n    return msg",
+        "func": "if msg['statusCode'] == 400:\n    data = {\n    'error' : 'USER DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\n    \nelse:\n    data = {\n        'error' : 'USER DELETED'\n    }\n    msg = {'payload' : data}\n    return msg",
         "outputs": 1,
         "x": 1470,
         "y": 1700,
@@ -22551,7 +22551,7 @@
         "name": "",
         "order": 1,
         "width": "6",
-        "height": "2",
+        "height": "3",
         "format": "<h1>UPDATE GREENHOUSE </h1>\n<p>Enter the <b>personal ID</b> and <b>Greenhouse ID</b> and change greenhouse information.</p>",
         "storeOutMessages": true,
         "fwdInMessages": true,
@@ -23423,8 +23423,8 @@
         "group": "0e274ee81497bf82",
         "name": "",
         "order": 7,
-        "width": 0,
-        "height": 0,
+        "width": "0",
+        "height": "0",
         "format": "<div>\n    <p>Before entering a new user or greenhouse ID, <b>unsubscribe</b> from the previous topic</p>\n    <p>(DO <b>NOT</b> MODIFY THIS FORM)</p>\n</div>",
         "storeOutMessages": true,
         "fwdInMessages": true,
@@ -23519,14 +23519,14 @@
             {
                 "label": "User ID",
                 "value": "id",
-                "type": "text",
+                "type": "number",
                 "required": true,
                 "rows": null
             },
             {
                 "label": "Greenhouse ID",
                 "value": "greenHouseID",
-                "type": "text",
+                "type": "number",
                 "required": true,
                 "rows": null
             }
@@ -23558,7 +23558,7 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "if msg['statusCode'] == 400:\n    data = {\n    'error' : 'USER DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\n    \nelse:\n    \n    return msg",
+        "func": "if msg['statusCode'] == 400:\n    data = {\n    'error' : 'USER DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\n    \nelse:\n    data = {\n        'error' : 'USER UPDATED'\n    }\n    msg = {'payload' : data}\n    return msg",
         "outputs": 1,
         "x": 2170,
         "y": 1540,
@@ -23573,7 +23573,7 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "if msg['statusCode'] == 400:\n    data = {\n    'error' : 'USER OR GREENHOUSE DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n    \n    return msg",
+        "func": "if msg['statusCode'] == 400:\n    data = {\n    'error' : 'USER OR GREENHOUSE DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n    data = {\n        'error' : 'GREENHOUSE UPDATED'\n    }\n    msg = {'payload' : data}\n    return msg",
         "outputs": 1,
         "x": 1690,
         "y": 2160,
@@ -23843,7 +23843,9 @@
         "x": 3830,
         "y": 2820,
         "wires": [
-            []
+            [
+                "d0fb4b8a40e5e369"
+            ]
         ]
     },
     {
@@ -23865,6 +23867,7 @@
         "id": "1a6b7e3c.bfac97",
         "type": "inject",
         "z": "dfa5f5222d797092",
+        "d": true,
         "name": "Trigger",
         "props": [
             {
@@ -23882,12 +23885,10 @@
         "topic": "",
         "payload": "{\"bn\":\"irrigation\",\"e\":{\"t\":1692025640.6563697,\"v\":10}}",
         "payloadType": "json",
-        "x": 4070,
-        "y": 3140,
+        "x": 3970,
+        "y": 2960,
         "wires": [
-            [
-                "d0fb4b8a40e5e369"
-            ]
+            []
         ]
     },
     {
@@ -23902,47 +23903,9 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 4690,
-        "y": 3200,
+        "x": 4230,
+        "y": 2900,
         "wires": []
-    },
-    {
-        "id": "15fffa44ef370cf6",
-        "type": "python3-function",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "func": "import json\n\noutput = [{\n\"series\": [\"Water\"],\n\"data\": [[]],\n\"labels\": [\"Water\"]\n}]\n\ndata_h = {\"x\": msg['payload']['e']['t'], \"y\": msg['payload']['e']['v']}\n\noutput[0]['data'][0] = data_h\n\nmsg['payload'] = output\nreturn msg",
-        "outputs": 1,
-        "x": 4350,
-        "y": 2960,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "b55036b12b11687a",
-        "type": "change",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "rules": [
-            {
-                "t": "set",
-                "p": "payload.data[0]",
-                "pt": "msg",
-                "to": "{     \"x\": \"{{payload.e.t}}\",     \"y\": \"{{payload.e.v}}\" }",
-                "tot": "json"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 4090,
-        "y": 3040,
-        "wires": [
-            []
-        ]
     },
     {
         "id": "d0fb4b8a40e5e369",
@@ -23951,8 +23914,8 @@
         "name": "",
         "func": "import json\nfrom datetime import datetime\n\ntimestamp = msg['payload']['e']['t']\n\ndt_object = datetime.fromtimestamp(timestamp)\nformatted_time = dt_object.strftime('%H:%M')\n\noutput = [{\n    \"series\": [formatted_time],\n    \"data\": [[ msg['payload']['e']['v']\n    ]],\n    \"labels\": [formatted_time]\n}]\n\nmsg['payload'] = output\nreturn msg\n\n\n",
         "outputs": 1,
-        "x": 4370,
-        "y": 3060,
+        "x": 4030,
+        "y": 2820,
         "wires": [
             [
                 "680e406ad5dd551a",
@@ -23982,13 +23945,13 @@
         "removeOlderPoints": "1000",
         "removeOlderUnit": "86400",
         "cutout": 0,
-        "useOneColor": true,
+        "useOneColor": false,
         "useUTC": false,
         "colors": [
             "#1f77b4",
             "#aec7e8",
             "#ff7f0e",
-            "#2ca02c",
+            "#20cf20",
             "#98df8a",
             "#d62728",
             "#ff9896",
@@ -23998,67 +23961,7 @@
         "outputs": 1,
         "useDifferentColor": false,
         "className": "",
-        "x": 4582.3330078125,
-        "y": 2970.66650390625,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "dbebc74a2c2a3ff6",
-        "type": "python3-function",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "func": "import json\nimport time\n\ndate_obj = time.strptime(msg['payload']['e']['t'] , \"%Y-%m-%dT%H:%M:%SZ\")\n\ndata_point = {\n    \"x\": time.mktime(date_obj)*1000,\n    \"y\": msg['payload']['e']['v']\n}\n\noutput = [{\n    \"series\": [\"Water\"],\n    \"data\": [data_point],\n    \"labels\": [\"Water\"]\n}]\n\nmsg['payload'] = output\nreturn msg\n",
-        "outputs": 1,
-        "x": 4290,
-        "y": 2820,
-        "wires": [
-            [
-                "7dcd360d77b24d8e"
-            ]
-        ]
-    },
-    {
-        "id": "7dcd360d77b24d8e",
-        "type": "ui_chart",
-        "z": "dfa5f5222d797092",
-        "d": true,
-        "name": "",
-        "group": "0301ba55f59e74c0",
-        "order": 3,
-        "width": 0,
-        "height": 0,
-        "label": "",
-        "chartType": "bar",
-        "legend": "false",
-        "xformat": "HH:mm:ss",
-        "interpolate": "linear",
-        "nodata": "",
-        "dot": false,
-        "ymin": "",
-        "ymax": "",
-        "removeOlder": "1",
-        "removeOlderPoints": "1000",
-        "removeOlderUnit": "86400",
-        "cutout": 0,
-        "useOneColor": true,
-        "useUTC": false,
-        "colors": [
-            "#1f77b4",
-            "#aec7e8",
-            "#ff7f0e",
-            "#2ca02c",
-            "#98df8a",
-            "#d62728",
-            "#ff9896",
-            "#9467bd",
-            "#c5b0d5"
-        ],
-        "outputs": 1,
-        "useDifferentColor": false,
-        "className": "",
-        "x": 4530,
+        "x": 4250,
         "y": 2820,
         "wires": [
             []
