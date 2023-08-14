@@ -23844,25 +23844,9 @@
         "y": 2820,
         "wires": [
             [
-                "54c853905a8d0ffb"
+                "d0fb4b8a40e5e369"
             ]
         ]
-    },
-    {
-        "id": "54c853905a8d0ffb",
-        "type": "debug",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 4050,
-        "y": 2900,
-        "wires": []
     },
     {
         "id": "5e74bf960214efee",
@@ -23880,27 +23864,72 @@
         ]
     },
     {
-        "id": "f52c23079f181acb",
+        "id": "1a6b7e3c.bfac97",
+        "type": "inject",
+        "z": "dfa5f5222d797092",
+        "d": true,
+        "name": "Trigger",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"bn\":\"irrigation\",\"e\":{\"t\":1692025640.6563697,\"v\":10}}",
+        "payloadType": "json",
+        "x": 3970,
+        "y": 2960,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c8df3c93.539ad8",
+        "type": "debug",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 4230,
+        "y": 2900,
+        "wires": []
+    },
+    {
+        "id": "d0fb4b8a40e5e369",
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "\nreturn msg",
+        "func": "import json\nfrom datetime import datetime\n\ntimestamp = msg['payload']['e']['t']\n\ndt_object = datetime.fromtimestamp(timestamp)\nformatted_time = dt_object.strftime('%H:%M')\n\noutput = [{\n    \"series\": [formatted_time],\n    \"data\": [[ msg['payload']['e']['v']\n    ]],\n    \"labels\": [formatted_time]\n}]\n\nmsg['payload'] = output\nreturn msg\n\n\n",
         "outputs": 1,
-        "x": 4070,
+        "x": 4030,
         "y": 2820,
         "wires": [
             [
-                "eaec0424ec250072"
+                "680e406ad5dd551a",
+                "c8df3c93.539ad8"
             ]
         ]
     },
     {
-        "id": "eaec0424ec250072",
+        "id": "680e406ad5dd551a",
         "type": "ui_chart",
         "z": "dfa5f5222d797092",
         "name": "",
         "group": "0301ba55f59e74c0",
-        "order": 0,
+        "order": 3,
         "width": 0,
         "height": 0,
         "label": "",
@@ -23912,9 +23941,9 @@
         "dot": false,
         "ymin": "",
         "ymax": "",
-        "removeOlder": 1,
-        "removeOlderPoints": "",
-        "removeOlderUnit": "3600",
+        "removeOlder": "1",
+        "removeOlderPoints": "1000",
+        "removeOlderUnit": "86400",
         "cutout": 0,
         "useOneColor": false,
         "useUTC": false,
@@ -23922,7 +23951,7 @@
             "#1f77b4",
             "#aec7e8",
             "#ff7f0e",
-            "#2ca02c",
+            "#20cf20",
             "#98df8a",
             "#d62728",
             "#ff9896",
