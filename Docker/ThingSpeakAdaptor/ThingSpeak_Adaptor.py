@@ -8,6 +8,8 @@ database = "db/thingspeak_adaptor_db.json"
 resCatEndpoints = "http://resource_catalog:8080"
 url_thingspeak = "https://api.thingspeak.com/update?api_key=YOUR_API_KEY
 
+measures = {"temp": 0, "hum": 0}
+
 
 class regTopic(object):
     exposed = True
@@ -267,17 +269,33 @@ def send_to_Thingspeak(topic, measure):
     else:   
         measureType = topic.split("/")[4]
 
+    try:
+        measures[measureType] = measure
+    except:
+        pass
+
     for user in db["users"]:
         if user["userID"] == int(userID):
             for greenhouse in user["greenHouses"]:
                 if greenhouse["greenHouseID"] == int(greenHouseID):
+                    
+                    if measureType == "irrigation":  
+                        thingspeak_key = greenhouse["KEY"]
+                        field = greenhouse[measureType]
 
-                    thingspeak_key = greenhouse["KEY"]
-                    field = greenhouse[measureType]
+                        RequestToThingspeak = str(url_thingspeak+thingspeak_key+field).format(float(measure))
+                        requests.post(RequestToThingspeak)
+                    else: 
+                        if measures["temp"] != 0 and measures["hum"] != 0:
+                            thingspeak_key = greenhouse["KEY"]
+                            field_temp = greenhouse["temperature"]
+                            field_hum = greenhouse["humidity"]
 
-                    RequestToThingspeak = str(url_thingspeak+thingspeak_key+field).format(float(measure))
-                    requests.post(RequestToThingspeak)  
-
+                            RequestToThingspeak = str(url_thingspeak+thingspeak_key+field_temp+field_hum).format(float(measures["temp"]), float(measures["hum"]))
+                            measures["temp"] = 0
+                            measures["hum"] = 0
+                            
+                            requests.post(RequestToThingspeak)
         
         
 
