@@ -2,10 +2,10 @@
 FROM python:3.9
 
 # Set the working directory to /device_connector
-WORKDIR /device_connector
+WORKDIR /device_connector_0
 
 # Copy the current directory contents into the container at /device_connector
-COPY . /device_connector
+COPY . /device_connector_0
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
