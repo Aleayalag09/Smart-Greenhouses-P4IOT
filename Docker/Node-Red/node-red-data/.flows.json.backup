@@ -21937,8 +21937,8 @@
         "title": "",
         "label": "%",
         "format": "{{msg.payload}}",
-        "min": "30",
-        "max": "80",
+        "min": "0",
+        "max": "1",
         "colors": [
             "#0044b3",
             "#26e600",
