@@ -1,0 +1,45 @@
+{
+    "ip": "http://device_connector",
+    "port": 8080, 
+    "function": "regTopic",
+    
+    "broker": {},
+
+    "userID": 1,
+    "greenHouseID": 0,
+
+    "real_devices": [
+        "DHT11",
+        "Window",
+        "Humidifier",
+        "AC",
+        "Pump"
+    ],
+
+    "devices": 
+    {
+        "sensors": 
+        [
+            "temperature",
+            "humidity"
+        ],
+        "actuators": 
+        [
+            "temperature",
+            "humidity",
+            "irrigation",
+            "windows"
+        ]
+    },
+
+    "window_factor": 3600,
+    "humidifier_factor": 60,
+    "ac_factor": 60,
+
+    "strategies":
+    {
+        "irrigation": [],
+        "environment": [],
+        "weather": []
+    }
+}
