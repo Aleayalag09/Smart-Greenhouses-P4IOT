@@ -22945,7 +22945,7 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "if str(msg['payload']['id']) == '0':\n    if str(msg['payload']['id']) == '0':\n        url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n    \n    elif str(msg['payload']['id']) == '1':\n        url = 'https://api.thingspeak.com/channels/2229831/feeds.json'\n    else:\n        data = {\n        'error' : 'GREENHOUSE DOES NOT EXISTS'\n        }\n        msg = {'payload' : data}\n        return msg\n        \n    msg = {'url' : url}\n    return msg\nelse:\n    data = {\n        'error' : 'USER  DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\n\n\"\"\"\n/*\nthe other 2 channel id are \n1690401\n2230652\n*/\n\nelif str(msg['payload']['id']) == '1':\n    \n    if str(msg['payload']['id']) == '0':\n        url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n    elif str(msg['payload']['id']) == '1':\n    \n        url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n        \n    msg = {'url' : url}\n    return msg\n    \nelif str(msg['payload']['id']) == '2':\n\n    url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n    msg = {'url' : url}\n    return msg\n\"\"\"",
+        "func": "if str(msg['payload']['id']) == '0':\n    if str(msg['payload']['greenHouseID']) == '0':\n        url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n    \n    elif str(msg['payload']['greenHouseID']) == '1':\n        url = 'https://api.thingspeak.com/channels/2229831/feeds.json'\n    else:\n        data = {\n        'error' : 'GREENHOUSE DOES NOT EXISTS'\n        }\n        msg = {'payload' : data}\n        return msg\n        \n    msg = {'url' : url}\n    return msg\nelse:\n    data = {\n        'error' : 'USER  DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\n\n\"\"\"\n/*\nthe other 2 channel id are \n1690401\n2230652\n*/\n\nelif str(msg['payload']['id']) == '1':\n    \n    if str(msg['payload']['greenHouseID']) == '0':\n        url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n    elif str(msg['payload']['greenHouseID']) == '1':\n    \n        url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n        \n    msg = {'url' : url}\n    return msg\n    \nelif str(msg['payload']['id']) == '2':\n\n    url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n    msg = {'url' : url}\n    return msg\n\"\"\"",
         "outputs": 1,
         "x": 4010,
         "y": 1900,
@@ -23549,7 +23549,9 @@
                 "1940d3aee50fa044",
                 "29ae8612d318481f",
                 "4963a8752fb69d27",
-                "5e74bf960214efee"
+                "5e74bf960214efee",
+                "040b290402537f85",
+                "2868a1257bcd1f73"
             ]
         ]
     },
@@ -23965,6 +23967,37 @@
         "y": 2820,
         "wires": [
             []
+        ]
+    },
+    {
+        "id": "040b290402537f85",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = \"\"\nmsg = {'payload' : data}\nreturn msg",
+        "outputs": 1,
+        "x": 3970,
+        "y": 2080,
+        "wires": [
+            [
+                "4fcf25e3cbebd058",
+                "79bcffc3c3f4d807"
+            ]
+        ]
+    },
+    {
+        "id": "2868a1257bcd1f73",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = {\n    'state' : \"\"\n    }\nmsg = {'payload' : data}\nreturn msg",
+        "outputs": 1,
+        "x": 4030,
+        "y": 2560,
+        "wires": [
+            [
+                "fb67db7845167187"
+            ]
         ]
     },
     {
