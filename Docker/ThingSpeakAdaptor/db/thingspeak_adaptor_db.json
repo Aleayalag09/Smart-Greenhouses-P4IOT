@@ -20,10 +20,16 @@
                     "humidity": "&field2={}",
                     "windows": "&field3={}",
                     "irrigation": "&field4={}"
-                },
+                }
+            ]
+        },
+
+        {   
+            "userID": 1,
+            "greenHouses": [
 
                 {
-                    "greenHouseID": 1,
+                    "greenHouseID": 0,
                     "channelID": 2229831,
                     "KEY": "3Y4VD8DM3HWS67HU",
                     "temperature": "&field1={}",

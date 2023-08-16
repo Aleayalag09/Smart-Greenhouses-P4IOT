@@ -50,11 +50,19 @@ services:
     networks:
       - smart_greenhouses
 
-  device_connector:
+  device_connector_0:
     build:
-      context: ./DeviceConnector
+      context: ./DeviceConnector_0
     ports:
       - "8086:8080"
+    networks:
+      - smart_greenhouses
+
+  device_connector_1:
+    build:
+      context: ./DeviceConnector_1
+    ports:
+      - "8087:8080"
     networks:
       - smart_greenhouses
 
