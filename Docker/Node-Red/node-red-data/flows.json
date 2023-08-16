@@ -21450,16 +21450,6 @@
         "wires": []
     },
     {
-        "id": "653617a7d6164bf2",
-        "type": "comment",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "info": "Trasformare il valore in On/Off",
-        "x": 1420,
-        "y": 1140,
-        "wires": []
-    },
-    {
         "id": "588a6af3636bd2f0",
         "type": "inject",
         "z": "dfa5f5222d797092",
@@ -23367,7 +23357,8 @@
                 "82af757ed4e75c1e",
                 "b77bc72f78c2613b",
                 "22088ad3bc05983d",
-                "8661dc6fbaa9996e"
+                "8661dc6fbaa9996e",
+                "3dd078e3683c57d9"
             ]
         ]
     },
@@ -23549,7 +23540,9 @@
                 "1940d3aee50fa044",
                 "29ae8612d318481f",
                 "4963a8752fb69d27",
-                "5e74bf960214efee"
+                "5e74bf960214efee",
+                "040b290402537f85",
+                "2868a1257bcd1f73"
             ]
         ]
     },
@@ -23965,6 +23958,52 @@
         "y": 2820,
         "wires": [
             []
+        ]
+    },
+    {
+        "id": "040b290402537f85",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = \"\"\nmsg = {'payload' : data}\nreturn msg",
+        "outputs": 1,
+        "x": 3970,
+        "y": 2080,
+        "wires": [
+            [
+                "4fcf25e3cbebd058",
+                "79bcffc3c3f4d807"
+            ]
+        ]
+    },
+    {
+        "id": "2868a1257bcd1f73",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = {\n    'state' : \"\"\n    }\nmsg = {'payload' : data}\nreturn msg",
+        "outputs": 1,
+        "x": 4030,
+        "y": 2560,
+        "wires": [
+            [
+                "fb67db7845167187"
+            ]
+        ]
+    },
+    {
+        "id": "3dd078e3683c57d9",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = {\n    'state' : \"\"\n    }\nmsg = {'payload' : data}\nreturn msg",
+        "outputs": 1,
+        "x": 1470,
+        "y": 1100,
+        "wires": [
+            [
+                "8462fce415534226"
+            ]
         ]
     },
     {
