@@ -18,7 +18,7 @@
                     "KEY": "J50M27K8VSFLULLK",
                     "temperature": "&field1={}",
                     "humidity": "&field2={}",
-                    "windows": "&field3={}",
+                    "weather": "&field3={}",
                     "irrigation": "&field4={}"
                 }
             ]
@@ -34,7 +34,7 @@
                     "KEY": "3Y4VD8DM3HWS67HU",
                     "temperature": "&field1={}",
                     "humidity": "&field2={}",
-                    "windows": "&field3={}",
+                    "weather": "&field3={}",
                     "irrigation": "&field4={}"
                 }
 

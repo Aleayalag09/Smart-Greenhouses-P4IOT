@@ -224,6 +224,8 @@ class MQTT_subscriber_publisher(object):
                         result = result+" - "+self.controller.turn_off_actuator(ac_ID)
                     elif isinstance(actuator, Humidifier):
                         result = result+" - "+self.controller.turn_off_actuator(humidifier_ID)
+                
+                mqtt_handler.publish("IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"+actuatorType, 1, actuatorType)
 
             elif value == "close":
                 result = self.controller.turn_off_actuator(window_ID) 
@@ -234,6 +236,8 @@ class MQTT_subscriber_publisher(object):
                         result = result+" - "+self.controller.turn_on_actuator(ac_ID)
                     elif isinstance(actuator, Humidifier):
                         result = result+" - "+self.controller.turn_on_actuator(humidifier_ID)
+                        
+                mqtt_handler.publish("IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"+actuatorType, 0, actuatorType)
             else:
                 print("Invalid Value")
                 
@@ -251,13 +255,15 @@ class MQTT_subscriber_publisher(object):
                 
         elif actuatorType == "irrigation":
             if isinstance(value, (float, int)):
-                result = self.controller.set_value(pump_ID, value)    
+                result = self.controller.set_value(pump_ID, value)  
+                
+                mqtt_handler.publish("IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"+actuatorType, value, actuatorType)  
             else:
                 print("Invalid Value")
 
         # If the command was successfull it should be seen from the UTILITY TOPIC of the actuator
         # THE UTILITY TOPIC SHOULD BE ACCESSED TO SEE IF THE STRATEGIES' COMMAND WERE SUCCESSFULL
-        mqtt_handler.publish("IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/utility/"+actuatorType, result, "utility")
+        mqtt_handler.publish("IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/utility/"+actuatorType, value, "utility")
 
     def publish(self, topic, value, measureType):
         self.client.loop_stop()
@@ -469,6 +475,7 @@ if __name__ == '__main__':
             for measureType in sensors:
 
                 mqtt_handler.publishSensorMeasure(measureType)
+                time.sleep(1.5)
             
 
 

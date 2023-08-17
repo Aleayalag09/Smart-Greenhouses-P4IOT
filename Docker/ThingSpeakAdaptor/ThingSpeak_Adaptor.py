@@ -8,7 +8,7 @@ database = "db/thingspeak_adaptor_db.json"
 resCatEndpoints = "http://resource_catalog:8080"
 url_thingspeak = "https://api.thingspeak.com/update?api_key=YOUR_API_KEY
 
-measures = {"temp": 0, "hum": 0}
+measures = {"temperature": 0, "humidity": 0, "weather": -1, "irrigation": 0}
 
 
 class regTopic(object):
@@ -34,23 +34,31 @@ class regTopic(object):
         except:
             raise cherrypy.HTTPError(400, 'Wrong input')
         
-        for sensorType in sensors:
+        # for sensorType in sensors:
 
-            topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/sensors/"+sensorType
-            new_topic = {
-                "topic": topic
-            }
-            db["topics"].append(new_topic)        
+        #     topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/sensors/"+sensorType
+        #     new_topic = {
+        #         "topic": topic
+        #     }
+        #     db["topics"].append(new_topic)        
 
-            MeasuresReceiver.subscribe(topic)
+        #     MeasuresReceiver.subscribe(topic)
         
-        # ADD THE IRRIGATION AS "SENSOR" TO TRACK THE WATER QUANTITY PUMPED
-        topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/#"
+        # # ADD THE IRRIGATION AS "SENSOR" TO TRACK THE WATER QUANTITY PUMPED
+        # topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/#"
+        # new_topic = {
+        #     "topic": topic
+        # }
+        # db["topics"].append(new_topic)   
+        
+        # MeasuresReceiver.subscribe(topic)
+
+        topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/sensors/#"
         new_topic = {
             "topic": topic
         }
         db["topics"].append(new_topic)   
-        
+
         MeasuresReceiver.subscribe(topic)
 
         db_file = open(database, "w")
@@ -224,18 +232,25 @@ def getTopics():
         except:
             raise cherrypy.HTTPError(400, 'Wrong parameters')
         else:
-            for sensorType in sensors:
-                topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/sensors/"+sensorType
-                topics_list.append({
-                                    "topic": topic
-                                })
-                MeasuresReceiver.subscribe(topic)
+            # for sensorType in sensors:
+            #     topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/sensors/"+sensorType
+            #     topics_list.append({
+            #                         "topic": topic
+            #                     })
+            #     MeasuresReceiver.subscribe(topic)
 
-            # ADD THE IRRIGATION AS "SENSOR" TO TRACK THE WATER QUANTITY PUMPED
-            topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/#"
+            # # ADD THE IRRIGATION AS "SENSOR" TO TRACK THE WATER QUANTITY PUMPED
+            # topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/#"
+            # topics_list.append({
+            #                     "topic": topic
+            #                 })
+            # MeasuresReceiver.subscribe(topic)
+            
+            topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/sensors/#"
             topics_list.append({
-                                "topic": topic
-                            })
+                "topic": topic
+            })
+            
             MeasuresReceiver.subscribe(topic)
 
     db_file = open(database, "r")
@@ -264,38 +279,65 @@ def send_to_Thingspeak(topic, measure):
     userID = topic.split("/")[1]
     greenHouseID = topic.split("/")[2]
 
-    if topic.split("/")[3] == "irrigation":
-        measureType = "irrigation"
-    else:   
-        measureType = topic.split("/")[4]
+    measureType = topic.split("/")[4]
 
-    try:
-        measures[measureType] = measure
-    except:
-        pass
+    measures[measureType] = measure
 
     for user in db["users"]:
         if user["userID"] == int(userID):
             for greenhouse in user["greenHouses"]:
                 if greenhouse["greenHouseID"] == int(greenHouseID):
-                    
-                    if measureType == "irrigation":  
+
+                    if measures["temperature"] != 0 and measures["humidity"] != 0:
                         thingspeak_key = greenhouse["KEY"]
-                        field = greenhouse[measureType]
+                        field_temp = greenhouse["temperature"]
+                        field_hum = greenhouse["humidity"]
 
-                        RequestToThingspeak = str(url_thingspeak+thingspeak_key+field).format(float(measure))
+                        if measures["irrigation"] != 0 and measures["weather"] != -1:
+                            field_irr = greenhouse["irrigation"]
+                            field_wea = greenhouse["weather"]
+
+                            RequestToThingspeak = str(url_thingspeak+thingspeak_key+field_temp+field_hum+field_wea+field_irr).format(float(measures["temperature"]), float(measures["humidity"], float(measures["weather"]), float(measures["irrigation"])))
+                            measures["weather"] = -1
+                            measures["irrigation"] = 0
+
+                        elif measures["weather"] != -1:
+                            field_wea = greenhouse["weather"]
+
+                            RequestToThingspeak = str(url_thingspeak+thingspeak_key+field_temp+field_hum+field_wea).format(float(measures["temperature"]), float(measures["humidity"], float(measures["weather"])))
+                            measures["weather"] = -1    
+
+                        elif measures["irrigation"] != 0:
+                            field_irr = greenhouse["irrigation"]
+
+                            RequestToThingspeak = str(url_thingspeak+thingspeak_key+field_temp+field_hum+field_irr).format(float(measures["temperature"]), float(measures["humidity"], float(measures["irrigation"])))
+                            measures["irrigation"] = 0    
+                        
+                        else:
+                            RequestToThingspeak = str(url_thingspeak+thingspeak_key+field_temp+field_hum).format(float(measures["temperature"]), float(measures["humidity"]))
+                       
+                        measures["temperature"] = 0
+                        measures["humidity"] = 0
+                        
                         requests.post(RequestToThingspeak)
-                    else: 
-                        if measures["temp"] != 0 and measures["hum"] != 0:
-                            thingspeak_key = greenhouse["KEY"]
-                            field_temp = greenhouse["temperature"]
-                            field_hum = greenhouse["humidity"]
+                    
+                    # if measureType == "irrigation":  
+                    #     thingspeak_key = greenhouse["KEY"]
+                    #     field = greenhouse[measureType]
 
-                            RequestToThingspeak = str(url_thingspeak+thingspeak_key+field_temp+field_hum).format(float(measures["temp"]), float(measures["hum"]))
-                            measures["temp"] = 0
-                            measures["hum"] = 0
+                    #     RequestToThingspeak = str(url_thingspeak+thingspeak_key+field).format(float(measure))
+                    #     requests.post(RequestToThingspeak)
+                    # else: 
+                    #     if measures["temp"] != 0 and measures["hum"] != 0:
+                    #         thingspeak_key = greenhouse["KEY"]
+                    #         field_temp = greenhouse["temperature"]
+                    #         field_hum = greenhouse["humidity"]
+
+                    #         RequestToThingspeak = str(url_thingspeak+thingspeak_key+field_temp+field_hum).format(float(measures["temp"]), float(measures["hum"]))
+                    #         measures["temp"] = 0
+                    #         measures["hum"] = 0
                             
-                            requests.post(RequestToThingspeak)
+                    #         requests.post(RequestToThingspeak)
         
         
 
