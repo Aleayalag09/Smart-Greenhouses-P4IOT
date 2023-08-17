@@ -211,7 +211,7 @@
         "id": "e7353509ebd1d05b",
         "type": "ui_tab",
         "name": "Statistics",
-        "icon": "dashboard",
+        "icon": "fa-bar-chart",
         "order": 24,
         "disabled": false,
         "hidden": false
@@ -407,7 +407,7 @@
         "id": "f0ebfb9d4cfd055e",
         "type": "ui_tab",
         "name": "User Management",
-        "icon": "dashboard",
+        "icon": "fa-user-o",
         "order": 21,
         "disabled": false,
         "hidden": false
@@ -478,7 +478,7 @@
         "id": "e4f2304aa464fc7e",
         "type": "ui_tab",
         "name": "Strategy",
-        "icon": "add_box",
+        "icon": "fa-cog",
         "order": 23,
         "disabled": false,
         "hidden": false
@@ -915,7 +915,7 @@
         "id": "cc105ece16ae7e53",
         "type": "ui_tab",
         "name": "Home",
-        "icon": "dashboard",
+        "icon": "fa-home",
         "order": 20,
         "disabled": false,
         "hidden": false
@@ -21450,16 +21450,6 @@
         "wires": []
     },
     {
-        "id": "653617a7d6164bf2",
-        "type": "comment",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "info": "Trasformare il valore in On/Off",
-        "x": 1420,
-        "y": 1140,
-        "wires": []
-    },
-    {
         "id": "588a6af3636bd2f0",
         "type": "inject",
         "z": "dfa5f5222d797092",
@@ -23367,7 +23357,8 @@
                 "82af757ed4e75c1e",
                 "b77bc72f78c2613b",
                 "22088ad3bc05983d",
-                "8661dc6fbaa9996e"
+                "8661dc6fbaa9996e",
+                "3dd078e3683c57d9"
             ]
         ]
     },
@@ -23590,7 +23581,7 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "if msg['statusCode'] == 400:\n\n    data = {\n        'error' : 'ERROR WITH USER OR GREENHOUSE'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n    return msg\n",
+        "func": "if msg['statusCode'] == 400:\n\n    data = {\n        'error' : 'USER OR GREENHOUSE DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n\n    data = {\n        'error' : 'STRATEGY CREATED'\n    }\n    msg = {'payload' : data}\n    return msg\n",
         "outputs": 1,
         "x": 3170,
         "y": 3680,
@@ -23605,7 +23596,7 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "if msg['statusCode'] == 400:\n\n    data = {\n        'error' : 'USER OR GREENHOUSE DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n    return msg\n",
+        "func": "if msg['statusCode'] == 400:\n\n    data = {\n        'error' : 'USER OR GREENHOUSE DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n\n    data = {\n        'error' : 'STRATEGY UPDATED'\n    }\n    msg = {'payload' : data}\n    return msg\n",
         "outputs": 1,
         "x": 3070,
         "y": 4320,
@@ -23620,7 +23611,7 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "if msg['statusCode'] == 400:\n\n    data = {\n        'error' : 'ERROR WITH USER OR GREENHOUSE'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n    return msg\n",
+        "func": "if msg['statusCode'] == 400:\n\n    data = {\n        'error' : 'USER OR GREENHOUSE DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\nelse:\n\n    data = {\n        'error' : 'STRATEGY DELETED'\n    }\n    msg = {'payload' : data}\n    return msg\n",
         "outputs": 1,
         "x": 3050,
         "y": 3280,
@@ -23997,6 +23988,21 @@
         "wires": [
             [
                 "fb67db7845167187"
+            ]
+        ]
+    },
+    {
+        "id": "3dd078e3683c57d9",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = {\n    'state' : \"\"\n    }\nmsg = {'payload' : data}\nreturn msg",
+        "outputs": 1,
+        "x": 1470,
+        "y": 1100,
+        "wires": [
+            [
+                "8462fce415534226"
             ]
         ]
     },

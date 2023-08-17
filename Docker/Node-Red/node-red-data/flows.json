@@ -211,7 +211,7 @@
         "id": "e7353509ebd1d05b",
         "type": "ui_tab",
         "name": "Statistics",
-        "icon": "dashboard",
+        "icon": "fa-bar-chart",
         "order": 24,
         "disabled": false,
         "hidden": false
@@ -350,7 +350,7 @@
         "id": "da91e2e4.019118",
         "type": "ui_tab",
         "name": "GreenHouse Management",
-        "icon": "dashboard",
+        "icon": "fa-tree",
         "order": 22,
         "disabled": false,
         "hidden": false
@@ -407,7 +407,7 @@
         "id": "f0ebfb9d4cfd055e",
         "type": "ui_tab",
         "name": "User Management",
-        "icon": "dashboard",
+        "icon": "fa-user-o",
         "order": 21,
         "disabled": false,
         "hidden": false
@@ -478,7 +478,7 @@
         "id": "e4f2304aa464fc7e",
         "type": "ui_tab",
         "name": "Strategy",
-        "icon": "add_box",
+        "icon": "fa-cog",
         "order": 23,
         "disabled": false,
         "hidden": false
@@ -915,7 +915,7 @@
         "id": "cc105ece16ae7e53",
         "type": "ui_tab",
         "name": "Home",
-        "icon": "dashboard",
+        "icon": "fa-home",
         "order": 20,
         "disabled": false,
         "hidden": false
