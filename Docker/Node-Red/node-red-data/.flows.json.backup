@@ -350,7 +350,7 @@
         "id": "da91e2e4.019118",
         "type": "ui_tab",
         "name": "GreenHouse Management",
-        "icon": "dashboard",
+        "icon": "fa-tree",
         "order": 22,
         "disabled": false,
         "hidden": false
@@ -21512,13 +21512,14 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 4370,
+        "x": 4330,
         "y": 1900,
         "wires": [
             [
                 "a41aa4cb664c0971",
                 "907dc787cc044d70",
-                "57b4e9371a0f3d43"
+                "57b4e9371a0f3d43",
+                "8c17df97385649aa"
             ]
         ]
     },
@@ -21577,7 +21578,7 @@
         "useDifferentColor": false,
         "className": "",
         "x": 4890,
-        "y": 1800,
+        "y": 1760,
         "wires": [
             []
         ]
@@ -21654,7 +21655,7 @@
         "useDifferentColor": false,
         "className": "",
         "x": 4890,
-        "y": 1940,
+        "y": 1900,
         "wires": [
             []
         ]
@@ -21793,7 +21794,7 @@
         "useDifferentColor": false,
         "className": "",
         "x": 4890,
-        "y": 2100,
+        "y": 2060,
         "wires": [
             []
         ]
@@ -22935,7 +22936,7 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "if str(msg['payload']['id']) == '0':\n    if str(msg['payload']['greenHouseID']) == '0':\n        url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n    \n    elif str(msg['payload']['greenHouseID']) == '1':\n        url = 'https://api.thingspeak.com/channels/2229831/feeds.json'\n    else:\n        data = {\n        'error' : 'GREENHOUSE DOES NOT EXISTS'\n        }\n        msg = {'payload' : data}\n        return msg\n        \n    msg = {'url' : url}\n    return msg\nelse:\n    data = {\n        'error' : 'USER  DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\n\n\"\"\"\n/*\nthe other 2 channel id are \n1690401\n2230652\n*/\n\nelif str(msg['payload']['id']) == '1':\n    \n    if str(msg['payload']['greenHouseID']) == '0':\n        url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n    elif str(msg['payload']['greenHouseID']) == '1':\n    \n        url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n        \n    msg = {'url' : url}\n    return msg\n    \nelif str(msg['payload']['id']) == '2':\n\n    url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n    msg = {'url' : url}\n    return msg\n\"\"\"",
+        "func": "if str(msg['payload']['id']) == '0':\n    if str(msg['payload']['greenHouseID']) == '0':\n        url = 'https://api.thingspeak.com/channels/2091049/feeds.json'\n    \n    elif str(msg['payload']['greenHouseID']) == '1':\n        url = 'https://api.thingspeak.com/channels/2230652/feeds.json?api_key=YOUR_API_KEY    \n    else:\n        data = {\n        'error' : 'GREENHOUSE DOES NOT EXISTS'\n        }\n        msg = {'payload' : data}\n        return msg\n        \n    msg = {'url' : url}\n    return msg\n    \nelif str(msg['payload']['id']) == '1':\n    \n    if str(msg['payload']['greenHouseID']) == '0':\n        url = 'https://api.thingspeak.com/channels/2229831/feeds.json?api_key=YOUR_API_KEY    else:\n        data = {\n        'error' : 'GREENHOUSE DOES NOT EXISTS'\n        }\n        msg = {'payload' : data}\n        return msg    \n    msg = {'url' : url}\n    return msg\n    \nelif str(msg['payload']['id']) == '2':\n\n    url = 'https://api.thingspeak.com/channels/1690401/feeds.json'\n    msg = {'url' : url}\n    return msg\n    \nelse:\n    data = {\n        'error' : 'USER  DOES NOT EXISTS'\n    }\n    msg = {'payload' : data}\n    return msg\n\n\"\"\"\nthe other 2 channel id are \n1690401\n2230652\n\n\"\"\"",
         "outputs": 1,
         "x": 4010,
         "y": 1900,
@@ -23542,7 +23543,9 @@
                 "4963a8752fb69d27",
                 "5e74bf960214efee",
                 "040b290402537f85",
-                "2868a1257bcd1f73"
+                "2868a1257bcd1f73",
+                "64a1841c66b7767f",
+                "cb06e1455d878c0b"
             ]
         ]
     },
@@ -23801,7 +23804,8 @@
         "y": 2820,
         "wires": [
             [
-                "77f95c0ece769d59"
+                "77f95c0ece769d59",
+                "6ac2e396d52df147"
             ]
         ]
     },
@@ -23812,7 +23816,7 @@
         "name": "",
         "func": "msg['action'] = \"subscribe\"\n\nmsg['topic']= \"IoT_project_29/\"+str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/irrigation/#\"\n\nreturn msg",
         "outputs": 1,
-        "x": 3630,
+        "x": 3710,
         "y": 2820,
         "wires": [
             [
@@ -23833,7 +23837,7 @@
         "rap": true,
         "rh": 0,
         "inputs": 1,
-        "x": 3830,
+        "x": 4150,
         "y": 2820,
         "wires": [
             [
@@ -23848,7 +23852,7 @@
         "name": "",
         "func": "msg['action'] = \"unsubscribe\"\n\nmsg['topic']= \"IoT_project_29/\"+str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/irrigation/#\"\n\nreturn msg",
         "outputs": 1,
-        "x": 3830,
+        "x": 3910,
         "y": 2740,
         "wires": [
             [
@@ -23878,8 +23882,8 @@
         "topic": "",
         "payload": "{\"bn\":\"irrigation\",\"e\":{\"t\":1692025640.6563697,\"v\":10}}",
         "payloadType": "json",
-        "x": 3970,
-        "y": 2960,
+        "x": 4210,
+        "y": 2740,
         "wires": [
             []
         ]
@@ -23896,7 +23900,7 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 4230,
+        "x": 4510,
         "y": 2900,
         "wires": []
     },
@@ -23907,7 +23911,7 @@
         "name": "",
         "func": "import json\nfrom datetime import datetime\n\ntimestamp = msg['payload']['e']['t']\n\ndt_object = datetime.fromtimestamp(timestamp)\nformatted_time = dt_object.strftime('%H:%M')\n\noutput = [{\n    \"series\": [formatted_time],\n    \"data\": [[ msg['payload']['e']['v']\n    ]],\n    \"labels\": [formatted_time]\n}]\n\nmsg['payload'] = output\nreturn msg\n\n\n",
         "outputs": 1,
-        "x": 4030,
+        "x": 4410,
         "y": 2820,
         "wires": [
             [
@@ -23954,7 +23958,7 @@
         "outputs": 1,
         "useDifferentColor": false,
         "className": "",
-        "x": 4250,
+        "x": 4770,
         "y": 2820,
         "wires": [
             []
@@ -24003,6 +24007,166 @@
         "wires": [
             [
                 "8462fce415534226"
+            ]
+        ]
+    },
+    {
+        "id": "64a1841c66b7767f",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "import json\nimport time\n\noutput = [{\n\"series\": [\"\"],\n\"data\": [[ {\"x\": \"\", \"y\": \"\"}]],\n\"labels\": [\"\"]\n}]\n\nmsg['payload'] = output\nreturn msg",
+        "outputs": 1,
+        "x": 4250,
+        "y": 1960,
+        "wires": [
+            [
+                "b68ad7b4f19ef12a",
+                "8de0f6912b124cdc",
+                "b7ce0e02612a7da3",
+                "680e406ad5dd551a"
+            ]
+        ]
+    },
+    {
+        "id": "8c17df97385649aa",
+        "type": "debug",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 4570,
+        "y": 2180,
+        "wires": []
+    },
+    {
+        "id": "6ac2e396d52df147",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "query = \"?id=\"+str(msg['payload']['id'])+\"&greenHouseID=\"+ str(msg['payload']['greenHouseID'])+ \"&strategyType=irrigation\"\n\nmsg = {'query': query}\n\nreturn msg",
+        "outputs": 1,
+        "x": 3710,
+        "y": 3000,
+        "wires": [
+            [
+                "7c084bcb91a98a12"
+            ]
+        ]
+    },
+    {
+        "id": "7c084bcb91a98a12",
+        "type": "http request",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://resource_catalog:8080/strategy{{{query}}}",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 3950,
+        "y": 3000,
+        "wires": [
+            [
+                "07d7caf83df56dd3"
+            ]
+        ]
+    },
+    {
+        "id": "07d7caf83df56dd3",
+        "type": "json",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 4130,
+        "y": 3000,
+        "wires": [
+            [
+                "dc8c63fa04bed6b7"
+            ]
+        ]
+    },
+    {
+        "id": "fe141fd5651659ac",
+        "type": "debug",
+        "z": "dfa5f5222d797092",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 4720,
+        "y": 3000,
+        "wires": []
+    },
+    {
+        "id": "dc8c63fa04bed6b7",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "total_water = 0\n\nfor strat in msg['payload']['strat']:\n    if strat['active'] == True:\n        total_water += strat['water_quantity']\n\ndata = {\n    'water_quantity' : total_water\n}\n\nmsg['payload'] = data\nreturn msg\n",
+        "outputs": 1,
+        "x": 4310,
+        "y": 3000,
+        "wires": [
+            [
+                "e76523a35fc2feb0"
+            ]
+        ]
+    },
+    {
+        "id": "e76523a35fc2feb0",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "0301ba55f59e74c0",
+        "name": "Irrigation stat",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "format": "<p>The daily amount of liters of water is <span ng-bind=\"msg['payload']['water_quantity']\"></span></p>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "template-initial-plots",
+        "x": 4510,
+        "y": 3000,
+        "wires": [
+            [
+                "fe141fd5651659ac"
+            ]
+        ]
+    },
+    {
+        "id": "cb06e1455d878c0b",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = \"\"\nmsg['payload'] = {'water_quantity' : data}\nreturn msg",
+        "outputs": 1,
+        "x": 4240,
+        "y": 2933.666748046875,
+        "wires": [
+            [
+                "e76523a35fc2feb0"
             ]
         ]
     },
