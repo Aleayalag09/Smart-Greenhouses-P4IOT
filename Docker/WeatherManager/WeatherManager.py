@@ -9,7 +9,7 @@ import paho.mqtt.client as mqtt
 new_strat = False
 database = "db/weather_manager_db.json"
 resCatEndpoints = "http://resource_catalog:8080"
-api = '8JGvSqyjYhlcUQlhcUmpLgjtPeXNgcJ4'
+api = 'AlNkoYV4pT7QmAPA0GIAgCoNLs375aIQ'
 
 class RegStrategy(object):
     exposed = True
@@ -306,6 +306,7 @@ def getWeather(city):
     global api
 
     key = getlocation(city)
+    time.sleep(1)
     weatherUrl= 'http://dataservice.accuweather.com/currentconditions/v1/'+key+'?apikey='+api+'&details=true'
     with urllib.request.urlopen(weatherUrl) as weatherUrl:
         data = json.loads(weatherUrl.read().decode())
