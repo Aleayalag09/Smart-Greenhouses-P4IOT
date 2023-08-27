@@ -1,5 +1,14 @@
 
-THE OTHER 2 CHANNEL INFORMATIONS
+CHANNEL INFORMATIONS
 
-channelid: 1690401 - Key: 8P881N7X80Q6W2SK
-channelid: 2230652 - Key: AU5DJKJR61HJO1DM
+userid : 2, greenhouse : 0 
+  channelid: 1690401 - Key: 8P881N7X80Q6W2SK
+
+userid : 0, greenhouse : 0 
+  channelid: 2091049 - Key: J50M27K8VSFLULLK
+
+userid : 0, greenhouse : 1 
+  channelid: 2230652 - Key: AU5DJKJR61HJO1DM
+
+userid : 1, greenhouse : 0 
+  channelid: 2229831 - Key: 3Y4VD8DM3HWS67HU
