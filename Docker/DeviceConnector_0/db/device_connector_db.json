@@ -1,5 +1,5 @@
 {
-    "ip": "http://device_connector",
+    "ip": "http://device_connector_0",
     "port": 8080, 
     "function": "regTopic",
     
