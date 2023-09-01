@@ -232,16 +232,19 @@ def getMeasurements(city):
     This method extract from a json the measurements of
     temperature and humidity of the specified city.
     """
-    # search_address = 'http://dataservice.accuweather.com/locations/v1/cities/search?apikey='+api+'&q='+city+'&details=true'
-    # with urllib.request.urlopen(search_address) as search_address:
-    #     data = json.loads(search_address.read().decode())
-    # location_key = data[0]['Key']
-    # weatherUrl= 'http://dataservice.accuweather.com/currentconditions/v1/'+location_key+'?apikey='+api+'&details=true'
-    # with urllib.request.urlopen(weatherUrl) as weatherUrl:
-    #     data = json.loads(weatherUrl.read().decode())
-    # temperature = data[0]['Temperature']['Metric']['Value']
-    # humidity = data[0]['RelativeHumidity'] / 100
-    temperature, humidity = 20, 0.2
+    search_address = 'http://dataservice.accuweather.com/locations/v1/cities/search?apikey='+api+'&q='+city+'&details=true'
+    hdr = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
+    req = urllib.request.Request(search_address, headers=hdr)
+    with urllib.request.urlopen(req) as search_address:
+        data = json.loads(search_address.read().decode())
+    location_key = data[0]['Key']
+    weatherUrl= 'http://dataservice.accuweather.com/currentconditions/v1/'+location_key+'?apikey='+api+'&details=true'
+    req = urllib.request.Request(weatherUrl,headers=hdr)
+    with urllib.request.urlopen(req) as weatherUrl:
+        data = json.loads(weatherUrl.read().decode())
+    temperature = data[0]['Temperature']['Metric']['Value']
+    humidity = data[0]['RelativeHumidity'] / 100
+    # temperature, humidity = 20, 0.2
     return temperature, humidity                                       
      
 if __name__ == '__main__':
@@ -270,54 +273,56 @@ if __name__ == '__main__':
     # # BOOT FUNCTION TO RETRIEVE STARTING STRATEGIES
     # getStrategies()
 
-    refresh_freq = 10
+    # refresh_freq = 10
     
-    broker_dict = json.load(open(database, "r"))["broker"]
-    strategies = json.load(open(database, "r"))["strategies"]
+    # broker_dict = json.load(open(database, "r"))["broker"]
+    # strategies = json.load(open(database, "r"))["strategies"]
     
-    publisher = MQTT_publisher(broker_dict["ip"], broker_dict["port"])
-    publisher.start()
+    # publisher = MQTT_publisher(broker_dict["ip"], broker_dict["port"])
+    # publisher.start()
     
-    percentange = 0.98
-    last_refresh = time.time()
+    # percentange = 0.98
+    # last_refresh = time.time()
     
-    while True:
-        timestamp = time.time()
-        time_start = datetime.fromtimestamp(timestamp)
-        time_start = time_start.strftime("%H:%M:%S")
+    # while True:
+    #     timestamp = time.time()
+    #     time_start = datetime.fromtimestamp(timestamp)
+    #     time_start = time_start.strftime("%H:%M:%S")
 
-        if timestamp-last_refresh >= refresh_freq:
+    #     if timestamp-last_refresh >= refresh_freq:
 
-            last_refresh = time.time()
-            # refresh()
+    #         last_refresh = time.time()
+    #         # refresh()
 
-        if new_strat:
-            db = json.load(open(database, "r"))
-            new_strat = False
+    #     if new_strat:
+    #         db = json.load(open(database, "r"))
+    #         new_strat = False
 
-        for strat in strategies:
+    #     for strat in strategies:
             
-            if strat["active"] == True:
-                temperature, humidity = getMeasurements(strat['city'])
+    #         if strat["active"] == True:
+    #             temperature, humidity = getMeasurements(strat['city'])
 
-                # If the window is open we control if it should be closed
-                if strat["open"] == True:
-                    if strat["temperature"] < temperature*(percentange) or strat["temperature"] > temperature*(2 - percentange) or \
-                    strat['humidity'] < humidity*(percentange) or strat['humidity'] > humidity*(2 - percentange):
-                        publisher.publish(strat["topic"], 'close')
-                        strat["open"] = False
-                        new_strat = True
-                # If the window is closed we control if it should be opened
-                else: 
-                    if temperature*(percentange) <= strat['temperature'] <= temperature*(2 - percentange) and humidity*(percentange) <= strat['humidity'] <= humidity*(2 - percentange):
-                        # Still we have to see how the device connector is going to receive this message
-                        publisher.publish(strat["topic"], 'open')
-                        strat["open"] = True
-                        new_strat = True
+    #             # If the window is open we control if it should be closed
+    #             if strat["open"] == True:
+    #                 if strat["temperature"] < temperature*(percentange) or strat["temperature"] > temperature*(2 - percentange) or \
+    #                 strat['humidity'] < humidity*(percentange) or strat['humidity'] > humidity*(2 - percentange):
+    #                     publisher.publish(strat["topic"], 'close')
+    #                     strat["open"] = False
+    #                     new_strat = True
+    #             # If the window is closed we control if it should be opened
+    #             else: 
+    #                 if temperature*(percentange) <= strat['temperature'] <= temperature*(2 - percentange) and humidity*(percentange) <= strat['humidity'] <= humidity*(2 - percentange):
+    #                     # Still we have to see how the device connector is going to receive this message
+    #                     publisher.publish(strat["topic"], 'open')
+    #                     strat["open"] = True
+    #                     new_strat = True
 
-        if new_strat == True:
-            # json.dump(db, open(database, "w"), indent=3)
-            pass
+    #     if new_strat == True:
+    #         # json.dump(db, open(database, "w"), indent=3)
+    #         pass
+    
+    print(getMeasurements('Turin'))
 
                 
     

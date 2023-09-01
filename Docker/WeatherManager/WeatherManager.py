@@ -316,11 +316,20 @@ def getMeasurements(city):
     This method extract from a json the measurements of
     temperature and humidity of the specified city.
     """
-
-    data = getWeather(city)
+    search_address = 'http://dataservice.accuweather.com/locations/v1/cities/search?apikey='+api+'&q='+city+'&details=true'
+    hdr = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
+    req = urllib.request.Request(search_address, headers=hdr)
+    with urllib.request.urlopen(req) as search_address:
+        data = json.loads(search_address.read().decode())
+    location_key = data[0]['Key']
+    weatherUrl= 'http://dataservice.accuweather.com/currentconditions/v1/'+location_key+'?apikey='+api+'&details=true'
+    req = urllib.request.Request(weatherUrl,headers=hdr)
+    with urllib.request.urlopen(req) as weatherUrl:
+        data = json.loads(weatherUrl.read().decode())
     temperature = data[0]['Temperature']['Metric']['Value']
     humidity = data[0]['RelativeHumidity'] / 100
-    return temperature, humidity
+    # temperature, humidity = 20, 0.2
+    return temperature, humidity       
                                         
      
 if __name__ == '__main__':
