@@ -22810,7 +22810,8 @@
         "tosidebar": true,
         "console": false,
         "tostatus": false,
-        "complete": "false",
+        "complete": "payload",
+        "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
         "x": 4470,
@@ -23544,7 +23545,8 @@
                 "5e74bf960214efee",
                 "040b290402537f85",
                 "2868a1257bcd1f73",
-                "64a1841c66b7767f"
+                "64a1841c66b7767f",
+                "cb06e1455d878c0b"
             ]
         ]
     },
@@ -23803,7 +23805,8 @@
         "y": 2820,
         "wires": [
             [
-                "77f95c0ece769d59"
+                "77f95c0ece769d59",
+                "6ac2e396d52df147"
             ]
         ]
     },
@@ -23880,8 +23883,8 @@
         "topic": "",
         "payload": "{\"bn\":\"irrigation\",\"e\":{\"t\":1692025640.6563697,\"v\":10}}",
         "payloadType": "json",
-        "x": 3970,
-        "y": 2960,
+        "x": 4210,
+        "y": 2740,
         "wires": [
             []
         ]
@@ -23927,7 +23930,7 @@
         "order": 3,
         "width": 0,
         "height": 0,
-        "label": "",
+        "label": "Water quantity (L)",
         "chartType": "bar",
         "legend": "false",
         "xformat": "HH:mm:ss",
@@ -23956,7 +23959,7 @@
         "outputs": 1,
         "useDifferentColor": false,
         "className": "",
-        "x": 4770,
+        "x": 4810,
         "y": 2820,
         "wires": [
             []
@@ -24042,6 +24045,131 @@
         "x": 4570,
         "y": 2180,
         "wires": []
+    },
+    {
+        "id": "6ac2e396d52df147",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "query = \"?id=\"+str(msg['payload']['id'])+\"&greenHouseID=\"+ str(msg['payload']['greenHouseID'])+ \"&strategyType=irrigation\"\n\nmsg = {'query': query}\n\nreturn msg",
+        "outputs": 1,
+        "x": 3710,
+        "y": 3000,
+        "wires": [
+            [
+                "7c084bcb91a98a12"
+            ]
+        ]
+    },
+    {
+        "id": "7c084bcb91a98a12",
+        "type": "http request",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://resource_catalog:8080/strategy{{{query}}}",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 3950,
+        "y": 3000,
+        "wires": [
+            [
+                "07d7caf83df56dd3"
+            ]
+        ]
+    },
+    {
+        "id": "07d7caf83df56dd3",
+        "type": "json",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 4130,
+        "y": 3000,
+        "wires": [
+            [
+                "dc8c63fa04bed6b7"
+            ]
+        ]
+    },
+    {
+        "id": "fe141fd5651659ac",
+        "type": "debug",
+        "z": "dfa5f5222d797092",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 4720,
+        "y": 3000,
+        "wires": []
+    },
+    {
+        "id": "dc8c63fa04bed6b7",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "total_water = 0\n\nfor strat in msg['payload']['strat']:\n    if strat['active'] == True:\n        total_water += strat['water_quantity']\n\ndata = {\n    'water_quantity' : total_water\n}\n\nmsg['payload'] = data\nreturn msg\n",
+        "outputs": 1,
+        "x": 4310,
+        "y": 3000,
+        "wires": [
+            [
+                "e76523a35fc2feb0"
+            ]
+        ]
+    },
+    {
+        "id": "e76523a35fc2feb0",
+        "type": "ui_template",
+        "z": "dfa5f5222d797092",
+        "group": "0301ba55f59e74c0",
+        "name": "Irrigation stat",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "format": "<p>Daily amount of water (L): <strong><span ng-bind=\"msg['payload']['water_quantity']\"></span></strong></p>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "template-initial-plots",
+        "x": 4510,
+        "y": 3000,
+        "wires": [
+            [
+                "fe141fd5651659ac"
+            ]
+        ]
+    },
+    {
+        "id": "cb06e1455d878c0b",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "data = \"\"\nmsg['payload'] = {'water_quantity' : data}\nreturn msg",
+        "outputs": 1,
+        "x": 4240,
+        "y": 2933.666748046875,
+        "wires": [
+            [
+                "e76523a35fc2feb0"
+            ]
+        ]
     },
     {
         "id": "1a53a8f34e77244d",

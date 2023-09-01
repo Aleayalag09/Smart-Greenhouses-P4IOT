@@ -640,7 +640,7 @@ class Strategy(object):
                                         "humidity" : humidity
                                     }
 
-                                    if greenhouse['strategies'][strategyType]["strat"] != {}:
+                                    if greenhouse['strategies'][strategyType]["strat"] != []:
                                         
                                         delete_manager_dict = {
                                             'userID': id, 
@@ -657,7 +657,7 @@ class Strategy(object):
 
                                             for step, win_state in enumerate(db_ws["states"]):
                                                 if win_state["userID"] == id and win_state["greenHouseID"] == greenHouseID:
-                                                    del db_ws["states"][step]
+                                                    db_ws["states"].pop(step)
                                                     break
 
                                             mqtt_handler.unsubscribe("IoT_project_29/"+str(id)+"/"+str(greenHouseID)+"/weather")
@@ -909,7 +909,7 @@ class Strategy(object):
 
                                         for step, win_state in enumerate(db_ws["states"]):
                                             if win_state["userID"] == id and win_state["greenHouseID"] == greenHouseID:
-                                                del db_ws["states"][step]
+                                                db_ws["states"].pop(step)
                                                 break
 
                                         mqtt_handler.unsubscribe("IoT_project_29/"+str(id)+"/"+str(greenHouseID)+"/weather")

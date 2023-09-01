@@ -306,6 +306,7 @@ def getWeather(city):
     global api
 
     key = getlocation(city)
+    time.sleep(1)
     weatherUrl= 'http://dataservice.accuweather.com/currentconditions/v1/'+key+'?apikey='+api+'&details=true'
     with urllib.request.urlopen(weatherUrl) as weatherUrl:
         data = json.loads(weatherUrl.read().decode())
