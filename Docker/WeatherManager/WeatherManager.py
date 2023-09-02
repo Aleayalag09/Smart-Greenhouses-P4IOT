@@ -329,6 +329,7 @@ def getMeasurements(city):
         data = json.loads(weatherUrl.read().decode())
     temperature = data[0]['Temperature']['Metric']['Value']
     humidity = data[0]['RelativeHumidity'] / 100
+    print(f'city: {city}, temperature:, {temperature}, humidity: {humidity}')
     # temperature, humidity = 20, 0.2
     return temperature, humidity       
                                         
@@ -375,10 +376,14 @@ if __name__ == '__main__':
     
     percentange = 0.95
     
+    flag = 1
+    
     while True:
         timestamp = time.time()
         time_start = datetime.fromtimestamp(timestamp)
         time_start = time_start.strftime("%H:%M:%S")
+        
+        # flag = True
 
         if timestamp-last_refresh >= refresh_freq:
 
@@ -399,7 +404,9 @@ if __name__ == '__main__':
         for strat in db["strategies"]:
             
             if strat["active"] == True:
-                temperature, humidity = getMeasurements(strat['city'])
+                if flag:
+                    temperature, humidity = getMeasurements(strat['city'])
+                    flag = 0
 
                 # If the window is open we control if it should be closed
                 if strat["open"] == True:
