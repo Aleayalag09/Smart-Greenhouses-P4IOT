@@ -22,8 +22,8 @@ class DHT11(Sensor):
     def __init__(self, id: int) -> None:
         super().__init__(id)
         self.value = {"temperature" : 0, "humidity" : 0}
-        self.error_humidity =round(random.uniform(-0.04, 0.04),2)
-        self.error_temperature = round(random.uniform(-2.0, 2.0),2)
+        self.error_humidity = 0
+        self.error_temperature = 0
     
     def read_measurements(self, environment):
         environment.update_environment()
@@ -127,7 +127,7 @@ class Environment(object):
             self.city_temperature, self.city_humidity = self.city_measurements()
             self.flag = False
             
-        time_passed = actual_time - self.last_change  
+        time_passed = actual_time - self.last_change
         
         window_humidity = window_intensity*((self.city_humidity - self.humidity)/self.window_factor)*time_passed + self.humidity
         humidifier_humidity = humidifier_intensity*((humidifer_value - window_humidity)/self.humidifier_factor)*time_passed + window_humidity
@@ -138,6 +138,8 @@ class Environment(object):
         
         self.humidity = round(humidifier_humidity + pump_humidity, 5)
         self.temperature = round(ac_temperature, 2)
+        
+        # print(f'humidity: {self.humidity}, temperature: {self.temperature}, time passed: {time_passed}')
         
         self.last_change = actual_time
                     
