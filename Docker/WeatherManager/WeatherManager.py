@@ -329,7 +329,6 @@ def getMeasurements(city):
         data = json.loads(weatherUrl.read().decode())
     temperature = data[0]['Temperature']['Metric']['Value']
     humidity = data[0]['RelativeHumidity'] / 100
-    print(f'city: {city}, temperature:, {temperature}, humidity: {humidity}')
     # temperature, humidity = 20, 0.2
     return temperature, humidity       
                                         
@@ -406,6 +405,7 @@ if __name__ == '__main__':
             if strat["active"] == True:
                 if flag:
                     temperature, humidity = getMeasurements(strat['city'])
+                    print(f'temperature:, {temperature}, humidity: {humidity}')
                     flag = 0
 
                 # If the window is open we control if it should be closed
