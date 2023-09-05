@@ -127,7 +127,7 @@ class RegStrategy(object):
         db_file.close()
 
         idx = 0
-        for strat in db:
+        for strat in db["strategies"]:
             if strat["topic"] == topic:
                 break
             else:
@@ -375,14 +375,16 @@ if __name__ == '__main__':
     
     percentange = 0.95
     
-    flag = 1
+    flag_API = True
+    time_flag = time.time()
     
     while True:
         timestamp = time.time()
         time_start = datetime.fromtimestamp(timestamp)
         time_start = time_start.strftime("%H:%M:%S")
         
-        # flag = True
+        if time.time() - time_flag >= 300:
+            flag_API = True
 
         if timestamp-last_refresh >= refresh_freq:
 
@@ -403,10 +405,11 @@ if __name__ == '__main__':
         for strat in db["strategies"]:
             
             if strat["active"] == True:
-                if flag:
+                if flag_API:
                     temperature, humidity = getMeasurements(strat['city'])
                     print(f'temperature:, {temperature}, humidity: {humidity}')
-                    flag = 0
+                    flag_API = False
+                    time_flag = time.time()
 
                 # If the window is open we control if it should be closed
                 if strat["open"] == True:
