@@ -654,14 +654,19 @@ class Strategy(object):
                                         
                                             with open("db/window_state.json", "r") as file:
                                                 db_ws = json.load(file)
-
-                                            for step, win_state in enumerate(db_ws["states"]):
-                                                if win_state["userID"] == id and win_state["greenHouseID"] == greenHouseID:
-                                                    db_ws["states"].pop(step)
-                                                    break
+                                            
+                                            states = db_ws["states"]
+                                            if len(states) == 1:
+                                                states = []
+                                            else:
+                                                for step, win_state in enumerate(states):
+                                                    if win_state["userID"] == id and win_state["greenHouseID"] == greenHouseID:
+                                                        del states[step]
+                                                        break
 
                                             mqtt_handler.unsubscribe("IoT_project_29/"+str(id)+"/"+str(greenHouseID)+"/weather")
-                                            
+                                            db_ws["states"] = states
+
                                             with open("db/window_state.json", "w") as file:
                                                 json.dump(db_ws, file, indent=3)
 
@@ -689,17 +694,28 @@ class Strategy(object):
                                     pass
 
                                 if strategyType == "weather":
+                                    time.sleep(1)
 
                                     with open("db/window_state.json", "r") as file:
                                         db_ws = json.load(file)
 
-                                    db_ws["states"] = db_ws["states"].append({
-                                        "userID": id,
-                                        "greenHouseID": greenHouseID,
-                                        "state": "close"
-                                    })
+                                    states = db_ws["states"]
+
+                                    if states == []:
+                                        states = [{
+                                            "userID": id,
+                                            "greenHouseID": greenHouseID,
+                                            "state": "CLOSE"
+                                        }]
+                                    else:
+                                        states = states.append({
+                                            "userID": id,
+                                            "greenHouseID": greenHouseID,
+                                            "state": "CLOSE"
+                                        })
 
                                     mqtt_handler.subscribe("IoT_project_29/"+str(id)+"/"+str(greenHouseID)+"/weather")
+                                    db_ws["states"] = states
                                     
                                     with open("db/window_state.json", "w") as file:
                                         json.dump(db_ws, file, indent=3)
@@ -906,13 +922,18 @@ class Strategy(object):
                                         
                                         with open("db/window_state.json", "r") as file:
                                             db_ws = json.load(file)
-
-                                        for step, win_state in enumerate(db_ws["states"]):
-                                            if win_state["userID"] == id and win_state["greenHouseID"] == greenHouseID:
-                                                db_ws["states"].pop(step)
-                                                break
+                                            
+                                        states = db_ws["states"]
+                                        if len(states) == 1:
+                                            states = []
+                                        else:
+                                            for step, win_state in enumerate(states):
+                                                if win_state["userID"] == id and win_state["greenHouseID"] == greenHouseID:
+                                                    del states[step]
+                                                    break
 
                                         mqtt_handler.unsubscribe("IoT_project_29/"+str(id)+"/"+str(greenHouseID)+"/weather")
+                                        db_ws["states"] = states
                                         
                                         with open("db/window_state.json", "w") as file:
                                             json.dump(db_ws, file, indent=3)
