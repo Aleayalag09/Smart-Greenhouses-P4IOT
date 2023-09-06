@@ -59,7 +59,7 @@ class Pump(Actuator):
         self.value = value # Water Quantity
         
 class Environment(object):
-    def __init__(self, actuators, city, temperature = round(random.uniform(0.0, 30.0),2), humidity = round(random.uniform(0.0, 1.0),2)):
+    def __init__(self, actuators, city, temperature = 20, humidity = 0.5):
         self.temperature = temperature
         self.humidity = humidity
         self.actuators = actuators
@@ -104,7 +104,7 @@ class Environment(object):
 
         window_intensity = 0
 
-        humidifer_value = 0
+        humidifier_value = 0
         humidifier_intensity = 0
 
         pump_intensity = 0
@@ -112,8 +112,8 @@ class Environment(object):
         ac_value = 0
         ac_intensity = 0
         
-        temperature_value = self.temperature
-        humidity_value = self.humidity
+        # temperature_value = self.temperature
+        # humidity_value = self.humidity
 
         actual_time = time.time()
         
@@ -123,7 +123,7 @@ class Environment(object):
                     window_intensity += 1
                 if isinstance(actuator, Humidifier):
                     humidifier_intensity += 1
-                    humidifer_value += actuator.value
+                    humidifier_value += actuator.value
                 if isinstance(actuator, Pump):
                     pump_intensity += actuator.value
                 if isinstance(actuator, AC):
@@ -131,9 +131,9 @@ class Environment(object):
                     ac_value += actuator.value
                     
         if humidifier_intensity != 0:
-            humidity_value = humidity_value/humidifier_intensity
+            humidifier_value = humidifier_value/humidifier_intensity
         if ac_intensity != 0:
-            temperature_value = temperature_value/ac_intensity
+            ac_value = ac_value/ac_intensity
         
         # To not overload the weather API            
         if self.flag:
@@ -143,7 +143,7 @@ class Environment(object):
         time_passed = actual_time - self.last_change
         
         window_humidity = window_intensity*((self.city_humidity - self.humidity)/self.window_factor)*time_passed + self.humidity
-        humidifier_humidity = humidifier_intensity*((humidifer_value - window_humidity)/self.humidifier_factor)*time_passed + window_humidity
+        humidifier_humidity = humidifier_intensity*((humidifier_value - window_humidity)/self.humidifier_factor)*time_passed + window_humidity
         pump_humidity = pump_intensity*self.pump_humidity_factor
         
         window_temperature = window_intensity*((self.city_temperature - self.temperature)/self.window_factor)*time_passed + self.temperature
