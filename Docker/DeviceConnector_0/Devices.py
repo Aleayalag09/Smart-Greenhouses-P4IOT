@@ -79,16 +79,24 @@ class Environment(object):
 
         
     def city_measurements(self):
+        """
+        This method extract from a json the measurements of
+        temperature and humidity of the specified city.
+        """
         search_address = 'http://dataservice.accuweather.com/locations/v1/cities/search?apikey='+self.api+'&q='+self.city+'&details=true'
-        with urllib.request.urlopen(search_address) as search_address:
+        hdr = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
+        req = urllib.request.Request(search_address, headers=hdr)
+        with urllib.request.urlopen(req) as search_address:
             data = json.loads(search_address.read().decode())
         location_key = data[0]['Key']
         weatherUrl= 'http://dataservice.accuweather.com/currentconditions/v1/'+location_key+'?apikey='+self.api+'&details=true'
-        with urllib.request.urlopen(weatherUrl) as weatherUrl:
+        req = urllib.request.Request(weatherUrl,headers=hdr)
+        with urllib.request.urlopen(req) as weatherUrl:
             data = json.loads(weatherUrl.read().decode())
         temperature = data[0]['Temperature']['Metric']['Value']
         humidity = data[0]['RelativeHumidity'] / 100
-        return temperature, humidity
+        # temperature, humidity = 20, 0.2
+        return temperature, humidity  
         
         
     def update_environment(self):
