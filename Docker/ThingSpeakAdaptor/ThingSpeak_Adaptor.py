@@ -21,10 +21,13 @@ class regTopic(object):
         
         global database
         input = json.loads(cherrypy.request.body.read())
+        
+        with open(database, "r") as file:
+            db = json.load(file)
 
-        db_file = open(database, "r")
-        db = json.load(db_file)
-        db_file.close()
+        # db_file = open(database, "r")
+        # db = json.load(db_file)
+        # db_file.close()
 
         try:
             # Da vedere che dati vengono inviati dal catalog e come => ogni volta che viene aggiunto un nuovo Device Connector deve essere fatto un POST qua
@@ -60,10 +63,13 @@ class regTopic(object):
         db["topics"].append(new_topic)   
 
         MeasuresReceiver.subscribe(topic)
+        
+        with open(database, "w") as file:
+            json.dump(db, file, indent=3)
 
-        db_file = open(database, "w")
-        json.dump(db, db_file, indent=3)
-        db_file.close()
+        # db_file = open(database, "w")
+        # json.dump(db, db_file, indent=3)
+        # db_file.close()
         
         result = {
             "userID": userID,
@@ -81,9 +87,12 @@ class regTopic(object):
         global database
         # input = json.loads(cherrypy.request.body.read())
         
-        db_file = open(database, "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open(database, "r") as file:
+            db = json.load(file)
+
+        # db_file = open(database, "r")
+        # db = json.load(db_file)
+        # db_file.close()
 
         try:
             userID = queries["userID"]
@@ -103,9 +112,12 @@ class regTopic(object):
         for idx in idxs:
             db["topics"].pop(idx)
 
-        db_file = open(database, "w")
-        json.dump(db, db_file, indent=3)
-        db_file.close()
+        with open(database, "w") as file:
+            json.dump(db, file, indent=3)
+
+        # db_file = open(database, "w")
+        # json.dump(db, db_file, indent=3)
+        # db_file.close()
         
         result = {
             "userID": userID,
@@ -119,9 +131,12 @@ class MQTT_subscriber(object):
 
     def __init__(self, broker, port):
         
-        db_file = open(database, "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open(database, "r") as file:
+            db = json.load(file)
+        
+        # db_file = open(database, "r")
+        # db = json.load(db_file)
+        # db_file.close()
         
         self.client = mqtt.Client("ThingSpeak_adaptor_"+str(db["ID"]))
         self.broker = broker
@@ -166,9 +181,13 @@ def refresh():
     """
 
     global database
-    db_file = open(database, "r")
-    db = json.load(db_file)
-    db_file.close()
+    
+    with open(database, "r") as file:
+        db = json.load(file)
+
+    # db_file = open(database, "r")
+    # db = json.load(db_file)
+    # db_file.close()
 
     payload = {
         'ip': db["ip"], 
@@ -199,17 +218,24 @@ def getBroker():
         raise cherrypy.HTTPError(400, 'Wrong parameters')
 
     # Load the database
-    db_file = open(database, "r")
-    db = json.load(db_file)
+    
+    with open(database, "r") as file:
+        db = json.load(file)
+
+    # db_file = open(database, "r")
+    # db = json.load(db_file)
+    # db_file.close()
 
     db["broker"]["ip"] = ip
     db["broker"]["port"] = port
     db["broker"]["timestamp"] = time.time()
 
-    db_file.close()
-    db_file = open(database, "w")
-    json.dump(db, db_file, indent=3)
-    db_file.close()
+    with open(database, "w") as file:
+        json.dump(db, file, indent=3)
+
+    # db_file = open(database, "w")
+    # json.dump(db, db_file, indent=3)
+    # db_file.close()
 
 
 def getTopics():
@@ -253,15 +279,21 @@ def getTopics():
             
             MeasuresReceiver.subscribe(topic)
 
-    db_file = open(database, "r")
-    db = json.load(db_file)
-    db_file.close()
+    with open(database, "r") as file:
+        db = json.load(file)
+
+    # db_file = open(database, "r")
+    # db = json.load(db_file)
+    # db_file.close()
 
     db["topics"] = topics_list
     
-    db_file = open(database, "w")
-    json.dump(db, db_file, indent=3)
-    db_file.close()
+    with open(database, "w") as file:
+        json.dump(db, file, indent=3)
+        
+    # db_file = open(database, "w")
+    # json.dump(db, db_file, indent=3)
+    # db_file.close()
 
 
 def send_to_Thingspeak(topic, measure):
@@ -272,9 +304,12 @@ def send_to_Thingspeak(topic, measure):
 
     global database
 
-    db_file = open(database, "r")
-    db = json.load(db_file)
-    db_file.close()
+    with open(database, "r") as file:
+        db = json.load(file)
+
+    # db_file = open(database, "r")
+    # db = json.load(db_file)
+    # db_file.close()
 
     userID = topic.split("/")[1]
     greenHouseID = topic.split("/")[2]
@@ -361,10 +396,14 @@ if __name__ == "__main__":
     # CAN THE MQTT BROKER CHANGE THROUGH TIME? I SUPPOSE NOT IN THIS CASE
     getBroker()
 
-    db_file = open(database, "r")
-    db = json.load(db_file)
+    with open(database, "r") as file:
+        db = json.load(file)
+
+    # db_file = open(database, "r")
+    # db = json.load(db_file)
+    # db_file.close()
+
     broker_dict = db["broker"]
-    db_file.close()
     
     MeasuresReceiver = MQTT_subscriber(broker_dict["ip"], broker_dict["port"]) 
     MeasuresReceiver.start()
