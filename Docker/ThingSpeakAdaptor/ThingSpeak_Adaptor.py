@@ -297,20 +297,20 @@ def send_to_Thingspeak(topic, measure):
                             field_irr = greenhouse["irrigation"]
                             field_wea = greenhouse["weather"]
 
-                            RequestToThingspeak = str(url_thingspeak+thingspeak_key+field_temp+field_hum+field_wea+field_irr).format(float(measures["temperature"]), float(measures["humidity"], float(measures["weather"]), float(measures["irrigation"])))
+                            RequestToThingspeak = str(url_thingspeak+thingspeak_key+field_temp+field_hum+field_wea+field_irr).format(float(measures["temperature"]), float(measures["humidity"]), float(measures["weather"]), float(measures["irrigation"]))
                             measures["weather"] = -1
                             measures["irrigation"] = 0
 
                         elif measures["weather"] != -1:
                             field_wea = greenhouse["weather"]
 
-                            RequestToThingspeak = str(url_thingspeak+thingspeak_key+field_temp+field_hum+field_wea).format(float(measures["temperature"]), float(measures["humidity"], float(measures["weather"])))
+                            RequestToThingspeak = str(url_thingspeak+thingspeak_key+field_temp+field_hum+field_wea).format(float(measures["temperature"]), float(measures["humidity"]), float(measures["weather"]))
                             measures["weather"] = -1    
 
                         elif measures["irrigation"] != 0:
                             field_irr = greenhouse["irrigation"]
 
-                            RequestToThingspeak = str(url_thingspeak+thingspeak_key+field_temp+field_hum+field_irr).format(float(measures["temperature"]), float(measures["humidity"], float(measures["irrigation"])))
+                            RequestToThingspeak = str(url_thingspeak+thingspeak_key+field_temp+field_hum+field_irr).format(float(measures["temperature"]), float(measures["humidity"]), float(measures["irrigation"]))
                             measures["irrigation"] = 0    
                         
                         else:
