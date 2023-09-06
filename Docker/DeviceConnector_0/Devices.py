@@ -119,8 +119,10 @@ class Environment(object):
                     ac_intensity += 1
                     ac_value += actuator.value
                     
-        humidifer_value = humidifer_value/humidifier_intensity
-        ac_value = ac_value/ac_intensity
+        if humidifier_intensity != 0:
+            humidity_value = humidity_value/humidifier_intensity
+        if ac_intensity != 0:
+            temperature_value = temperature_value/ac_intensity
         
         # To not overload the weather API            
         if self.flag:
