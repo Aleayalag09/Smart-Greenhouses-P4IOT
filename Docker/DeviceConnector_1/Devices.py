@@ -103,6 +103,9 @@ class Environment(object):
 
         ac_value = 0
         ac_intensity = 0
+        
+        temperature_value = self.temperature
+        humidity_value = self.humidity
 
         actual_time = time.time()
         
