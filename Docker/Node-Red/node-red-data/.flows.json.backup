@@ -23930,7 +23930,7 @@
         "order": 3,
         "width": 0,
         "height": 0,
-        "label": "water quantity (l)",
+        "label": "Water quantity (L)",
         "chartType": "bar",
         "legend": "false",
         "xformat": "HH:mm:ss",
@@ -23959,7 +23959,7 @@
         "outputs": 1,
         "useDifferentColor": false,
         "className": "",
-        "x": 4800,
+        "x": 4810,
         "y": 2820,
         "wires": [
             []

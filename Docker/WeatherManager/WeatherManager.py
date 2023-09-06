@@ -9,7 +9,7 @@ import paho.mqtt.client as mqtt
 new_strat = False
 database = "db/weather_manager_db.json"
 resCatEndpoints = "http://resource_catalog:8080"
-api = '2dijRCsmASyFDctePrXXG4MW7JRe9Ncx'
+api = '9v7pxZQ1QJ85tCibvSx9ph5oRCywUf1U'
 
 class RegStrategy(object):
     exposed = True
