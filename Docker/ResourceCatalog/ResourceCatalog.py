@@ -660,7 +660,7 @@ class Strategy(object):
                                                 states = []
                                             else:
                                                 for step, win_state in enumerate(states):
-                                                    if win_state["userID"] == id and win_state["greenHouseID"] == greenHouseID:
+                                                    if win_state["userID"] == int(id) and win_state["greenHouseID"] == int(greenHouseID):
                                                         del states[step]
                                                         break
 
@@ -703,14 +703,14 @@ class Strategy(object):
 
                                     if states == []:
                                         states = [{
-                                            "userID": id,
-                                            "greenHouseID": greenHouseID,
+                                            "userID": int(id),
+                                            "greenHouseID": int(greenHouseID),
                                             "state": "CLOSE"
                                         }]
                                     else:
                                         states = states.append({
-                                            "userID": id,
-                                            "greenHouseID": greenHouseID,
+                                            "userID": int(id),
+                                            "greenHouseID": int(greenHouseID),
                                             "state": "CLOSE"
                                         })
 
