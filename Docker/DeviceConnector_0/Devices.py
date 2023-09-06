@@ -68,10 +68,10 @@ class Environment(object):
         self.api = 'YOUR_API_KEY'
         self.city_temperature = 20
         self.city_humidity = 0.5
-        self.flag = False
+        self.flag = True
         
         # Hyperparameters
-        self.window_factor = 3600 # How much time it takes to have the same temperature - humidity if the a window is open (1 hour)
+        self.window_factor = 60 # How much time it takes to have the same temperature - humidity if the a window is open (1 hour)
         self.humidifier_factor = 60 # How much time it takes to have the same humidity as the set point (20 minutes)
         self.ac_factor = 60 # How much time it takes to have the same temperature as the set point (20 minutes)
         self.pump_humidity_factor = 0.001 # Proportion of the humidity that increase by second for the total amount of water quantity
@@ -144,7 +144,7 @@ class Environment(object):
         self.humidity = round(humidifier_humidity + pump_humidity, 5)
         self.temperature = round(ac_temperature, 2)
         
-        print(f'humidity: {self.humidity}, temperature: {self.temperature}, time passed: {time_passed}')
+        # print(f'humidity: {self.humidity}, temperature: {self.temperature}, time passed: {time_passed}')
         
         self.last_change = actual_time
         
