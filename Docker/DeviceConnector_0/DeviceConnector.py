@@ -28,9 +28,12 @@ class RegTopic(object):
         global new_strat
         input = json.loads(cherrypy.request.body.read())
 
-        db_file = open(database, "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open(database, "r") as file:
+            db = json.load(file)
+
+        # db_file = open(database, "r")
+        # db = json.load(db_file)
+        # db_file.close()
 
         try:
             strategyType = input['strategyType']
@@ -68,9 +71,13 @@ class RegTopic(object):
             db["strategies"][strategyType].append(newStrategy_topic)
 
         new_strat = True
-        db_file = open(database, "w")
-        json.dump(db, db_file, indent=3)
-        db_file.close()
+
+        with open(database, "w") as file:
+            json.dump(db, file, indent=3)
+
+        # db_file = open(database, "w")
+        # json.dump(db, db_file, indent=3)
+        # db_file.close()
         
         result = {
             "strategyType": strategyType,
@@ -86,9 +93,12 @@ class RegTopic(object):
         global database
         global new_strat
 
-        db_file = open(database, "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open(database, "r") as file:
+            db = json.load(file)
+
+        # db_file = open(database, "r")
+        # db = json.load(db_file)
+        # db_file.close()
 
         try:
             strategyType = queries['strategyType']
@@ -118,9 +128,13 @@ class RegTopic(object):
             db["strategies"][strategyType] = []
 
         new_strat = True
-        db_file = open(database, "w")
-        json.dump(db, db_file, indent=3)
-        db_file.close()
+
+        with open(database, "w") as file:
+            json.dump(db, file, indent=3)
+
+        # db_file = open(database, "w")
+        # json.dump(db, db_file, indent=3)
+        # db_file.close()
         
         result = {
             "strategyType": strategyType,
@@ -139,10 +153,13 @@ class MQTT_subscriber_publisher(object):
         global ac_ID
         global pump_ID
         global dht11_ID
-       
-        db_file = open(database, "r")
-        db = json.load(db_file)
-        db_file.close()
+        
+        with open(database, "r") as file:
+            db = json.load(file)
+
+        # db_file = open(database, "r")
+        # db = json.load(db_file)
+        # db_file.close()
         
         self.client = mqtt.Client("DeviceConnector_"+str(db["userID"])+"_"+str(db["greenHouseID"]))
         self.broker = broker
@@ -198,9 +215,12 @@ class MQTT_subscriber_publisher(object):
         global pump_ID
         global dht11_ID
 
-        db_file = open(database, "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open(database, "r") as file:
+            db = json.load(file)
+
+        # db_file = open(database, "r")
+        # db = json.load(db_file)
+        # db_file.close()
 
         measure = json.loads(message.payload)
 
@@ -282,9 +302,12 @@ class MQTT_subscriber_publisher(object):
         
         global database
 
-        db_file = open(database, "r")
-        db = json.load(db_file)
-        db_file.close()
+        with open(database, "r") as file:
+            db = json.load(file)
+
+        # db_file = open(database, "r")
+        # db = json.load(db_file)
+        # db_file.close()
 
         topic = "IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"+measureType
         
@@ -311,9 +334,12 @@ def refresh():
 
     global database
     
-    db_file = open(database, "r")
-    db = json.load(db_file)
-    db_file.close()
+    with open(database, "r") as file:
+        db = json.load(file)
+
+    # db_file = open(database, "r")
+    # db = json.load(db_file)
+    # db_file.close()
 
     payload = {
         "userID": db["userID"],
@@ -350,17 +376,23 @@ def getBroker():
     except:
         raise cherrypy.HTTPError(400, 'Wrong parameters')
     
-    db_file = open(database, "r")
-    db = json.load(db_file)
+    with open(database, "r") as file:
+        db = json.load(file)
+
+    # db_file = open(database, "r")
+    # db = json.load(db_file)
+    # db_file.close()
 
     db["broker"]["ip"] = ip
     db["broker"]["port"] = port
     db["broker"]["timestamp"] = time.time()
 
-    db_file.close()
-    db_file = open(database, "w")
-    json.dump(db, db_file, indent=3)
-    db_file.close()
+    with open(database, "w") as file:
+        json.dump(db, file, indent=3)
+        
+    # db_file = open(database, "w")
+    # json.dump(db, db_file, indent=3)
+    # db_file.close()
 
 
 def getTopics():
@@ -374,9 +406,12 @@ def getTopics():
     global database
     global new_strat
 
-    db_file = open(database, "r")
-    db = json.load(db_file)
-    db_file.close()
+    with open(database, "r") as file:
+        db = json.load(file)
+
+    # db_file = open(database, "r")
+    # db = json.load(db_file)
+    # db_file.close()
 
     url = resCatEndpoints+'/strategy'
     params = {"id": db["userID"], "greenHouseID": db["greenHouseID"], "strategyType": "all"}
@@ -409,9 +444,13 @@ def getTopics():
         mqtt_handler.subscribe(topic)
     
     new_strat = True
-    db_file = open(database, "w")
-    json.dump(db, db_file, indent=3)
-    db_file.close()
+
+    with open(database, "w") as file:
+        json.dump(db, file, indent=3)
+
+    # db_file = open(database, "w")
+    # json.dump(db, db_file, indent=3)
+    # db_file.close()
 
 
     
@@ -436,8 +475,12 @@ if __name__ == '__main__':
     # CAN THE MQTT BROKER CHANGE THROUGH TIME? I SUPPOSE NOT IN THIS CASE
     getBroker()
     
-    db_file = open(database, "r")
-    db = json.load(db_file)
+    with open(database, "r") as file:
+        db = json.load(file)
+
+    # db_file = open(database, "r")
+    # db = json.load(db_file)
+    # db_file.close()
 
     broker_dict = db["broker"]
     
@@ -458,8 +501,6 @@ if __name__ == '__main__':
     measure_freq = 20
 
     sensors = db["devices"]["sensors"]
-    
-    db_file.close()
 
     while True:
         timestamp = time.time()

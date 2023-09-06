@@ -35,10 +35,13 @@ class RegStrategy(object):
         
         topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
 
-        db_file = open(database, "r")
-        db = json.load(db_file)
-        db_file.close()
-    
+        with open(database, "r") as file:
+            db = json.load(file)
+
+        # db_file = open(database, "r")
+        # db = json.load(db_file)
+        # db_file.close()
+
         new_strategy = {
             "topic": topic, 
             "time": time_start, 
@@ -55,10 +58,14 @@ class RegStrategy(object):
                     strat["active"] = activeIrr
 
         new_strat = True
-        db_file = open(database, "w")
-        json.dump(db, db_file, indent=3)
-        db_file.close()
 
+        with open(database, "w") as file:
+            json.dump(db, file, indent=3)
+
+        # db_file = open(database, "w")
+        # json.dump(db, db_file, indent=3)
+        # db_file.close()
+        
         result = {
             "userID": userID,
             "greenHouseID": greenHouseID,
@@ -78,10 +85,13 @@ class RegStrategy(object):
         global database 
         global new_strat
         input = json.loads(cherrypy.request.body.read())
-        
-        db_file = open(database, "r")
-        db = json.load(db_file)
-        db_file.close()
+
+        with open(database, "r") as file:
+            db = json.load(file)
+
+        # db_file = open(database, "r")
+        # db = json.load(db_file)
+        # db_file.close()
 
         try:
             userID = input['userID']
@@ -104,9 +114,13 @@ class RegStrategy(object):
                     strat["active"] = activeStrat
         
         new_strat = True
-        db_file = open(database, "w")
-        json.dump(db, db_file, indent=3)
-        db_file.close()
+
+        with open(database, "w") as file:
+            json.dump(db, file, indent=3)
+
+        # db_file = open(database, "w")
+        # json.dump(db, db_file, indent=3)
+        # db_file.close()
         
         result = {
             "userID": userID,
@@ -137,9 +151,12 @@ class RegStrategy(object):
             except: 
                 pass
             else:
-                db_file = open(database, "r")
-                db = json.load(db_file)
-                db_file.close()
+                with open(database, "r") as file:
+                    db = json.load(file)
+
+                # db_file = open(database, "r")
+                # db = json.load(db_file)
+                # db_file.close()
 
                 idxs = []
                 for idx, strat in enumerate(db["strategies"]):
@@ -152,19 +169,26 @@ class RegStrategy(object):
                     db["strategies"].pop(idx)
                 
                 new_strat = True
-                db_file = open(database, "w")
-                json.dump(db, db_file, indent=3)
-                db_file.close()
 
+                with open(database, "w") as file:
+                    json.dump(db, file, indent=3)
+
+                # db_file = open(database, "w")
+                # json.dump(db, db_file, indent=3)
+                # db_file.close()
+        
                 return
 
             raise cherrypy.HTTPError(400, 'Bad request')
         else:
             topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
-            
-            db_file = open(database, "r")
-            db = json.load(db_file)
-            db_file.close()
+
+            with open(database, "r") as file:
+                db = json.load(file)
+
+            # db_file = open(database, "r")
+            # db = json.load(db_file)
+            # db_file.close()
 
             idx = 0
             for strat in db["strategies"]:
@@ -180,9 +204,13 @@ class RegStrategy(object):
                     strat["topic"] = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(int(split_topic[4])-1)
             
             new_strat = True
-            db_file = open(database, "w")
-            json.dump(db, db_file, indent=3)
-            db_file.close()
+
+            with open(database, "w") as file:
+                json.dump(db, file, indent=3)
+
+            # db_file = open(database, "w")
+            # json.dump(db, db_file, indent=3)
+            # db_file.close()
         
         result = {
             "userID": userID,
@@ -195,11 +223,14 @@ class RegStrategy(object):
 class MQTT_publisher(object):
 
     def __init__(self, broker, port):
-        
-        db_file = open(database, "r")
-        db = json.load(db_file)
-        db_file.close()
-        
+
+        with open(database, "r") as file:
+            db = json.load(file)
+
+        # db_file = open(database, "r")
+        # db = json.load(db_file)
+        # db_file.close()
+
         self.client = mqtt.Client("IrrigationManager_"+str(db["ID"]))
         self.broker = broker
         self.port = port
@@ -233,9 +264,13 @@ def refresh():
     """
     
     global database
-    db_file = open(database, "r")
-    db = json.load(db_file)
-    db_file.close()
+
+    with open(database, "r") as file:
+        db = json.load(file)
+
+    # db_file = open(database, "r")
+    # db = json.load(db_file)
+    # db_file.close()
 
     payload = {
         'ip': db["ip"], 
@@ -266,17 +301,25 @@ def getBroker():
         raise cherrypy.HTTPError(400, 'Wrong parameters')
 
     # Load the database
-    db_file = open(database, "r")
-    db = json.load(db_file)
+
+    with open(database, "r") as file:
+        db = json.load(file)
+
+    # db_file = open(database, "r")
+    # db = json.load(db_file)
+    # db_file.close()
 
     db["broker"]["ip"] = ip
     db["broker"]["port"] = port
     db["broker"]["timestamp"] = time.time()
 
-    db_file.close()
-    db_file = open(database, "w")
-    json.dump(db, db_file, indent=3)
-    db_file.close()
+    with open(database, "w") as file:
+        json.dump(db, file, indent=3)
+
+    # db_file = open(database, "w")
+    # json.dump(db, db_file, indent=3)
+    # db_file.close()
+        
 
 
 def getStrategies():
@@ -318,16 +361,22 @@ def getStrategies():
                                     "timestamp": time.time()
                                 })
 
-    db_file = open(database, "r")
-    db = json.load(db_file)
-    db_file.close()
+    with open(database, "r") as file:
+        db = json.load(file)
+
+    # db_file = open(database, "r")
+    # db = json.load(db_file)
+    # db_file.close()
 
     db["strategies"] = strategy_list
     new_strat = True
 
-    db_file = open(database, "w")
-    json.dump(db, db_file, indent=3)
-    db_file.close()
+    with open(database, "w") as file:
+        json.dump(db, file, indent=3)
+
+    # db_file = open(database, "w")
+    # json.dump(db, db_file, indent=3)
+    # db_file.close()
 
 
 if __name__=="__main__":
@@ -363,16 +412,18 @@ if __name__=="__main__":
     refresh_freq = 60
     cooldown = 80
     water_released = 0
-    
-    db_file = open(database, "r")
-    db = json.load(db_file)
-    
+
+    with open(database, "r") as file:
+        db = json.load(file)
+
+    # db_file = open(database, "r")
+    # db = json.load(db_file)
+    # db_file.close()
+
     broker_dict = db["broker"]
     
     publisher = MQTT_publisher(broker_dict["ip"], broker_dict["port"])
     publisher.start()
-    
-    db_file.close()
 
     while True:
         timestamp = time.time()
@@ -387,9 +438,12 @@ if __name__=="__main__":
         if new_strat:
 
             try:
-                db_file = open(database, "r")
-                db = json.load(db_file)
-                db_file.close()
+                with open(database, "r") as file:
+                    db = json.load(file)
+
+                # db_file = open(database, "r")
+                # db = json.load(db_file)
+                # db_file.close()
             except:
                 new_strat = True
             else:
