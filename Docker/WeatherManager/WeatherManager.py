@@ -10,6 +10,8 @@ new_strat = False
 database = "db/weather_manager_db.json"
 resCatEndpoints = "http://resource_catalog:8080"
 api = 'YOUR_API_KEY'
+with open(database, "r") as file:
+    db_test = json.load(file)
 
 class RegStrategy(object):
     exposed = True
@@ -22,6 +24,7 @@ class RegStrategy(object):
 
         global database
         global new_strat
+        global db_test
         input = json.loads(cherrypy.request.body.read())
 
         try:
@@ -54,10 +57,14 @@ class RegStrategy(object):
         }
         db["strategies"].append(new_strategy)
 
-        new_strat = True
         with open(database, "w") as file:
             json.dump(db, file, indent=3)
+        
+        with open(database, "r") as file:
+            db_test = json.load(file)
 
+        time.sleep(5)
+        new_strat = True
         # db_file = open(database, "w")
         # json.dump(db, db_file, indent=3)
         # db_file.close()
@@ -81,6 +88,7 @@ class RegStrategy(object):
 
         global database 
         global new_strat
+        global db_test
         input = json.loads(cherrypy.request.body.read())
         
         with open(database, "r") as file:
@@ -102,10 +110,14 @@ class RegStrategy(object):
                 if int(split_topic[1]) == int(userID) and int(split_topic[2]) == int(greenHouseID):
                     strat["active"] = active
         
-        new_strat = True
         with open(database, "w") as file:
             json.dump(db, file, indent=3)
 
+        with open(database, "r") as file:
+            db_test = json.load(file)
+
+        time.sleep(5)
+        new_strat = True
         # db_file = open(database, "w")
         # json.dump(db, db_file, indent=3)
         # db_file.close()
@@ -125,6 +137,7 @@ class RegStrategy(object):
 
         global database
         global new_strat
+        global db_test
 
         try:
             userID = queries['userID']
@@ -149,10 +162,14 @@ class RegStrategy(object):
                 idx += 1
         db["strategies"].pop(idx)
 
-        new_strat = True
         with open(database, "w") as file:
             json.dump(db, file, indent=3)
 
+        with open(database, "r") as file:
+            db_test = json.load(file)
+
+        time.sleep(5)
+        new_strat = True
         # db_file = open(database, "w")
         # json.dump(db, db_file, indent=3)
         # db_file.close()
@@ -233,6 +250,7 @@ def getBroker():
     """
 
     global database
+    global db_test
 
     url = resCatEndpoints+'/broker'
     broker = requests.get(url).json()
@@ -258,6 +276,9 @@ def getBroker():
 
     with open(database, "w") as file:
         json.dump(db, file, indent=3)
+        
+    with open(database, "r") as file:
+        db_test = json.load(file)
 
     # db_file = open(database, "w")
     # json.dump(db, db_file, indent=3)
@@ -273,6 +294,7 @@ def getStrategies():
 
     global database
     global new_strat
+    global db_test
 
     url = resCatEndpoints+'/strategy/manager'
     params = {"strategyType": "weather"}
@@ -309,11 +331,15 @@ def getStrategies():
     # db_file.close()
 
     db["strategies"] = strategy_list
-    new_strat = True
     
     with open(database, "w") as file:
         json.dump(db, file, indent=3)
 
+    with open(database, "r") as file:
+        db_test = json.load(file)
+
+    time.sleep(5)
+    new_strat = True
     # db_file = open(database, "w")
     # json.dump(db, db_file, indent=3)
     # db_file.close()
@@ -433,24 +459,22 @@ if __name__ == '__main__':
             refresh()
 
         if new_strat:
-
             try:
                 with open(database, "r") as file:
                     db = json.load(file)
-                # db_file = open(database, "r")
-                # db = json.load(db_file)
-                # db_file.close()
             except:
                 new_strat = True
             else:
                 new_strat = False
 
-        for strat in db["strategies"]:
+            # print(db_test)
+
+        for strat in db_test["strategies"]:
             
             if strat["active"] == True:
                 if flag_API:
                     temperature, humidity = getMeasurements(strat['city'])
-                    print(f'temperature:, {temperature}, humidity: {humidity}')
+                    print(f'temperature: {temperature}, humidity: {humidity}')
                     flag_API = False
                     time_flag = time.time()
 
@@ -459,20 +483,49 @@ if __name__ == '__main__':
                     if strat["temperature"] < temperature*(percentange) or strat["temperature"] > temperature*(2 - percentange) or \
                     strat['humidity'] < humidity*(percentange) or strat['humidity'] > humidity*(2 - percentange):
                         publisher.publish(strat["topic"], 'close')
+                        
+                        split_topic = strat["topic"].split("/")
+
+                        payload = {
+                            'userID': split_topic[1], 
+                            'greenHouseID': split_topic[2],
+                            'state': "CLOSE"
+                        }
+                        
+                        url = "http://resource_catalog:8080/window_state"
+                        requests.post(url, json.dumps(payload))
+
                         strat["open"] = False
                         new_strat = True
+                        # time.sleep(0.5)
                 # If the window is closed we control if it should be opened
                 else: 
-                    if temperature*(percentange) <= strat['temperature'] <= temperature*(2 - percentange) and humidity*(percentange) <= strat['humidity'] <= humidity*(2 - percentange):
+                    if (temperature*(percentange) <= strat['temperature'] and strat['temperature'] <= temperature*(2 - percentange)) and (humidity*(percentange) <= strat['humidity'] and strat['humidity'] <= humidity*(2 - percentange)):
+                    # if float(temperature) == float(strat["temperature"]) and float(humidity) == float(strat["humidity"]):
                         # Still we have to see how the device connector is going to receive this message
                         publisher.publish(strat["topic"], 'open')
+                        
+                        split_topic = strat["topic"].split("/")
+
+                        payload = {
+                            'userID': split_topic[1], 
+                            'greenHouseID': split_topic[2],
+                            'state': "OPEN"
+                        }
+                        
+                        url = "http://resource_catalog:8080/window_state"
+                        requests.post(url, json.dumps(payload))
+                        
                         strat["open"] = True
                         new_strat = True
+                        # time.sleep(0.5)
+
+                        print("PORCODIO")
 
         if new_strat == True:
-            time.sleep(1)
+            # time.sleep(1)
             with open(database, "w") as file:
-                json.dump(db, file, indent=3)
+                json.dump(db_test, file, indent=3)
 
             # db_file = open(database, "w")
             # json.dump(db, db_file, indent=3)
