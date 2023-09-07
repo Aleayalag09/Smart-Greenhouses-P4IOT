@@ -126,7 +126,8 @@ class RegStrategy(object):
         new_strat = True
         with open(database, "w") as file:
             json.dump(db, file, indent=3)
-
+        
+        time.sleep(0.5)
         result = {
             "userID": userID,
             "greenHouseID": greenHouseID,
@@ -173,6 +174,7 @@ class RegStrategy(object):
         with open(database, "w") as file:
             json.dump(db, file, indent=3)
 
+        time.sleep(0.5)
         result = {
             "userID": userID,
             "greenHouseID": greenHouseID,
@@ -399,6 +401,7 @@ def getStrategies():
     with open(database, "w") as file:
         json.dump(db, file, indent=3)
 
+    time.sleep(0.5)
 
 def getFactors(userID, greenHouseID):
     """
@@ -554,6 +557,7 @@ if __name__=="__main__":
                                     
                                     setLastMessage(strat["userID"], strat["greenHouseID"], "temp")
                                     new_strat = True
+                                    time.sleep(0.5)
 
 
                     # Accessible only if we have a new measure for the humidity and if it's passed enough time from the last message 
@@ -577,3 +581,4 @@ if __name__=="__main__":
                                     
                                     setLastMessage(strat["userID"], strat["greenHouseID"], "hum")
                                     new_strat = True
+                                    time.sleep(0.5)
