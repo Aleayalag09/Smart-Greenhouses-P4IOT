@@ -664,7 +664,7 @@ class Strategy(object):
                                                         del states[step]
                                                         break
 
-                                            mqtt_handler.unsubscribe("IoT_project_29/"+str(id)+"/"+str(greenHouseID)+"/weather")
+                                            # mqtt_handler.unsubscribe("IoT_project_29/"+str(id)+"/"+str(greenHouseID)+"/weather")
                                             db_ws["states"] = states
 
                                             with open("db/window_state.json", "w") as file:
@@ -687,12 +687,6 @@ class Strategy(object):
                                 with open("db/catalog.json", "w") as file:
                                     json.dump(db, file, indent=3)
 
-                                try:
-                                    post_to_manager(strategyType, post_manager_dict)
-                                    post_to_dev_conn(strategyType, post_manager_dict)
-                                except:
-                                    pass
-
                                 if strategyType == "weather":
                                     time.sleep(1)
 
@@ -714,11 +708,17 @@ class Strategy(object):
                                             "state": "CLOSE"
                                         })
 
-                                    mqtt_handler.subscribe("IoT_project_29/"+str(id)+"/"+str(greenHouseID)+"/weather")
+                                    # mqtt_handler.subscribe("IoT_project_29/"+str(id)+"/"+str(greenHouseID)+"/weather")
                                     db_ws["states"] = states
                                     
                                     with open("db/window_state.json", "w") as file:
                                         json.dump(db_ws, file, indent=3)
+
+                                try:
+                                    post_to_manager(strategyType, post_manager_dict)
+                                    post_to_dev_conn(strategyType, post_manager_dict)
+                                except:
+                                    pass
 
                                 return post_manager_dict
             except: 
@@ -932,7 +932,7 @@ class Strategy(object):
                                                     del states[step]
                                                     break
 
-                                        mqtt_handler.unsubscribe("IoT_project_29/"+str(id)+"/"+str(greenHouseID)+"/weather")
+                                        # mqtt_handler.unsubscribe("IoT_project_29/"+str(id)+"/"+str(greenHouseID)+"/weather")
                                         db_ws["states"] = states
                                         
                                         with open("db/window_state.json", "w") as file:
@@ -1699,61 +1699,61 @@ def delete_to_dev_conn(strategyType = "", strat_info = {}):
 
 
 
-class MQTT_subscriber(object):
+# class MQTT_subscriber(object):
     
-    def __init__(self, broker, port):
+#     def __init__(self, broker, port):
         
-        self.client = mqtt.Client("Resource_catalog_0")
-        self.broker = broker
-        self.port = port
-        self.topic = None
+#         self.client = mqtt.Client("Resource_catalog_0")
+#         self.broker = broker
+#         self.port = port
+#         self.topic = None
 
-    def start (self):
-        self.client.connect(self.broker, self.port)
-        self.client.loop_start()
+#     def start (self):
+#         self.client.connect(self.broker, self.port)
+#         self.client.loop_start()
 
-    def subscribe(self, topic):
-        self.client.subscribe(topic)
-        self.client.on_message= self.on_message
-        self.topic = topic
+#     def subscribe(self, topic):
+#         self.client.subscribe(topic)
+#         self.client.on_message= self.on_message
+#         self.topic = topic
 
-    def unsubscribe(self, topic):
-        self.client.unsubscribe(topic)
+#     def unsubscribe(self, topic):
+#         self.client.unsubscribe(topic)
 
-    def stop (self):
-        self.client.loop_stop()
+#     def stop (self):
+#         self.client.loop_stop()
 
-    def on_message(self, client, userdata, message):
+#     def on_message(self, client, userdata, message):
 
-        measure = json.loads(message.payload)
-        topic = message.topic.split("/")
+#         measure = json.loads(message.payload)
+#         topic = message.topic.split("/")
 
-        try:
-            # Unit of measure of the measure
-            # unit = measure['unit']
-            value = measure['e']['v']
-            timestamp = measure['e']['t']
-            measuretype = measure['bn']
-        except:
-            raise cherrypy.HTTPError(400, 'Wrong parameters')
+#         try:
+#             # Unit of measure of the measure
+#             # unit = measure['unit']
+#             value = measure['e']['v']
+#             timestamp = measure['e']['t']
+#             measuretype = measure['bn']
+#         except:
+#             raise cherrypy.HTTPError(400, 'Wrong parameters')
 
-        # Load the database
-        with open("db/window_state.json", "r") as file:
-            db_ws = json.load(file)
+#         # Load the database
+#         with open("db/window_state.json", "r") as file:
+#             db_ws = json.load(file)
 
-        # If the message is received from the weather manager the script must change the parameter
-        # related to the window for the strategy of that user and greenhouse
-        if measuretype == "weather":
-            for win_state in db_ws["states"]:
-                if win_state["userID"] == int(topic[1]) and win_state["greenHouseID"] == int(topic[2]):
-                    if value == "close":
-                        win_state["state"] = "CLOSE"
-                    elif value == "open":
-                        win_state["state"] = "OPEN"
+#         # If the message is received from the weather manager the script must change the parameter
+#         # related to the window for the strategy of that user and greenhouse
+#         if measuretype == "weather":
+#             for win_state in db_ws["states"]:
+#                 if win_state["userID"] == int(topic[1]) and win_state["greenHouseID"] == int(topic[2]):
+#                     if value == "close":
+#                         win_state["state"] = "CLOSE"
+#                     elif value == "open":
+#                         win_state["state"] = "OPEN"
                         
-        # Write the updated database back to the file
-        with open("db/window_state.json", "w") as file:
-            json.dump(db_ws, file, indent=3)
+#         # Write the updated database back to the file
+#         with open("db/window_state.json", "w") as file:
+#             json.dump(db_ws, file, indent=3)
 
 
 class WindowState(object):
@@ -1778,6 +1778,30 @@ class WindowState(object):
                 return json.dumps(win_state, indent=3)
             
         return json.dumps({"state": "Error"}, indent=3)
+    
+    def POST(self, *path, **queries):
+        """
+        
+        """
+        
+        input = json.loads(cherrypy.request.body.read())
+
+        try:
+            id = input['userID']
+            greenHouseID = input['greenHouseID']
+            state = input['state']
+        except:
+            raise cherrypy.HTTPError(400, 'Bad request')
+        
+        with open("db/window_state.json", "r") as file:
+            db_ws = json.load(file)
+
+        for win_state in db_ws["states"]:
+            if win_state["userID"] == int(id) and win_state["greenHouseID"] == int(greenHouseID):
+                win_state["state"] = state
+
+        with open("db/window_state.json", "w") as file:
+            json.dump(db_ws, file, indent=3)
 
 
 
@@ -1823,8 +1847,8 @@ if __name__=="__main__":
     
     with open("db/broker.json", "r") as file:
         broker = json.load(file)
-    mqtt_handler = MQTT_subscriber(broker["ip"], broker["port"])
-    mqtt_handler.start()
+    # mqtt_handler = MQTT_subscriber(broker["ip"], broker["port"])
+    # mqtt_handler.start()
     
     # BOOT: retrieve the THINGSPEAK ADAPTORS info from the database (catalog.json)
     thingspeak_adaptors = db["thingspeak_adaptors"]
