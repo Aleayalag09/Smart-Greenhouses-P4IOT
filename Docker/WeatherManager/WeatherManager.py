@@ -492,7 +492,7 @@ if __name__ == '__main__':
                             'state': "CLOSE"
                         }
                         
-                        url = "http://resource_catalog:8080/window_state"
+                        url = resCatEndpoints+"/window_state"
                         requests.post(url, json.dumps(payload))
 
                         strat["open"] = False
@@ -513,7 +513,7 @@ if __name__ == '__main__':
                             'state': "OPEN"
                         }
                         
-                        url = "http://resource_catalog:8080/window_state"
+                        url = resCatEndpoints+"/window_state"
                         requests.post(url, json.dumps(payload))
                         
                         strat["open"] = True
