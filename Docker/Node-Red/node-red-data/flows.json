@@ -21519,7 +21519,8 @@
                 "a41aa4cb664c0971",
                 "907dc787cc044d70",
                 "57b4e9371a0f3d43",
-                "8c17df97385649aa"
+                "8c17df97385649aa",
+                "5667582e57cbb879"
             ]
         ]
     },
@@ -21744,7 +21745,7 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "import json\nimport time\n\n\noutput = [{\n\"series\": [\"Window\"],\n\"data\": [[]],\n\"labels\": [\"Window\"]\n}]\n\nfor feed in msg['payload']['feeds']:\n    \n    date_obj = time.strptime(feed['created_at'] , \"%Y-%m-%dT%H:%M:%SZ\")\n    \n    data_w = {\"x\": time.mktime(date_obj)*1000, \"y\": feed['field3']}\n    \n    output[0]['data'][0].append(data_w)\n    \nmsg['payload'] = output\nreturn msg",
+        "func": "import json\nimport time\n\n\noutput = [{\n\"series\": [\"Window\"],\n\"data\": [[]],\n\"labels\": [\"Window\"]\n}]\n\nfor feed in msg['payload']['feeds']:\n    \n    if feed['field3'] is not None:\n        date_obj = time.strptime(feed['created_at'] , \"%Y-%m-%dT%H:%M:%SZ\")\n        \n        data_w = {\"x\": time.mktime(date_obj)*1000, \"y\": feed['field3']}\n        \n        output[0]['data'][0].append(data_w)\n    \nmsg['payload'] = output\nreturn msg",
         "outputs": 1,
         "x": 4610,
         "y": 2060,
@@ -21825,7 +21826,7 @@
         "type": "python3-function",
         "z": "dfa5f5222d797092",
         "name": "",
-        "func": "msg['action'] = \"subscribe\"\n# da aggiungere alla fine il sensorType\nmsg['topic']= \"IoT_project_29/\"+str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/sensors/temperature\"\n\n#msg['topic'] = \"IoT_project/group29/greenhouse1/temperature\"\nreturn msg",
+        "func": "msg['action'] = \"subscribe\"\n\nmsg['topic']= \"IoT_project_29/\"+str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/sensors/temperature\"\n\n\nreturn msg",
         "outputs": 1,
         "x": 3630,
         "y": 2480,
@@ -23542,7 +23543,6 @@
                 "1940d3aee50fa044",
                 "29ae8612d318481f",
                 "4963a8752fb69d27",
-                "5e74bf960214efee",
                 "040b290402537f85",
                 "2868a1257bcd1f73",
                 "64a1841c66b7767f",
@@ -23805,7 +23805,6 @@
         "y": 2820,
         "wires": [
             [
-                "77f95c0ece769d59",
                 "6ac2e396d52df147"
             ]
         ]
@@ -23814,11 +23813,12 @@
         "id": "77f95c0ece769d59",
         "type": "python3-function",
         "z": "dfa5f5222d797092",
+        "d": true,
         "name": "",
         "func": "msg['action'] = \"subscribe\"\n\nmsg['topic']= \"IoT_project_29/\"+str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/irrigation/#\"\n\nreturn msg",
         "outputs": 1,
-        "x": 3710,
-        "y": 2820,
+        "x": 3910,
+        "y": 3220,
         "wires": [
             [
                 "14e3e0a4d2a2c6a9"
@@ -23829,6 +23829,7 @@
         "id": "14e3e0a4d2a2c6a9",
         "type": "mqtt in",
         "z": "dfa5f5222d797092",
+        "d": true,
         "name": "",
         "topic": "",
         "qos": "2",
@@ -23839,7 +23840,7 @@
         "rh": 0,
         "inputs": 1,
         "x": 4150,
-        "y": 2820,
+        "y": 3220,
         "wires": [
             [
                 "d0fb4b8a40e5e369"
@@ -23850,11 +23851,12 @@
         "id": "5e74bf960214efee",
         "type": "python3-function",
         "z": "dfa5f5222d797092",
+        "d": true,
         "name": "",
         "func": "msg['action'] = \"unsubscribe\"\n\nmsg['topic']= \"IoT_project_29/\"+str(msg['payload']['id'])+\"/\"+str(msg['payload']['greenHouseID'])+\"/irrigation/#\"\n\nreturn msg",
         "outputs": 1,
         "x": 3910,
-        "y": 2740,
+        "y": 3140,
         "wires": [
             [
                 "14e3e0a4d2a2c6a9"
@@ -23893,76 +23895,35 @@
         "id": "c8df3c93.539ad8",
         "type": "debug",
         "z": "dfa5f5222d797092",
+        "d": true,
         "name": "",
         "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
-        "complete": "false",
+        "complete": "payload",
+        "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 4510,
-        "y": 2900,
+        "x": 4170,
+        "y": 3140,
         "wires": []
     },
     {
         "id": "d0fb4b8a40e5e369",
         "type": "python3-function",
         "z": "dfa5f5222d797092",
+        "d": true,
         "name": "",
         "func": "import json\nfrom datetime import datetime\n\ntimestamp = msg['payload']['e']['t']\n\ndt_object = datetime.fromtimestamp(timestamp)\nformatted_time = dt_object.strftime('%H:%M')\n\noutput = [{\n    \"series\": [formatted_time],\n    \"data\": [[ msg['payload']['e']['v']\n    ]],\n    \"labels\": [formatted_time]\n}]\n\nmsg['payload'] = output\nreturn msg\n\n\n",
         "outputs": 1,
         "x": 4410,
-        "y": 2820,
+        "y": 3220,
         "wires": [
             [
-                "680e406ad5dd551a",
-                "c8df3c93.539ad8"
+                "c8df3c93.539ad8",
+                "680e406ad5dd551a"
             ]
-        ]
-    },
-    {
-        "id": "680e406ad5dd551a",
-        "type": "ui_chart",
-        "z": "dfa5f5222d797092",
-        "name": "",
-        "group": "0301ba55f59e74c0",
-        "order": 3,
-        "width": 0,
-        "height": 0,
-        "label": "Water quantity (L)",
-        "chartType": "bar",
-        "legend": "false",
-        "xformat": "HH:mm:ss",
-        "interpolate": "linear",
-        "nodata": "",
-        "dot": false,
-        "ymin": "",
-        "ymax": "",
-        "removeOlder": "1",
-        "removeOlderPoints": "1000",
-        "removeOlderUnit": "86400",
-        "cutout": 0,
-        "useOneColor": false,
-        "useUTC": false,
-        "colors": [
-            "#1f77b4",
-            "#aec7e8",
-            "#ff7f0e",
-            "#20cf20",
-            "#98df8a",
-            "#d62728",
-            "#ff9896",
-            "#9467bd",
-            "#c5b0d5"
-        ],
-        "outputs": 1,
-        "useDifferentColor": false,
-        "className": "",
-        "x": 4810,
-        "y": 2820,
-        "wires": [
-            []
         ]
     },
     {
@@ -24025,7 +23986,7 @@
                 "b68ad7b4f19ef12a",
                 "8de0f6912b124cdc",
                 "b7ce0e02612a7da3",
-                "680e406ad5dd551a"
+                "30a7907c24027e28"
             ]
         ]
     },
@@ -24042,8 +24003,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 4570,
-        "y": 2180,
+        "x": 4590,
+        "y": 1660,
         "wires": []
     },
     {
@@ -24169,6 +24130,128 @@
             [
                 "e76523a35fc2feb0"
             ]
+        ]
+    },
+    {
+        "id": "ef284fd4d17b62c8",
+        "type": "debug",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 4890,
+        "y": 2160,
+        "wires": []
+    },
+    {
+        "id": "5667582e57cbb879",
+        "type": "python3-function",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "func": "import json\nimport time\n\n\noutput = [{\n\"series\": [\"Irrigation\"],\n\"data\": [[]],\n\"labels\": [\"Irrigation\"]\n}]\n\nfor feed in msg['payload']['feeds']:\n    \n    if feed['field4'] is not None:\n        date_obj = time.strptime(feed['created_at'] , \"%Y-%m-%dT%H:%M:%SZ\")\n        \n        data_h = {\"x\": time.mktime(date_obj)*1000, \"y\": feed['field4']}\n        \n        output[0]['data'][0].append(data_h)\n\nmsg['payload'] = output\nreturn msg",
+        "outputs": 1,
+        "x": 4610,
+        "y": 2200,
+        "wires": [
+            [
+                "ef284fd4d17b62c8",
+                "30a7907c24027e28"
+            ]
+        ]
+    },
+    {
+        "id": "30a7907c24027e28",
+        "type": "ui_chart",
+        "z": "dfa5f5222d797092",
+        "name": "",
+        "group": "0301ba55f59e74c0",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "label": "",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "1000",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 4890,
+        "y": 2200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "680e406ad5dd551a",
+        "type": "ui_chart",
+        "z": "dfa5f5222d797092",
+        "d": true,
+        "name": "",
+        "group": "0301ba55f59e74c0",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "label": "Water quantity (L)",
+        "chartType": "bar",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "1",
+        "removeOlderPoints": "1000",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#20cf20",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 4410,
+        "y": 3140,
+        "wires": [
+            []
         ]
     },
     {
