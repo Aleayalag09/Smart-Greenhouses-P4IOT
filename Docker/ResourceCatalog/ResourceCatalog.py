@@ -715,8 +715,10 @@ class Strategy(object):
                                         json.dump(db_ws, file, indent=3)
 
                                 try:
-                                    post_to_manager(strategyType, post_manager_dict)
                                     post_to_dev_conn(strategyType, post_manager_dict)
+                                    time.sleep(60)
+                                    post_to_manager(strategyType, post_manager_dict)
+
                                 except:
                                     pass
 
