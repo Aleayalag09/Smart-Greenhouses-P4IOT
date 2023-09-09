@@ -40,10 +40,10 @@ class RegStrategy(object):
         
         
         # Generate topic strings based on user and greenhouse IDs
-        topic_act_temp = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/environment/temperature"
-        topic_act_hum = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/environment/humidity"
-        topic_sens_temp = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/sensors/temperature"
-        topic_sens_hum = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/sensors/humidity"
+        topic_act_temp = "IoT_project_29_test/"+str(userID)+"/"+str(greenHouseID)+"/environment/temperature"
+        topic_act_hum = "IoT_project_29_test/"+str(userID)+"/"+str(greenHouseID)+"/environment/humidity"
+        topic_sens_temp = "IoT_project_29_test/"+str(userID)+"/"+str(greenHouseID)+"/sensors/temperature"
+        topic_sens_hum = "IoT_project_29_test/"+str(userID)+"/"+str(greenHouseID)+"/sensors/humidity"
         
         # Load the database JSON
         with open(database, "r") as file:
@@ -276,6 +276,7 @@ class MQTT_subscriber_publisher(object):
         self.__message["e"]["v"] = value
 
         # Publish the message to the specified topic
+        print(topic, self.__message)
         self.client.publish(topic, json.dumps(self.__message))
         
         self.client.loop_start()
@@ -356,11 +357,11 @@ def getStrategies():
         except:
             raise cherrypy.HTTPError(400, 'Wrong parameters')
         else:
-            topic_act_temp = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/environment/temperature"
-            topic_act_hum = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/environment/humidity"
+            topic_act_temp = "IoT_project_29_test/"+str(userID)+"/"+str(greenHouseID)+"/environment/temperature"
+            topic_act_hum = "IoT_project_29_test/"+str(userID)+"/"+str(greenHouseID)+"/environment/humidity"
 
-            topic_sens_temp = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/sensors/temperature"
-            topic_sens_hum = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/sensors/humidity"
+            topic_sens_temp = "IoT_project_29_test/"+str(userID)+"/"+str(greenHouseID)+"/sensors/temperature"
+            topic_sens_hum = "IoT_project_29_test/"+str(userID)+"/"+str(greenHouseID)+"/sensors/humidity"
 
             strategy_list.append({
                                     "userID": int(userID),
@@ -389,7 +390,7 @@ def getStrategies():
             mqtt_handler.subscribe(topic_sens_temp)
             mqtt_handler.subscribe(topic_sens_hum)
 
-            topic_weather = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/weather"
+            topic_weather = "IoT_project_29_test/"+str(userID)+"/"+str(greenHouseID)+"/weather"
             mqtt_handler.subscribe(topic_weather)
     
     with open(database, "r") as file:

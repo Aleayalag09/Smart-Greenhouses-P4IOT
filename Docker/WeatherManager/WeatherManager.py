@@ -37,7 +37,7 @@ class RegStrategy(object):
         except:
             raise cherrypy.HTTPError(400, 'Wrong input')
         
-        topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/weather"
+        topic = "IoT_project_29_test/"+str(userID)+"/"+str(greenHouseID)+"/weather"
         
         with open(database, "r") as file:
             db = json.load(file)
@@ -145,7 +145,7 @@ class RegStrategy(object):
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
         
-        topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/weather"
+        topic = "IoT_project_29_test/"+str(userID)+"/"+str(greenHouseID)+"/weather"
         
         with open(database, "r") as file:
             db = json.load(file)
@@ -212,6 +212,8 @@ class MQTT_publisher(object):
 
         self.__message["e"]["t"] = time.time()
         self.__message["e"]["v"] = value
+        
+        print(self.__message, topic)
 
         self.client.publish(topic, json.dumps(self.__message))
         
@@ -312,7 +314,7 @@ def getStrategies():
         except:
             raise cherrypy.HTTPError(400, 'Wrong parameters')
         else:
-            topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/weather"
+            topic = "IoT_project_29_test/"+str(userID)+"/"+str(greenHouseID)+"/weather"
             strategy_list.append({
                                     "topic": topic,
                                     "temperature": temperature,
@@ -503,6 +505,7 @@ if __name__ == '__main__':
                     if (temperature*(percentange) <= strat['temperature'] and strat['temperature'] <= temperature*(2 - percentange)) and (humidity*(percentange) <= strat['humidity'] and strat['humidity'] <= humidity*(2 - percentange)):
                     # if float(temperature) == float(strat["temperature"]) and float(humidity) == float(strat["humidity"]):
                         # Still we have to see how the device connector is going to receive this message
+                        print(strat['topic'])
                         publisher.publish(strat["topic"], 'open')
                         
                         split_topic = strat["topic"].split("/")
