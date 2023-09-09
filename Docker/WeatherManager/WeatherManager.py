@@ -9,7 +9,7 @@ import paho.mqtt.client as mqtt
 new_strat = False
 database = "db/weather_manager_db.json"
 resCatEndpoints = "http://resource_catalog:8080"
-api = '5cDOsWQ4c3EAnYvBlZsLG7qdZI9GANCQ'
+api = 'osO3PJqMAVQ4ulN91rLBsEl4ifdWFNs3'
 
 with open(database, "r") as file:
     db_test = json.load(file)
