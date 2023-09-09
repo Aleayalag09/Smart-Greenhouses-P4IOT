@@ -34,6 +34,8 @@ class RegTopic(object):
         # db_file = open(database, "r")
         # db = json.load(db_file)
         # db_file.close()
+        
+        print(input)
 
         try:
             strategyType = input['strategyType']
@@ -66,6 +68,7 @@ class RegTopic(object):
         else:
             newStrategy_topic = "IoT_project_29_test/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/"+strategyType
             # Subscribe to the MQTT topics
+            print('aqui', newStrategy_topic)
             mqtt_handler.subscribe(newStrategy_topic)
             
             db["strategies"][strategyType].append(newStrategy_topic)
@@ -116,15 +119,16 @@ class RegTopic(object):
                     split_topic = topic.split("/")
                     if int(split_topic[4]) == int(strategyID):
                         db["strategies"]["irrigation"].pop(step)
-                        mqtt_handler.unsubscribe(topic)
+                        # mqtt_handler.unsubscribe(topic)
                         break
 
         elif strategyType == "environment":
-            mqtt_handler.unsubscribe(db["strategies"]["environment"][0])
-            mqtt_handler.unsubscribe(db["strategies"]["environment"][1])
+            # mqtt_handler.unsubscribe(db["strategies"]["environment"][0])
+            # mqtt_handler.unsubscribe(db["strategies"]["environment"][1])
             db["strategies"]["environment"] = []
         else:
-            mqtt_handler.unsubscribe(db["strategies"][strategyType][0])
+            # print('me fui', db["strategies"][strategyType][0])
+            # mqtt_handler.unsubscribe(db["strategies"][strategyType][0])
             db["strategies"][strategyType] = []
 
         new_strat = True
@@ -190,11 +194,12 @@ class MQTT_subscriber_publisher(object):
         self.controller = Controller(self.sensors, self.actuators)
         self.enviroment = Environment(self.actuators, "Torino")
 
-    def start (self):
+    def start(self):
         self.client.connect(self.broker, self.port)
         self.client.loop_start()
 
     def subscribe(self, topic):
+        self.client.loop_start()
         self.client.subscribe(topic)
         self.client.on_message= self.on_message
         self.topic = topic
@@ -314,6 +319,7 @@ class MQTT_subscriber_publisher(object):
         topic = "IoT_project_29_test/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"+measureType
         
         find = False
+        # print('ciao3')
         for sensor in self.controller.sensors:
             
             if find == False:
@@ -323,6 +329,7 @@ class MQTT_subscriber_publisher(object):
                         break
 
         if find == True:       
+            # print('ciao4')
             sensor.read_measurements(self.enviroment)
             self.publish(topic, sensor.value[measureType], measureType)
 
@@ -511,13 +518,14 @@ if __name__ == '__main__':
 
             last_refresh = time.time()
             refresh()
-            print(mqtt_handler.topic)
+            # print(mqtt_handler.topic)
 
         if timestamp-last_measure >= measure_freq:
+            # print('ciao1')
 
             last_measure = time.time()
             for measureType in sensors:
-
+                # print('ciao2')
                 mqtt_handler.publishSensorMeasure(measureType)
                 time.sleep(1.5)
             
