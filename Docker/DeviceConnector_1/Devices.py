@@ -65,7 +65,7 @@ class Environment(object):
         self.actuators = actuators
         self.last_change = time.time()
         self.city = city
-        self.api = 'ZOFXZFYKKQEE6UwvN4wjGXsQ13z9hrXf'
+        self.api = 'iBG8GnjUzups6vdxgv9yB95NWtOZD1hf'
         self.city_temperature = 20
         self.city_humidity = 0.5
         self.flag = True
