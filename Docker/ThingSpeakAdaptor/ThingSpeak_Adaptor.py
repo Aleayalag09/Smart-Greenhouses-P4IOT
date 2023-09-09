@@ -39,7 +39,7 @@ class regTopic(object):
         
         # for sensorType in sensors:
 
-        #     topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/sensors/"+sensorType
+        #     topic = "IoT_project_29_test/"+str(userID)+"/"+str(greenHouseID)+"/sensors/"+sensorType
         #     new_topic = {
         #         "topic": topic
         #     }
@@ -48,7 +48,7 @@ class regTopic(object):
         #     MeasuresReceiver.subscribe(topic)
         
         # # ADD THE IRRIGATION AS "SENSOR" TO TRACK THE WATER QUANTITY PUMPED
-        # topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/#"
+        # topic = "IoT_project_29_test/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/#"
         # new_topic = {
         #     "topic": topic
         # }
@@ -56,7 +56,7 @@ class regTopic(object):
         
         # MeasuresReceiver.subscribe(topic)
 
-        topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/sensors/#"
+        topic = "IoT_project_29_test/"+str(userID)+"/"+str(greenHouseID)+"/sensors/#"
         new_topic = {
             "topic": topic
         }
@@ -259,20 +259,20 @@ def getTopics():
             raise cherrypy.HTTPError(400, 'Wrong parameters')
         else:
             # for sensorType in sensors:
-            #     topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/sensors/"+sensorType
+            #     topic = "IoT_project_29_test/"+str(userID)+"/"+str(greenHouseID)+"/sensors/"+sensorType
             #     topics_list.append({
             #                         "topic": topic
             #                     })
             #     MeasuresReceiver.subscribe(topic)
 
             # # ADD THE IRRIGATION AS "SENSOR" TO TRACK THE WATER QUANTITY PUMPED
-            # topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/#"
+            # topic = "IoT_project_29_test/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/#"
             # topics_list.append({
             #                     "topic": topic
             #                 })
             # MeasuresReceiver.subscribe(topic)
             
-            topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/sensors/#"
+            topic = "IoT_project_29_test/"+str(userID)+"/"+str(greenHouseID)+"/sensors/#"
             topics_list.append({
                 "topic": topic
             })

@@ -33,7 +33,7 @@ class RegStrategy(object):
         except:
             raise cherrypy.HTTPError(400, 'Wrong input')
         
-        topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
+        topic = "IoT_project_29_test/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
 
         with open(database, "r") as file:
             db = json.load(file)
@@ -181,7 +181,7 @@ class RegStrategy(object):
 
             raise cherrypy.HTTPError(400, 'Bad request')
         else:
-            topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
+            topic = "IoT_project_29_test/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
 
             with open(database, "r") as file:
                 db = json.load(file)
@@ -201,7 +201,7 @@ class RegStrategy(object):
             for strat in db["strategies"]:
                 split_topic = strat["topic"].split("/")
                 if int(split_topic[1]) == int(userID) and int(split_topic[2]) == int(greenHouseID) and int(split_topic[4]) > int(stratID):
-                    strat["topic"] = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(int(split_topic[4])-1)
+                    strat["topic"] = "IoT_project_29_test/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(int(split_topic[4])-1)
             
             new_strat = True
 
@@ -349,7 +349,7 @@ def getStrategies():
         except:
             raise cherrypy.HTTPError(400, 'Wrong parameters')
         else:
-            topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
+            topic = "IoT_project_29_test/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
             if active == True:
                 active = active_strat
 

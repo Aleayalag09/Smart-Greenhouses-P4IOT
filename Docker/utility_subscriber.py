@@ -47,7 +47,7 @@ if __name__ == "__main__":
     MeasuresReceiver = MQTT_subscriber("test.mosquitto.org", 1883) 
     MeasuresReceiver.start()
 
-    MeasuresReceiver.subscribe("IoT_project_29/0/0/utility/#")
+    MeasuresReceiver.subscribe("IoT_project_29_test/0/0/utility/#")
 
     while True:
         pass

@@ -48,15 +48,15 @@ class RegTopic(object):
             except:
                 raise cherrypy.HTTPError(400, 'Missing input')
             else:
-                newStrategy_topic = "IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/irrigation/"+str(strategyID)
+                newStrategy_topic = "IoT_project_29_test/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/irrigation/"+str(strategyID)
                 # Subscribe to the MQTT topics
                 mqtt_handler.subscribe(newStrategy_topic)
                 
                 db["strategies"][strategyType].append(newStrategy_topic)
 
         elif strategyType == "environment":
-            newStrategy_topic_temp = "IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/temperature"
-            newStrategy_topic_hum = "IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/humidity"
+            newStrategy_topic_temp = "IoT_project_29_test/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/temperature"
+            newStrategy_topic_hum = "IoT_project_29_test/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/humidity"
             # Subscribe to the MQTT topics
             mqtt_handler.subscribe(newStrategy_topic_temp)
             mqtt_handler.subscribe(newStrategy_topic_hum)
@@ -64,7 +64,7 @@ class RegTopic(object):
             db["strategies"][strategyType].append(newStrategy_topic_temp)
             db["strategies"][strategyType].append(newStrategy_topic_hum)
         else:
-            newStrategy_topic = "IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/"+strategyType
+            newStrategy_topic = "IoT_project_29_test/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/"+strategyType
             # Subscribe to the MQTT topics
             mqtt_handler.subscribe(newStrategy_topic)
             
@@ -245,7 +245,7 @@ class MQTT_subscriber_publisher(object):
                     elif isinstance(actuator, Humidifier):
                         result = result+" - "+self.controller.turn_off_actuator(humidifier_ID)
                 
-                mqtt_handler.publish("IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"+actuatorType, 1, actuatorType)
+                mqtt_handler.publish("IoT_project_29_test/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"+actuatorType, 1, actuatorType)
 
             elif value == "close":
                 result = self.controller.turn_off_actuator(window_ID) 
@@ -257,7 +257,7 @@ class MQTT_subscriber_publisher(object):
                     elif isinstance(actuator, Humidifier):
                         result = result+" - "+self.controller.turn_on_actuator(humidifier_ID)
                         
-                mqtt_handler.publish("IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"+actuatorType, 0, actuatorType)
+                mqtt_handler.publish("IoT_project_29_test/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"+actuatorType, 0, actuatorType)
             else:
                 print("Invalid Value")
                 
@@ -277,13 +277,13 @@ class MQTT_subscriber_publisher(object):
             if isinstance(value, (float, int)):
                 result = self.controller.set_value(pump_ID, value)  
                 
-                mqtt_handler.publish("IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"+actuatorType, value, actuatorType)  
+                mqtt_handler.publish("IoT_project_29_test/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"+actuatorType, value, actuatorType)  
             else:
                 print("Invalid Value")
 
         # If the command was successfull it should be seen from the UTILITY TOPIC of the actuator
         # THE UTILITY TOPIC SHOULD BE ACCESSED TO SEE IF THE STRATEGIES' COMMAND WERE SUCCESSFULL
-        mqtt_handler.publish("IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/utility/"+actuatorType, value, "utility")
+        mqtt_handler.publish("IoT_project_29_test/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/utility/"+actuatorType, value, "utility")
 
     def publish(self, topic, value, measureType):
         self.client.loop_stop()
@@ -309,7 +309,7 @@ class MQTT_subscriber_publisher(object):
         # db = json.load(db_file)
         # db_file.close()
 
-        topic = "IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"+measureType
+        topic = "IoT_project_29_test/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"+measureType
         
         find = False
         for sensor in self.controller.sensors:
@@ -430,20 +430,20 @@ def getTopics():
     
     if irr_strat["strat"] != []:
         for strat in irr_strat["strat"]:
-            topic = "IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/irrigation/"+str(strat["id"])
+            topic = "IoT_project_29_test/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/irrigation/"+str(strat["id"])
             db["strategies"]["irrigation"].append(topic)
             mqtt_handler.subscribe(topic)
 
     if env_strat["strat"] != []:
-        topic_temp = "IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/temperature"
-        topic_hum = "IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/humidity"
+        topic_temp = "IoT_project_29_test/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/temperature"
+        topic_hum = "IoT_project_29_test/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/humidity"
         db["strategies"]["environment"].append(topic_temp)
         db["strategies"]["environment"].append(topic_hum)
         mqtt_handler.subscribe(topic_temp)
         mqtt_handler.subscribe(topic_hum)
 
     if wea_strat["strat"] != []:
-        topic = "IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/weather"
+        topic = "IoT_project_29_test/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/weather"
         db["strategies"]["weather"].append(topic)
         mqtt_handler.subscribe(topic)
     
