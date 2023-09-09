@@ -31,10 +31,6 @@ class RegTopic(object):
         with open(database, "r") as file:
             db = json.load(file)
 
-        # db_file = open(database, "r")
-        # db = json.load(db_file)
-        # db_file.close()
-
         try:
             strategyType = input['strategyType']
             # Check if the strategy type taken from the input exist in the dev conn database
@@ -74,10 +70,6 @@ class RegTopic(object):
 
         with open(database, "w") as file:
             json.dump(db, file, indent=3)
-
-        # db_file = open(database, "w")
-        # json.dump(db, db_file, indent=3)
-        # db_file.close()
         
         result = {
             "strategyType": strategyType,
@@ -96,51 +88,46 @@ class RegTopic(object):
         with open(database, "r") as file:
             db = json.load(file)
 
-        # db_file = open(database, "r")
-        # db = json.load(db_file)
-        # db_file.close()
-
         try:
             strategyType = queries['strategyType']
             db["strategies"][strategyType]
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
-
-        if strategyType == "irrigation":
-            try:
-                strategyID = queries["stratID"]
-            except:
-                db["strategies"]["irrigation"] = []
-            else:
-                for step, topic in enumerate(db["strategies"]["irrigation"]):
-                    split_topic = topic.split("/")
-                    if int(split_topic[4]) == int(strategyID):
-                        db["strategies"]["irrigation"].pop(step)
-                        mqtt_handler.unsubscribe(topic)
-                        break
-
-        elif strategyType == "environment":
-            mqtt_handler.unsubscribe(db["strategies"]["environment"][0])
-            mqtt_handler.unsubscribe(db["strategies"]["environment"][1])
-            db["strategies"]["environment"] = []
-        else:
-            mqtt_handler.unsubscribe(db["strategies"][strategyType][0])
-            db["strategies"][strategyType] = []
-
-        new_strat = True
-
-        with open(database, "w") as file:
-            json.dump(db, file, indent=3)
-
-        # db_file = open(database, "w")
-        # json.dump(db, db_file, indent=3)
-        # db_file.close()
         
-        result = {
-            "strategyType": strategyType,
-            "timestamp": time.time()
-        }
-        return result
+        try:
+            if strategyType == "irrigation":
+                try:
+                    strategyID = queries["stratID"]
+                except:
+                    db["strategies"]["irrigation"] = []
+                else:
+                    for step, topic in enumerate(db["strategies"]["irrigation"]):
+                        split_topic = topic.split("/")
+                        if int(split_topic[4]) == int(strategyID):
+                            db["strategies"]["irrigation"].pop(step)
+                            mqtt_handler.unsubscribe(topic)
+                            break
+
+            elif strategyType == "environment":
+                mqtt_handler.unsubscribe(db["strategies"]["environment"][0])
+                mqtt_handler.unsubscribe(db["strategies"]["environment"][1])
+                db["strategies"]["environment"] = []
+            else:
+                mqtt_handler.unsubscribe(db["strategies"][strategyType][0])
+                db["strategies"][strategyType] = []
+
+            new_strat = True
+
+            with open(database, "w") as file:
+                json.dump(db, file, indent=3)
+            
+            result = {
+                "strategyType": strategyType,
+                "timestamp": time.time()
+            }
+            return result
+        except:
+            print("No strategy registered")
 
 
 
@@ -156,10 +143,6 @@ class MQTT_subscriber_publisher(object):
         
         with open(database, "r") as file:
             db = json.load(file)
-
-        # db_file = open(database, "r")
-        # db = json.load(db_file)
-        # db_file.close()
         
         self.client = mqtt.Client("DeviceConnector_"+str(db["userID"])+"_"+str(db["greenHouseID"]))
         self.broker = broker
@@ -197,7 +180,6 @@ class MQTT_subscriber_publisher(object):
     def subscribe(self, topic):
         self.client.subscribe(topic)
         self.client.on_message= self.on_message
-        self.topic = topic
 
     def unsubscribe(self, topic):
         self.client.unsubscribe(topic)
@@ -217,10 +199,6 @@ class MQTT_subscriber_publisher(object):
 
         with open(database, "r") as file:
             db = json.load(file)
-
-        # db_file = open(database, "r")
-        # db = json.load(db_file)
-        # db_file.close()
 
         measure = json.loads(message.payload)
 
@@ -305,10 +283,6 @@ class MQTT_subscriber_publisher(object):
         with open(database, "r") as file:
             db = json.load(file)
 
-        # db_file = open(database, "r")
-        # db = json.load(db_file)
-        # db_file.close()
-
         topic = "IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/sensors/"+measureType
         
         find = False
@@ -336,10 +310,6 @@ def refresh():
     
     with open(database, "r") as file:
         db = json.load(file)
-
-    # db_file = open(database, "r")
-    # db = json.load(db_file)
-    # db_file.close()
 
     payload = {
         "userID": db["userID"],
@@ -379,20 +349,12 @@ def getBroker():
     with open(database, "r") as file:
         db = json.load(file)
 
-    # db_file = open(database, "r")
-    # db = json.load(db_file)
-    # db_file.close()
-
     db["broker"]["ip"] = ip
     db["broker"]["port"] = port
     db["broker"]["timestamp"] = time.time()
 
     with open(database, "w") as file:
         json.dump(db, file, indent=3)
-        
-    # db_file = open(database, "w")
-    # json.dump(db, db_file, indent=3)
-    # db_file.close()
 
 
 def getTopics():
@@ -409,13 +371,13 @@ def getTopics():
     with open(database, "r") as file:
         db = json.load(file)
 
-    # db_file = open(database, "r")
-    # db = json.load(db_file)
-    # db_file.close()
-
-    url = resCatEndpoints+'/strategy'
-    params = {"id": db["userID"], "greenHouseID": db["greenHouseID"], "strategyType": "all"}
-    strategies = requests.get(url, params=params).json()
+    try:
+        url = resCatEndpoints+'/strategy'
+        params = {"id": db["userID"], "greenHouseID": db["greenHouseID"], "strategyType": "all"}
+        strategies = requests.get(url, params=params).json()
+    except:
+        print(cherrypy.HTTPError(400, 'No User of Greenhouse registered'))
+        return
 
     try:
         irr_strat = strategies["irrigation"]
@@ -424,13 +386,13 @@ def getTopics():
     except:
         raise cherrypy.HTTPError(400, 'Wrong parameters')
     
-    if irr_strat["strat"] != []:
+    if irr_strat["strat"] != {}:
         for strat in irr_strat["strat"]:
             topic = "IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/irrigation/"+str(strat["id"])
             db["strategies"]["irrigation"].append(topic)
             mqtt_handler.subscribe(topic)
 
-    if env_strat["strat"] != []:
+    if env_strat["strat"] != {}:
         topic_temp = "IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/temperature"
         topic_hum = "IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/environment/humidity"
         db["strategies"]["environment"].append(topic_temp)
@@ -438,7 +400,7 @@ def getTopics():
         mqtt_handler.subscribe(topic_temp)
         mqtt_handler.subscribe(topic_hum)
 
-    if wea_strat["strat"] != []:
+    if wea_strat["strat"] != {}:
         topic = "IoT_project_29/"+str(db["userID"])+"/"+str(db["greenHouseID"])+"/weather"
         db["strategies"]["weather"].append(topic)
         mqtt_handler.subscribe(topic)
@@ -447,10 +409,6 @@ def getTopics():
 
     with open(database, "w") as file:
         json.dump(db, file, indent=3)
-
-    # db_file = open(database, "w")
-    # json.dump(db, db_file, indent=3)
-    # db_file.close()
 
 
     
@@ -472,15 +430,10 @@ if __name__ == '__main__':
     cherrypy.engine.start()
     # cherrypy.engine.block()
 
-    # CAN THE MQTT BROKER CHANGE THROUGH TIME? I SUPPOSE NOT IN THIS CASE
     getBroker()
     
     with open(database, "r") as file:
         db = json.load(file)
-
-    # db_file = open(database, "r")
-    # db = json.load(db_file)
-    # db_file.close()
 
     broker_dict = db["broker"]
     

@@ -15,6 +15,9 @@ new_measures = {
 database = "db/environment_manager_db.json"
 resCatEndpoints = "http://resource_catalog:8080"
 
+with open(database, "r") as file:
+    db_test = json.load(file)
+
 # Define a CherryPy class for handling strategy registration
 class RegStrategy(object):
     exposed = True
@@ -27,6 +30,7 @@ class RegStrategy(object):
 
         global database
         global new_strat
+        global db_test
         input = json.loads(cherrypy.request.body.read())
 
         try:
@@ -83,8 +87,11 @@ class RegStrategy(object):
         new_strat = True
         with open(database, "w") as file:
             json.dump(db, file, indent=3)
+            
+        with open(database, "r") as file:
+            db_test = json.load(file)
 
-        time.sleep(0.5)
+        time.sleep(2)
         getFactors(userID, greenHouseID)
 
         result = {
@@ -105,6 +112,7 @@ class RegStrategy(object):
 
         global database 
         global new_strat
+        global db_test
         input = json.loads(cherrypy.request.body.read())
         
         with open(database, "r") as file:
@@ -126,8 +134,11 @@ class RegStrategy(object):
         new_strat = True
         with open(database, "w") as file:
             json.dump(db, file, indent=3)
-        
-        time.sleep(0.5)
+
+        with open(database, "r") as file:
+            db_test = json.load(file)
+
+        time.sleep(2)
         result = {
             "userID": userID,
             "greenHouseID": greenHouseID,
@@ -143,6 +154,7 @@ class RegStrategy(object):
 
         global database
         global new_strat
+        global db_test
         
         # Extract input parameters from the request
         try:
@@ -166,21 +178,28 @@ class RegStrategy(object):
                 idx += 1
         
         # Remove the strategy from the strategies list in the database
-        db["strategies"].pop(idx)
+        try:
+            db["strategies"].pop(idx)
 
-        new_strat = True
+            new_strat = True
 
-        # Write the updated database back to the file
-        with open(database, "w") as file:
-            json.dump(db, file, indent=3)
+            # Write the updated database back to the file
+            with open(database, "w") as file:
+                json.dump(db, file, indent=3)
 
-        time.sleep(0.5)
-        result = {
-            "userID": userID,
-            "greenHouseID": greenHouseID,
-            "timestamp": time.time()
-        }
-        return result
+            with open(database, "r") as file:
+                db_test = json.load(file)
+
+            time.sleep(2)
+            result = {
+                "userID": userID,
+                "greenHouseID": greenHouseID,
+                "timestamp": time.time()
+            }
+            return result
+        except:
+            print("No strategy registered")
+
 
 
 class MQTT_subscriber_publisher(object):
@@ -216,13 +235,12 @@ class MQTT_subscriber_publisher(object):
     def on_message(self, client, userdata, message):
         global database
         global new_measures
+        global db_test
 
         measure = json.loads(message.payload)
         topic = message.topic.split("/")
 
         try:
-            # Unit of measure of the measure
-            # unit = measure['unit']
             value = measure['e']['v']
             timestamp = measure['e']['t']
             measuretype = measure['bn']
@@ -268,6 +286,9 @@ class MQTT_subscriber_publisher(object):
         with open(database, "w") as file:
             json.dump(db, file, indent=3)
 
+        with open(database, "r") as file:
+            db_test = json.load(file)
+
     def publish(self, topic, value, actuatorType):
         self.client.loop_stop()
         # Update the message with the current timestamp and value
@@ -308,6 +329,7 @@ def getBroker():
     """
 
     global database
+    global db_test
 
     url = resCatEndpoints+'/broker'
     broker = requests.get(url).json()
@@ -329,6 +351,9 @@ def getBroker():
 
     with open(database, "w") as file:
         json.dump(db, file, indent=3)
+        
+    with open(database, "r") as file:
+        db_test = json.load(file)
 
 
 def getStrategies():
@@ -340,6 +365,7 @@ def getStrategies():
 
     global database
     global new_strat
+    global db_test
 
     url = resCatEndpoints+'/strategy/manager'
     params = {"strategyType": "environment"}
@@ -354,7 +380,7 @@ def getStrategies():
             humidity = strat["strat"]["humidity"]
             active = strat["active"]
         except:
-            raise cherrypy.HTTPError(400, 'Wrong parameters')
+            print('Wrong parameters')
         else:
             topic_act_temp = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/environment/temperature"
             topic_act_hum = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/environment/humidity"
@@ -401,7 +427,10 @@ def getStrategies():
     with open(database, "w") as file:
         json.dump(db, file, indent=3)
 
-    time.sleep(0.5)
+    with open(database, "r") as file:
+        db_test = json.load(file)
+
+    time.sleep(2)
 
 def getFactors(userID, greenHouseID):
     """
@@ -410,6 +439,7 @@ def getFactors(userID, greenHouseID):
     """
 
     global database
+    global db_test
 
     url = resCatEndpoints+'/device_connectors'
     params = {"id": userID, "greenHouseID": greenHouseID}
@@ -437,6 +467,11 @@ def getFactors(userID, greenHouseID):
 
         with open(database, "w") as file:
             json.dump(db, file, indent=3)
+            
+        with open(database, "r") as file:
+            db_test = json.load(file)
+
+        time.sleep(2)
     else:
         # For now, we have just 1 device connector even if we obtain a list from the GET
         pass
@@ -448,6 +483,7 @@ def setLastMessage(userID, greenHouseID, type):
     """
 
     global database
+    global db_test
 
     # Load the database
     with open(database, "r") as file:
@@ -459,6 +495,11 @@ def setLastMessage(userID, greenHouseID, type):
 
     with open(database, "w") as file:
         json.dump(db, file, indent=3)
+        
+    with open(database, "r") as file:
+        db_test = json.load(file)
+
+    time.sleep(2)
 
 
 
@@ -530,7 +571,7 @@ if __name__=="__main__":
         # but they are not new it's useless to send new commands, they were already sent previously)
         if new_measures["new"]:
             time.sleep(0.5)
-            for strat in db["strategies"]:
+            for strat in db_test["strategies"]:
 
                 # If the window is opened the strategy must stop to not waste energy
                 if strat["active"] == True and strat["window_open"] == False:
@@ -540,7 +581,7 @@ if __name__=="__main__":
                         with open(database, "r") as file:
                             db = json.load(file)
 
-                        actual_temp = db["actual_temperature"]
+                        actual_temp = db_test["actual_temperature"]
                         new_measures["temperature"] = False
                         new_measures["new"] = False
 
@@ -565,7 +606,7 @@ if __name__=="__main__":
                         with open(database, "r") as file:
                             db = json.load(file)
 
-                        actual_hum = db["actual_humidity"]
+                        actual_hum = db_test["actual_humidity"]
                         new_measures["humidity"] = False
                         new_measures["new"] = False
 
