@@ -9,6 +9,9 @@ new_strat = False
 database = "db/irrigation_manager_db.json"
 resCatEndpoints = "http://resource_catalog:8080"
 
+with open(database, "r") as file:
+    db_test = json.load(file)
+
 class RegStrategy(object):
     exposed = True
  
@@ -20,6 +23,7 @@ class RegStrategy(object):
 
         global database
         global new_strat
+        global db_test
         input = json.loads(cherrypy.request.body.read())
 
         try:
@@ -37,10 +41,6 @@ class RegStrategy(object):
 
         with open(database, "r") as file:
             db = json.load(file)
-
-        # db_file = open(database, "r")
-        # db = json.load(db_file)
-        # db_file.close()
 
         new_strategy = {
             "topic": topic, 
@@ -62,9 +62,8 @@ class RegStrategy(object):
         with open(database, "w") as file:
             json.dump(db, file, indent=3)
 
-        # db_file = open(database, "w")
-        # json.dump(db, db_file, indent=3)
-        # db_file.close()
+        with open(database, "r") as file:
+            db_test = json.load(file)
         
         result = {
             "userID": userID,
@@ -84,14 +83,11 @@ class RegStrategy(object):
 
         global database 
         global new_strat
+        global db_test
         input = json.loads(cherrypy.request.body.read())
 
         with open(database, "r") as file:
             db = json.load(file)
-
-        # db_file = open(database, "r")
-        # db = json.load(db_file)
-        # db_file.close()
 
         try:
             userID = input['userID']
@@ -117,10 +113,9 @@ class RegStrategy(object):
 
         with open(database, "w") as file:
             json.dump(db, file, indent=3)
-
-        # db_file = open(database, "w")
-        # json.dump(db, db_file, indent=3)
-        # db_file.close()
+            
+        with open(database, "r") as file:
+            db_test = json.load(file)
         
         result = {
             "userID": userID,
@@ -138,6 +133,7 @@ class RegStrategy(object):
 
         global database
         global new_strat
+        global db_test
 
         try:
             userID = queries['userID']
@@ -154,10 +150,6 @@ class RegStrategy(object):
                 with open(database, "r") as file:
                     db = json.load(file)
 
-                # db_file = open(database, "r")
-                # db = json.load(db_file)
-                # db_file.close()
-
                 idxs = []
                 for idx, strat in enumerate(db["strategies"]):
                     split_topic = strat["topic"].split("/")
@@ -172,10 +164,9 @@ class RegStrategy(object):
 
                 with open(database, "w") as file:
                     json.dump(db, file, indent=3)
-
-                # db_file = open(database, "w")
-                # json.dump(db, db_file, indent=3)
-                # db_file.close()
+                    
+                with open(database, "r") as file:
+                    db_test = json.load(file)
         
                 return
 
@@ -186,31 +177,31 @@ class RegStrategy(object):
             with open(database, "r") as file:
                 db = json.load(file)
 
-            # db_file = open(database, "r")
-            # db = json.load(db_file)
-            # db_file.close()
-
             idx = 0
             for strat in db["strategies"]:
                 if strat["topic"] == topic:
                     break
                 else:
                     idx += 1
-            db["strategies"].pop(idx)
 
-            for strat in db["strategies"]:
-                split_topic = strat["topic"].split("/")
-                if int(split_topic[1]) == int(userID) and int(split_topic[2]) == int(greenHouseID) and int(split_topic[4]) > int(stratID):
-                    strat["topic"] = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(int(split_topic[4])-1)
-            
-            new_strat = True
+            try:
+                db["strategies"].pop(idx)
 
-            with open(database, "w") as file:
-                json.dump(db, file, indent=3)
+                for strat in db["strategies"]:
+                    split_topic = strat["topic"].split("/")
+                    if int(split_topic[1]) == int(userID) and int(split_topic[2]) == int(greenHouseID) and int(split_topic[4]) > int(stratID):
+                        strat["topic"] = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(int(split_topic[4])-1)
+                
+                new_strat = True
 
-            # db_file = open(database, "w")
-            # json.dump(db, db_file, indent=3)
-            # db_file.close()
+                with open(database, "w") as file:
+                    json.dump(db, file, indent=3)
+                    
+                with open(database, "r") as file:
+                    db_test = json.load(file)
+
+            except:
+                print("No strategy registered")
         
         result = {
             "userID": userID,
@@ -226,10 +217,6 @@ class MQTT_publisher(object):
 
         with open(database, "r") as file:
             db = json.load(file)
-
-        # db_file = open(database, "r")
-        # db = json.load(db_file)
-        # db_file.close()
 
         self.client = mqtt.Client("IrrigationManager_"+str(db["ID"]))
         self.broker = broker
@@ -268,10 +255,6 @@ def refresh():
     with open(database, "r") as file:
         db = json.load(file)
 
-    # db_file = open(database, "r")
-    # db = json.load(db_file)
-    # db_file.close()
-
     payload = {
         'ip': db["ip"], 
         'port': db["port"],
@@ -289,6 +272,7 @@ def getBroker():
     """
 
     global database
+    global db_test
 
     url = resCatEndpoints+'/broker'
     broker = requests.get(url).json()
@@ -305,20 +289,15 @@ def getBroker():
     with open(database, "r") as file:
         db = json.load(file)
 
-    # db_file = open(database, "r")
-    # db = json.load(db_file)
-    # db_file.close()
-
     db["broker"]["ip"] = ip
     db["broker"]["port"] = port
     db["broker"]["timestamp"] = time.time()
 
     with open(database, "w") as file:
         json.dump(db, file, indent=3)
-
-    # db_file = open(database, "w")
-    # json.dump(db, db_file, indent=3)
-    # db_file.close()
+        
+    with open(database, "r") as file:
+        db_test = json.load(file)
         
 
 
@@ -331,6 +310,7 @@ def getStrategies():
 
     global database
     global new_strat
+    global db_test
 
     url = resCatEndpoints+'/strategy/manager'
     params = {"strategyType": "irrigation"}
@@ -347,7 +327,7 @@ def getStrategies():
             active_strat = strat["strat"]["active"]
             active = strat["active"]
         except:
-            raise cherrypy.HTTPError(400, 'Wrong parameters')
+            print('Wrong parameters')
         else:
             topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/"+str(stratID)
             if active == True:
@@ -364,19 +344,16 @@ def getStrategies():
     with open(database, "r") as file:
         db = json.load(file)
 
-    # db_file = open(database, "r")
-    # db = json.load(db_file)
-    # db_file.close()
-
     db["strategies"] = strategy_list
     new_strat = True
 
     with open(database, "w") as file:
         json.dump(db, file, indent=3)
+        
+    with open(database, "r") as file:
+        db_test = json.load(file)
 
-    # db_file = open(database, "w")
-    # json.dump(db, db_file, indent=3)
-    # db_file.close()
+
 
 
 if __name__=="__main__":
@@ -396,7 +373,6 @@ if __name__=="__main__":
     cherrypy.engine.start()
     # cherrypy.engine.block()
 
-    # CAN THE MQTT BROKER CHANGE THROUGH TIME? I SUPPOSE NOT IN THIS CASE
     getBroker()
 
     last_refresh = time.time() 
@@ -415,10 +391,6 @@ if __name__=="__main__":
 
     with open(database, "r") as file:
         db = json.load(file)
-
-    # db_file = open(database, "r")
-    # db = json.load(db_file)
-    # db_file.close()
 
     broker_dict = db["broker"]
     
@@ -441,15 +413,12 @@ if __name__=="__main__":
                 with open(database, "r") as file:
                     db = json.load(file)
 
-                # db_file = open(database, "r")
-                # db = json.load(db_file)
-                # db_file.close()
             except:
                 new_strat = True
             else:
                 new_strat = False
 
-        for strat in db["strategies"]:
+        for strat in db_test["strategies"]:
             
             strat_time = datetime.strptime(strat["time"], "%H:%M:%S")
             strat_time = strat_time.strftime("%H:%M")

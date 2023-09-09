@@ -25,36 +25,12 @@ class regTopic(object):
         with open(database, "r") as file:
             db = json.load(file)
 
-        # db_file = open(database, "r")
-        # db = json.load(db_file)
-        # db_file.close()
-
         try:
-            # Da vedere che dati vengono inviati dal catalog e come => ogni volta che viene aggiunto un nuovo Device Connector deve essere fatto un POST qua
             userID = input["userID"]
             greenHouseID = input["greenHouseID"]
             sensors = input["sensors"]
         except:
             raise cherrypy.HTTPError(400, 'Wrong input')
-        
-        # for sensorType in sensors:
-
-        #     topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/sensors/"+sensorType
-        #     new_topic = {
-        #         "topic": topic
-        #     }
-        #     db["topics"].append(new_topic)        
-
-        #     MeasuresReceiver.subscribe(topic)
-        
-        # # ADD THE IRRIGATION AS "SENSOR" TO TRACK THE WATER QUANTITY PUMPED
-        # topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/#"
-        # new_topic = {
-        #     "topic": topic
-        # }
-        # db["topics"].append(new_topic)   
-        
-        # MeasuresReceiver.subscribe(topic)
 
         topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/sensors/#"
         new_topic = {
@@ -66,10 +42,6 @@ class regTopic(object):
         
         with open(database, "w") as file:
             json.dump(db, file, indent=3)
-
-        # db_file = open(database, "w")
-        # json.dump(db, db_file, indent=3)
-        # db_file.close()
         
         result = {
             "userID": userID,
@@ -85,14 +57,9 @@ class regTopic(object):
         """
 
         global database
-        # input = json.loads(cherrypy.request.body.read())
         
         with open(database, "r") as file:
             db = json.load(file)
-
-        # db_file = open(database, "r")
-        # db = json.load(db_file)
-        # db_file.close()
 
         try:
             userID = queries["userID"]
@@ -114,10 +81,6 @@ class regTopic(object):
 
         with open(database, "w") as file:
             json.dump(db, file, indent=3)
-
-        # db_file = open(database, "w")
-        # json.dump(db, db_file, indent=3)
-        # db_file.close()
         
         result = {
             "userID": userID,
@@ -133,10 +96,6 @@ class MQTT_subscriber(object):
         
         with open(database, "r") as file:
             db = json.load(file)
-        
-        # db_file = open(database, "r")
-        # db = json.load(db_file)
-        # db_file.close()
         
         self.client = mqtt.Client("ThingSpeak_adaptor_"+str(db["ID"]))
         self.broker = broker
@@ -164,8 +123,6 @@ class MQTT_subscriber(object):
         topic = message.topic
 
         try:
-            # Unit of measure of the measure
-            # unit = measure['unit']
             value = measure["e"]['v']
             timestamp = measure["e"]['t']
         except:
@@ -184,10 +141,6 @@ def refresh():
     
     with open(database, "r") as file:
         db = json.load(file)
-
-    # db_file = open(database, "r")
-    # db = json.load(db_file)
-    # db_file.close()
 
     payload = {
         'ip': db["ip"], 
@@ -222,20 +175,12 @@ def getBroker():
     with open(database, "r") as file:
         db = json.load(file)
 
-    # db_file = open(database, "r")
-    # db = json.load(db_file)
-    # db_file.close()
-
     db["broker"]["ip"] = ip
     db["broker"]["port"] = port
     db["broker"]["timestamp"] = time.time()
 
     with open(database, "w") as file:
         json.dump(db, file, indent=3)
-
-    # db_file = open(database, "w")
-    # json.dump(db, db_file, indent=3)
-    # db_file.close()
 
 
 def getTopics():
@@ -258,20 +203,7 @@ def getTopics():
         except:
             raise cherrypy.HTTPError(400, 'Wrong parameters')
         else:
-            # for sensorType in sensors:
-            #     topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/sensors/"+sensorType
-            #     topics_list.append({
-            #                         "topic": topic
-            #                     })
-            #     MeasuresReceiver.subscribe(topic)
 
-            # # ADD THE IRRIGATION AS "SENSOR" TO TRACK THE WATER QUANTITY PUMPED
-            # topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/irrigation/#"
-            # topics_list.append({
-            #                     "topic": topic
-            #                 })
-            # MeasuresReceiver.subscribe(topic)
-            
             topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/sensors/#"
             topics_list.append({
                 "topic": topic
@@ -282,18 +214,10 @@ def getTopics():
     with open(database, "r") as file:
         db = json.load(file)
 
-    # db_file = open(database, "r")
-    # db = json.load(db_file)
-    # db_file.close()
-
     db["topics"] = topics_list
     
     with open(database, "w") as file:
         json.dump(db, file, indent=3)
-        
-    # db_file = open(database, "w")
-    # json.dump(db, db_file, indent=3)
-    # db_file.close()
 
 
 def send_to_Thingspeak(topic, measure):
@@ -306,10 +230,6 @@ def send_to_Thingspeak(topic, measure):
 
     with open(database, "r") as file:
         db = json.load(file)
-
-    # db_file = open(database, "r")
-    # db = json.load(db_file)
-    # db_file.close()
 
     userID = topic.split("/")[1]
     greenHouseID = topic.split("/")[2]
@@ -355,24 +275,6 @@ def send_to_Thingspeak(topic, measure):
                         measures["humidity"] = 0
                         
                         requests.post(RequestToThingspeak)
-                    
-                    # if measureType == "irrigation":  
-                    #     thingspeak_key = greenhouse["KEY"]
-                    #     field = greenhouse[measureType]
-
-                    #     RequestToThingspeak = str(url_thingspeak+thingspeak_key+field).format(float(measure))
-                    #     requests.post(RequestToThingspeak)
-                    # else: 
-                    #     if measures["temp"] != 0 and measures["hum"] != 0:
-                    #         thingspeak_key = greenhouse["KEY"]
-                    #         field_temp = greenhouse["temperature"]
-                    #         field_hum = greenhouse["humidity"]
-
-                    #         RequestToThingspeak = str(url_thingspeak+thingspeak_key+field_temp+field_hum).format(float(measures["temp"]), float(measures["hum"]))
-                    #         measures["temp"] = 0
-                    #         measures["hum"] = 0
-                            
-                    #         requests.post(RequestToThingspeak)
         
         
 
@@ -393,15 +295,10 @@ if __name__ == "__main__":
     cherrypy.engine.start()
     # cherrypy.engine.block()
 
-    # CAN THE MQTT BROKER CHANGE THROUGH TIME? I SUPPOSE NOT IN THIS CASE
     getBroker()
 
     with open(database, "r") as file:
         db = json.load(file)
-
-    # db_file = open(database, "r")
-    # db = json.load(db_file)
-    # db_file.close()
 
     broker_dict = db["broker"]
     

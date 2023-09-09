@@ -10,6 +10,7 @@ new_strat = False
 database = "db/weather_manager_db.json"
 resCatEndpoints = "http://resource_catalog:8080"
 api = 'YOUR_API_KEY'
+
 with open(database, "r") as file:
     db_test = json.load(file)
 
@@ -41,10 +42,6 @@ class RegStrategy(object):
         
         with open(database, "r") as file:
             db = json.load(file)
-
-        # db_file = open(database, "r")
-        # db = json.load(db_file)
-        # db_file.close()
     
         new_strategy = {
             "topic": topic,
@@ -65,9 +62,6 @@ class RegStrategy(object):
 
         time.sleep(5)
         new_strat = True
-        # db_file = open(database, "w")
-        # json.dump(db, db_file, indent=3)
-        # db_file.close()
         
         result = {
             "userID": userID,
@@ -94,10 +88,6 @@ class RegStrategy(object):
         with open(database, "r") as file:
             db = json.load(file)
 
-        # db_file = open(database, "r")
-        # db = json.load(db_file)
-        # db_file.close()
-
         try:
             userID = input['userID']
             greenHouseID = input['greenHouseID']
@@ -118,9 +108,6 @@ class RegStrategy(object):
 
         time.sleep(5)
         new_strat = True
-        # db_file = open(database, "w")
-        # json.dump(db, db_file, indent=3)
-        # db_file.close()
         
         result = {
             "userID": userID,
@@ -150,36 +137,33 @@ class RegStrategy(object):
         with open(database, "r") as file:
             db = json.load(file)
 
-        # db_file = open(database, "r")
-        # db = json.load(db_file)
-        # db_file.close()
-
         idx = 0
         for strat in db["strategies"]:
             if strat["topic"] == topic:
                 break
             else:
                 idx += 1
-        db["strategies"].pop(idx)
 
-        with open(database, "w") as file:
-            json.dump(db, file, indent=3)
+        try:
+            db["strategies"].pop(idx)
 
-        with open(database, "r") as file:
-            db_test = json.load(file)
+            with open(database, "w") as file:
+                json.dump(db, file, indent=3)
 
-        time.sleep(5)
-        new_strat = True
-        # db_file = open(database, "w")
-        # json.dump(db, db_file, indent=3)
-        # db_file.close()
-        
-        result = {
-            "userID": userID,
-            "greenHouseID": greenHouseID,
-            "timestamp": time.time()
-        }
-        return result
+            with open(database, "r") as file:
+                db_test = json.load(file)
+
+            time.sleep(5)
+            new_strat = True
+            
+            result = {
+                "userID": userID,
+                "greenHouseID": greenHouseID,
+                "timestamp": time.time()
+            }
+            return result
+        except:
+            print("No strategy registered")
     
     
 class MQTT_publisher(object):
@@ -187,10 +171,6 @@ class MQTT_publisher(object):
         
         with open(database, "r") as file:
             db = json.load(file)
-
-        # db_file = open(database, "r")
-        # db = json.load(db_file)
-        # db_file.close()
         
         self.client = mqtt.Client("WeatherManager_"+str(db["ID"]))
         self.broker = broker
@@ -213,7 +193,7 @@ class MQTT_publisher(object):
         self.__message["e"]["t"] = time.time()
         self.__message["e"]["v"] = value
 
-        self.client.publish(topic, json.dumps(self.__message))
+        self.client.publish(topic, json.dumps(self.__message)) 
         
         self.client.loop_start()
     
@@ -228,10 +208,6 @@ def refresh():
     
     with open(database, "r") as file:
         db = json.load(file)
-
-    # db_file = open(database, "r")
-    # db = json.load(db_file)
-    # db_file.close()
 
     payload = {
         'ip': db["ip"], 
@@ -266,10 +242,6 @@ def getBroker():
     with open(database, "r") as file:
         db = json.load(file)
 
-    # db_file = open(database, "r")
-    # db = json.load(db_file)
-    # db_file.close()
-
     db["broker"]["ip"] = ip
     db["broker"]["port"] = port
     db["broker"]["timestamp"] = time.time()
@@ -279,10 +251,6 @@ def getBroker():
         
     with open(database, "r") as file:
         db_test = json.load(file)
-
-    # db_file = open(database, "w")
-    # json.dump(db, db_file, indent=3)
-    # db_file.close()
     
 
 def getStrategies():
@@ -310,7 +278,7 @@ def getStrategies():
             city = strat["city"]
             active = strat["active"]
         except:
-            raise cherrypy.HTTPError(400, 'Wrong parameters')
+            print('Wrong parameters')
         else:
             topic = "IoT_project_29/"+str(userID)+"/"+str(greenHouseID)+"/weather"
             strategy_list.append({
@@ -326,10 +294,6 @@ def getStrategies():
     with open(database, "r") as file:
         db = json.load(file)
 
-    # db_file = open(database, "r")
-    # db = json.load(db_file)
-    # db_file.close()
-
     db["strategies"] = strategy_list
     
     with open(database, "w") as file:
@@ -340,9 +304,6 @@ def getStrategies():
 
     time.sleep(5)
     new_strat = True
-    # db_file = open(database, "w")
-    # json.dump(db, db_file, indent=3)
-    # db_file.close()
     
 
 def getlocation(city):
@@ -380,6 +341,7 @@ def getMeasurements(city):
     This method extract from a json the measurements of
     temperature and humidity of the specified city.
     """
+
     search_address = 'http://dataservice.accuweather.com/locations/v1/cities/search?apikey='+api+'&q='+city+'&details=true'
     hdr = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
     req = urllib.request.Request(search_address, headers=hdr)
@@ -413,7 +375,6 @@ if __name__ == '__main__':
     cherrypy.engine.start()
     # cherrypy.engine.block()
 
-    # CAN THE MQTT BROKER CHANGE THROUGH TIME? I SUPPOSE NOT IN THIS CASE
     getBroker()
     
     last_refresh = time.time() 
@@ -430,10 +391,6 @@ if __name__ == '__main__':
     
     with open(database, "r") as file:
         db = json.load(file)
-
-    # db_file = open(database, "r")
-    # db = json.load(db_file)
-    # db_file.close()
 
     broker_dict = db["broker"]
     
@@ -467,14 +424,11 @@ if __name__ == '__main__':
             else:
                 new_strat = False
 
-            # print(db_test)
-
         for strat in db_test["strategies"]:
             
             if strat["active"] == True:
                 if flag_API:
-                    temperature, humidity = getMeasurements(strat['city'])
-                    print(f'temperature: {temperature}, humidity: {humidity}')
+                    temperature, humidity = getMeasurements(strat['city']) 
                     flag_API = False
                     time_flag = time.time()
 
@@ -502,7 +456,6 @@ if __name__ == '__main__':
                 else: 
                     if (temperature*(percentange) <= strat['temperature'] and strat['temperature'] <= temperature*(2 - percentange)) and (humidity*(percentange) <= strat['humidity'] and strat['humidity'] <= humidity*(2 - percentange)):
                     # if float(temperature) == float(strat["temperature"]) and float(humidity) == float(strat["humidity"]):
-                        # Still we have to see how the device connector is going to receive this message
                         publisher.publish(strat["topic"], 'open')
                         
                         split_topic = strat["topic"].split("/")
@@ -520,16 +473,10 @@ if __name__ == '__main__':
                         new_strat = True
                         # time.sleep(0.5)
 
-                        print("PORCODIO")
-
         if new_strat == True:
             # time.sleep(1)
             with open(database, "w") as file:
                 json.dump(db_test, file, indent=3)
-
-            # db_file = open(database, "w")
-            # json.dump(db, db_file, indent=3)
-            # db_file.close()
 
                 
     
