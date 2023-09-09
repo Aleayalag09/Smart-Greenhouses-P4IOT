@@ -37,7 +37,7 @@ class RegStrategy(object):
         except:
             raise cherrypy.HTTPError(400, 'Wrong input')
         
-        topic = "IoT_project_29_test/"+str(userID)+"/"+str(greenHouseID)+"/weather"
+        topic = "IoT_project_29_test1/"+str(userID)+"/"+str(greenHouseID)+"/weather"
         
         with open(database, "r") as file:
             db = json.load(file)
@@ -145,7 +145,7 @@ class RegStrategy(object):
         except:
             raise cherrypy.HTTPError(400, 'Bad request')
         
-        topic = "IoT_project_29_test/"+str(userID)+"/"+str(greenHouseID)+"/weather"
+        topic = "IoT_project_29_test1/"+str(userID)+"/"+str(greenHouseID)+"/weather"
         
         with open(database, "r") as file:
             db = json.load(file)
@@ -314,7 +314,7 @@ def getStrategies():
         except:
             raise cherrypy.HTTPError(400, 'Wrong parameters')
         else:
-            topic = "IoT_project_29_test/"+str(userID)+"/"+str(greenHouseID)+"/weather"
+            topic = "IoT_project_29_test1/"+str(userID)+"/"+str(greenHouseID)+"/weather"
             strategy_list.append({
                                     "topic": topic,
                                     "temperature": temperature,

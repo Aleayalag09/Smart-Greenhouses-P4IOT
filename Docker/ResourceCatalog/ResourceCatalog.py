@@ -664,7 +664,7 @@ class Strategy(object):
                                                         del states[step]
                                                         break
 
-                                            # mqtt_handler.unsubscribe("IoT_project_29_test/"+str(id)+"/"+str(greenHouseID)+"/weather")
+                                            # mqtt_handler.unsubscribe("IoT_project_29_test1/"+str(id)+"/"+str(greenHouseID)+"/weather")
                                             db_ws["states"] = states
 
                                             with open("db/window_state.json", "w") as file:
@@ -708,7 +708,7 @@ class Strategy(object):
                                             "state": "CLOSE"
                                         })
 
-                                    # mqtt_handler.subscribe("IoT_project_29_test/"+str(id)+"/"+str(greenHouseID)+"/weather")
+                                    # mqtt_handler.subscribe("IoT_project_29_test1/"+str(id)+"/"+str(greenHouseID)+"/weather")
                                     db_ws["states"] = states
                                     
                                     with open("db/window_state.json", "w") as file:
@@ -932,7 +932,7 @@ class Strategy(object):
                                                     del states[step]
                                                     break
 
-                                        # mqtt_handler.unsubscribe("IoT_project_29_test/"+str(id)+"/"+str(greenHouseID)+"/weather")
+                                        # mqtt_handler.unsubscribe("IoT_project_29_test1/"+str(id)+"/"+str(greenHouseID)+"/weather")
                                         db_ws["states"] = states
                                         
                                         with open("db/window_state.json", "w") as file:
