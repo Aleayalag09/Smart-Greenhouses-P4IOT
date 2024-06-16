@@ -1,14 +1,18 @@
-Smart Greenhouses P4IOT
+# Smart Greenhouses P4IOT
 
-Team:
-Alejandro Ayala
-Matteo Imperi
-Matteo Bogoni
-Valentina Zamora
+## Team Members
+- Alejandro Ayala
+- Matteo Imperi
+- Matteo Bogoni
+- Valentina Zamora
 
-The idea of this project is implement a way to mesuare and controll different green houses. This development is intended provide this service to different users and be able to show plots about the behavior of the places.
+## Project Overview
+The goal of this project is to develop a system for monitoring and controlling multiple greenhouses. Our solution allows users to measure various environmental parameters within their greenhouses and visualize the data through detailed plots. This service aims to enhance greenhouse management for diverse users.
 
-In this project was used:
--Python + Cherrypy + MQTT
--Thinkspeak
+## Technologies Used
+- Python
+- CherryPy
+- MQTT
+- ThingSpeak
+
 
